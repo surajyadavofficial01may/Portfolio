@@ -1,0 +1,95 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    font-family: 'IBM Plex Mono', monospace;
+    color: #10283F;
+    background-color: #F4E9D5;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Space Grotesk', sans-serif;
+  }
+}
+
+.font-display {
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.font-mono-tech {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.font-pixel {
+  font-family: 'Press Start 2P', monospace;
+  image-rendering: pixelated;
+}
+
+/* Subtle Technical Grid Background */
+.bg-tech-grid {
+  background-color: #F4E9D5;
+  background-image: 
+    linear-gradient(to right, rgba(9, 42, 74, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(9, 42, 74, 0.05) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Subtle Blueprint Lines Accent */
+.bg-blueprint-lines {
+  background-image: radial-gradient(rgba(9, 42, 74, 0.08) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+/* CRT Scanlines effect for the console screen */
+.crt-screen {
+  position: relative;
+  overflow: hidden;
+}
+
+.crt-screen::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+  background-size: 100% 4px;
+  z-index: 20;
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+.crt-screen::after {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: radial-gradient(circle at center, transparent 65%, rgba(0, 0, 0, 0.45) 100%);
+  pointer-events: none;
+  z-index: 21;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #EADBC3;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C8B79D;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #092A4A;
+}
+
+/* Pixel rendering */
+.pixelated {
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
