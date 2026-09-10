@@ -333,25 +333,25 @@ export const RetroConsole: React.FC<RetroConsoleProps> = ({
                 {/* UP */}
                 <div 
                   className={activeButton === 'dpad-up' ? 'dpad-arm-active' : ''}
-                  onClick={() => pressDpad('up')}
+                  onPointerDown={() => pressDpad('up')}
                   style={{ position: 'absolute', top: 0, left: 22, width: 26, height: 28, background: '#1C1C24', borderRadius: '4px 4px 0 0', boxShadow: 'inset 0 2px 2px rgba(255,255,255,0.2), -2px 0 2px rgba(0,0,0,0.4), 2px 0 2px rgba(0,0,0,0.4)', cursor: 'pointer', zIndex: 20 }}
                 />
                 {/* DOWN */}
                 <div 
                   className={activeButton === 'dpad-down' ? 'dpad-arm-active' : ''}
-                  onClick={() => pressDpad('down')}
+                  onPointerDown={() => pressDpad('down')}
                   style={{ position: 'absolute', bottom: 0, left: 22, width: 26, height: 28, background: '#1C1C24', borderRadius: '0 0 4px 4px', boxShadow: 'inset 0 -2px 4px rgba(0,0,0,0.8), -2px 0 2px rgba(0,0,0,0.4), 2px 0 2px rgba(0,0,0,0.4)', cursor: 'pointer', zIndex: 20 }}
                 />
                 {/* LEFT */}
                 <div 
                   className={activeButton === 'dpad-left' ? 'dpad-arm-active' : ''}
-                  onClick={() => pressDpad('left')}
+                  onPointerDown={() => pressDpad('left')}
                   style={{ position: 'absolute', top: 22, left: 0, width: 28, height: 26, background: '#1C1C24', borderRadius: '4px 0 0 4px', boxShadow: 'inset 2px 0 2px rgba(255,255,255,0.1), 0 -2px 2px rgba(0,0,0,0.4), 0 2px 2px rgba(0,0,0,0.4)', cursor: 'pointer', zIndex: 20 }}
                 />
                 {/* RIGHT */}
                 <div 
                   className={activeButton === 'dpad-right' ? 'dpad-arm-active' : ''}
-                  onClick={() => pressDpad('right')}
+                  onPointerDown={() => pressDpad('right')}
                   style={{ position: 'absolute', top: 22, right: 0, width: 28, height: 26, background: '#1C1C24', borderRadius: '0 4px 4px 0', boxShadow: 'inset -2px 0 4px rgba(0,0,0,0.6), 0 -2px 2px rgba(0,0,0,0.4), 0 2px 2px rgba(0,0,0,0.4)', cursor: 'pointer', zIndex: 20 }}
                 />
                 {/* CENTER */}
@@ -364,11 +364,10 @@ export const RetroConsole: React.FC<RetroConsoleProps> = ({
             {/* A/B buttons */}
             <div style={{ position: 'relative', width: 110, height: 60 }}>
               {/* B Button */}
-              <div style={{ position: 'absolute', left: 0, bottom: -10, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ position: 'absolute', left: 0, bottom: -10, display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }} onPointerDown={pressB}>
                 <div style={{ background: '#A6976A', padding: 3, borderRadius: '50%', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3), 0 1px 2px rgba(255,255,255,0.4)' }}>
                   <div 
                     className={`gb-button ${activeButton === 'btn-b' ? 'gb-button-active' : ''}`}
-                    onClick={pressB}
                     style={{ width: 38, height: 38, background: 'linear-gradient(135deg, #A82E49, #6B1C2D)', borderRadius: '50%', border: '2px solid #3A101A', boxShadow: '0 4px 6px rgba(0,0,0,0.5), inset 0 2px 3px rgba(255,255,255,0.3)', cursor: 'pointer', transition: 'all 0.1s' }} 
                   />
                 </div>
@@ -376,11 +375,10 @@ export const RetroConsole: React.FC<RetroConsoleProps> = ({
               </div>
               
               {/* A Button */}
-              <div style={{ position: 'absolute', right: 0, top: -10, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ position: 'absolute', right: 0, top: -10, display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }} onPointerDown={pressA}>
                 <div style={{ background: '#A6976A', padding: 3, borderRadius: '50%', boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.3), 0 1px 2px rgba(255,255,255,0.4)' }}>
                   <div 
                     className={`gb-button ${activeButton === 'btn-a' ? 'gb-button-active' : ''}`}
-                    onClick={pressA}
                     style={{ width: 38, height: 38, background: 'linear-gradient(135deg, #A82E49, #6B1C2D)', borderRadius: '50%', border: '2px solid #3A101A', boxShadow: '0 4px 6px rgba(0,0,0,0.5), inset 0 2px 3px rgba(255,255,255,0.3)', cursor: 'pointer', transition: 'all 0.1s' }} 
                   />
                 </div>
@@ -393,22 +391,20 @@ export const RetroConsole: React.FC<RetroConsoleProps> = ({
           <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: 40, padding: '0 10px' }}>
             {/* SELECT & START */}
             <div style={{ display: 'flex', gap: 16, transform: 'rotate(-15deg)', marginTop: 10 }}>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }} onPointerDown={pressSelect}>
                 <div style={{ background: '#A6976A', padding: 2, borderRadius: 20, boxShadow: 'inset 0 2px 3px rgba(0,0,0,0.3)' }}>
                   <div 
                     className={activeButton === 'btn-select' ? 'gb-button-active' : ''}
-                    onClick={pressSelect}
                     style={{ width: 44, height: 12, background: '#2E2F38', borderRadius: 10, boxShadow: '0 2px 4px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.2)', cursor: 'pointer' }} 
                   />
                 </div>
                 <span style={{ marginTop: 6, fontSize: 8, fontFamily: 'sans-serif', fontWeight: 800, color: '#4A3B2B', letterSpacing: '0.1em' }}>SELECT</span>
               </div>
               
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer' }} onPointerDown={pressStart}>
                 <div style={{ background: '#A6976A', padding: 2, borderRadius: 20, boxShadow: 'inset 0 2px 3px rgba(0,0,0,0.3)' }}>
                   <div 
                     className={activeButton === 'btn-start' ? 'gb-button-active' : ''}
-                    onClick={pressStart}
                     style={{ width: 44, height: 12, background: '#2E2F38', borderRadius: 10, boxShadow: '0 2px 4px rgba(0,0,0,0.5), inset 0 1px 2px rgba(255,255,255,0.2)', cursor: 'pointer' }} 
                   />
                 </div>
@@ -454,10 +450,10 @@ export const RetroConsole: React.FC<RetroConsoleProps> = ({
       </div>
 
       {/* HELPER CONTROLS GUIDE & QUEST MODE TOGGLE */}
-      <div className="mt-4 flex flex-wrap items-center justify-center gap-2 font-mono-tech text-xs text-[#4B6173]">
+      <div className="mt-4 flex flex-wrap items-center justify-center gap-2 font-mono-tech text-xs text-[#4B6173] dark:text-[#94A3B8]">
         <button
-          onClick={pressStart}
-          className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#EADBC3] hover:bg-[#D7C3A6] text-[#092A4A] border border-[#C8B79D] transition-colors font-bold shadow-xs cursor-pointer"
+          onPointerDown={pressStart}
+          className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-[#EADBC3] dark:bg-[#151520] hover:bg-[#D7C3A6] text-[#092A4A] dark:text-[#6EB5F7] border border-[#C8B79D] dark:border-[#2B3040] transition-colors font-bold shadow-xs cursor-pointer"
         >
           <span>{mode === 'menu' ? '🕹️ Launch Quest Mode' : '📋 Return to RPG Menu'}</span>
         </button>

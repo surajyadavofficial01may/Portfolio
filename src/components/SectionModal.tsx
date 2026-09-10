@@ -75,12 +75,12 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
       onClick={handleClose}
     >
       <div 
-        className="w-full max-w-4xl max-h-[90vh] bg-[#F4E9D5] rounded-xl border-2 border-[#092A4A] shadow-[0_25px_50px_rgba(6,27,48,0.4)] flex flex-col overflow-hidden relative"
+        className="w-full max-w-4xl max-h-[90vh] bg-[#F4E9D5] dark:bg-[#0A0A0F] rounded-xl border-2 border-[#092A4A] dark:border-[#3B82F6] shadow-[0_25px_50px_rgba(6,27,48,0.4)] flex flex-col overflow-hidden relative"
         id="section-modal-container"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Window Header */}
-        <div className="bg-[#092A4A] text-[#F4E9D5] px-4 py-3 sm:px-6 flex items-center justify-between border-b border-[#061B30] select-none">
+        <div className="bg-[#092A4A] dark:bg-[#3B82F6] text-[#F4E9D5] dark:text-[#0A0A0F] px-4 py-3 sm:px-6 flex items-center justify-between border-b border-[#061B30] dark:border-[#1E3A8A] select-none">
           <div className="flex items-center gap-2 font-mono-tech text-xs tracking-wider">
             <span className="text-[#D7A93D]">SYS://SURaj.EXE</span>
             <span className="text-[#6FAF75]">&gt;&gt;</span>
@@ -91,7 +91,7 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
             onClick={handleClose}
             id="close-modal-btn"
             title="Close [ESC / B]"
-            className="flex items-center gap-1 text-xs font-mono-tech px-2 py-1 bg-[#123F68] hover:bg-[#C85C57] text-[#F4E9D5] rounded transition-colors"
+            className="flex items-center gap-1 text-xs font-mono-tech px-2 py-1 bg-[#123F68] dark:bg-[#2563EB] hover:bg-[#C85C57] text-[#F4E9D5] dark:text-[#0A0A0F] rounded transition-colors"
           >
             <span>ESC / [B]</span>
             <X size={15} />
@@ -104,64 +104,64 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
           {section === 'about' && (
             <div className="space-y-6">
               {/* Header block */}
-              <div className="border-b border-[#092A4A]/15 pb-4">
-                <div className="inline-block font-mono-tech text-xs bg-[#EADBC3] text-[#092A4A] px-2.5 py-0.5 rounded border border-[#C8B79D] mb-2 font-semibold">
+              <div className="border-b border-[#092A4A]/15 dark:border-[#3B82F6]/15 pb-4">
+                <div className="inline-block font-mono-tech text-xs bg-[#EADBC3] dark:bg-[#151520] text-[#092A4A] dark:text-[#6EB5F7] px-2.5 py-0.5 rounded border border-[#C8B79D] dark:border-[#2B3040] mb-2 font-semibold">
                   LV 01 • DEVELOPER PROFILE
                 </div>
-                <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#092A4A]">
+                <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#092A4A] dark:text-[#6EB5F7]">
                   Engineering Philosophy & Background
                 </h2>
-                <p className="font-mono-tech text-sm text-[#4B6173] mt-2 leading-relaxed">
+                <p className="font-mono-tech text-sm text-[#4B6173] dark:text-[#94A3B8] mt-2 leading-relaxed">
                   I specialize in designing and engineering high-reliability software. From distributed backends to fluid user interfaces, my focus is on clarity, modular architecture, and systems that scale.
                 </p>
               </div>
 
               {/* Core Pillars */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-[#EADBC3]/50 p-4 rounded border border-[#C8B79D]">
-                  <div className="font-display font-bold text-base text-[#092A4A] mb-1.5 flex items-center gap-2">
+                <div className="bg-[#EADBC3]/50 dark:bg-[#151520]/50 p-4 rounded border border-[#C8B79D] dark:border-[#2B3040]">
+                  <div className="font-display font-bold text-base text-[#092A4A] dark:text-[#6EB5F7] mb-1.5 flex items-center gap-2">
                     <span className="text-[#D7A93D]">01 //</span> Scalability First
                   </div>
-                  <p className="font-mono-tech text-xs text-[#4B6173] leading-relaxed">
+                  <p className="font-mono-tech text-xs text-[#4B6173] dark:text-[#94A3B8] leading-relaxed">
                     Architecting resilient services with microservices, Redis caching layers, and asynchronous task queues.
                   </p>
                 </div>
 
-                <div className="bg-[#EADBC3]/50 p-4 rounded border border-[#C8B79D]">
-                  <div className="font-display font-bold text-base text-[#092A4A] mb-1.5 flex items-center gap-2">
+                <div className="bg-[#EADBC3]/50 dark:bg-[#151520]/50 p-4 rounded border border-[#C8B79D] dark:border-[#2B3040]">
+                  <div className="font-display font-bold text-base text-[#092A4A] dark:text-[#6EB5F7] mb-1.5 flex items-center gap-2">
                     <span className="text-[#3DA66B]">02 //</span> Tactile Interfaces
                   </div>
-                  <p className="font-mono-tech text-xs text-[#4B6173] leading-relaxed">
+                  <p className="font-mono-tech text-xs text-[#4B6173] dark:text-[#94A3B8] leading-relaxed">
                     Crafting memorable, tactile frontends that bridge interactive physical aesthetics with modern responsive web standards.
                   </p>
                 </div>
 
-                <div className="bg-[#EADBC3]/50 p-4 rounded border border-[#C8B79D]">
-                  <div className="font-display font-bold text-base text-[#092A4A] mb-1.5 flex items-center gap-2">
-                    <span className="text-[#092A4A]">03 //</span> Autonomous AI
+                <div className="bg-[#EADBC3]/50 dark:bg-[#151520]/50 p-4 rounded border border-[#C8B79D] dark:border-[#2B3040]">
+                  <div className="font-display font-bold text-base text-[#092A4A] dark:text-[#6EB5F7] mb-1.5 flex items-center gap-2">
+                    <span className="text-[#092A4A] dark:text-[#6EB5F7]">03 //</span> Autonomous AI
                   </div>
-                  <p className="font-mono-tech text-xs text-[#4B6173] leading-relaxed">
+                  <p className="font-mono-tech text-xs text-[#4B6173] dark:text-[#94A3B8] leading-relaxed">
                     Integrating cyclical agent graphs, vector search retrieval, and LLM orchestration to automate complex workflows.
                   </p>
                 </div>
               </div>
 
               {/* Experience / Internships Timeline */}
-              <div className="bg-[#EADBC3]/40 p-5 rounded-lg border border-[#C8B79D]">
-                <h3 className="font-display font-bold text-lg text-[#092A4A] mb-3">
+              <div className="bg-[#EADBC3]/40 dark:bg-[#151520]/40 p-5 rounded-lg border border-[#C8B79D] dark:border-[#2B3040]">
+                <h3 className="font-display font-bold text-lg text-[#092A4A] dark:text-[#6EB5F7] mb-3">
                   Experience & Internships
                 </h3>
-                <div className="space-y-4 font-mono-tech text-xs text-[#10283F]">
+                <div className="space-y-4 font-mono-tech text-xs text-[#10283F] dark:text-[#E0E6ED]">
                   {EXPERIENCES.map((exp, idx) => (
                     <div key={idx} className="flex items-start gap-3">
-                      <span className="text-[#092A4A] font-bold shrink-0 bg-[#F4E9D5] px-2 py-0.5 rounded border border-[#C8B79D] text-[10px]">
+                      <span className="text-[#092A4A] dark:text-[#6EB5F7] font-bold shrink-0 bg-[#F4E9D5] dark:bg-[#0A0A0F] px-2 py-0.5 rounded border border-[#C8B79D] dark:border-[#2B3040] text-[10px]">
                         {exp.period}
                       </span>
                       <div>
-                        <div className="font-semibold text-sm text-[#092A4A]">
+                        <div className="font-semibold text-sm text-[#092A4A] dark:text-[#6EB5F7]">
                           {exp.role} • <span className="text-[#123F68]">{exp.company}</span>
                         </div>
-                        <p className="text-[#4B6173] mt-1 leading-relaxed">
+                        <p className="text-[#4B6173] dark:text-[#94A3B8] mt-1 leading-relaxed">
                           {exp.description}
                         </p>
                       </div>
@@ -172,14 +172,14 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
 
               {/* Education & Certifications */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-[#EADBC3]/40 p-4 rounded-lg border border-[#C8B79D]">
-                  <h4 className="font-display font-bold text-sm text-[#092A4A] mb-2 uppercase">
+                <div className="bg-[#EADBC3]/40 dark:bg-[#151520]/40 p-4 rounded-lg border border-[#C8B79D] dark:border-[#2B3040]">
+                  <h4 className="font-display font-bold text-sm text-[#092A4A] dark:text-[#6EB5F7] mb-2 uppercase">
                     🎓 Education
                   </h4>
-                  <div className="font-mono-tech text-xs text-[#092A4A] font-semibold">
+                  <div className="font-mono-tech text-xs text-[#092A4A] dark:text-[#6EB5F7] font-semibold">
                     {EDUCATION_INFO.institution}
                   </div>
-                  <div className="font-mono-tech text-[11px] text-[#4B6173] mt-0.5">
+                  <div className="font-mono-tech text-[11px] text-[#4B6173] dark:text-[#94A3B8] mt-0.5">
                     {EDUCATION_INFO.degree}
                   </div>
                   <div className="mt-2 text-[10.5px] font-mono-tech text-[#123F68]">
@@ -187,11 +187,11 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
                   </div>
                 </div>
 
-                <div className="bg-[#EADBC3]/40 p-4 rounded-lg border border-[#C8B79D]">
-                  <h4 className="font-display font-bold text-sm text-[#092A4A] mb-2 uppercase">
+                <div className="bg-[#EADBC3]/40 dark:bg-[#151520]/40 p-4 rounded-lg border border-[#C8B79D] dark:border-[#2B3040]">
+                  <h4 className="font-display font-bold text-sm text-[#092A4A] dark:text-[#6EB5F7] mb-2 uppercase">
                     📜 Certifications
                   </h4>
-                  <ul className="space-y-1.5 font-mono-tech text-[11px] text-[#10283F]">
+                  <ul className="space-y-1.5 font-mono-tech text-[11px] text-[#10283F] dark:text-[#E0E6ED]">
                     {EDUCATION_INFO.certifications.map((cert, idx) => (
                       <li key={idx} className="flex items-start gap-1.5">
                         <span className="text-[#3DA66B] font-bold">✓</span>
@@ -201,20 +201,41 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
                   </ul>
                 </div>
               </div>
+
+              {/* Comprehensive Tech Stack */}
+              <div className="bg-[#EADBC3]/40 dark:bg-[#151520]/40 p-5 rounded-lg border border-[#C8B79D] dark:border-[#2B3040]">
+                <h3 className="font-display font-bold text-lg text-[#092A4A] dark:text-[#6EB5F7] mb-3">
+                  Comprehensive Tech Stack
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {TECH_STACK.map((tech) => (
+                    <div key={tech.id} className="flex flex-col">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-[#092A4A] dark:text-[#6EB5F7] font-bold font-mono-tech text-[11px] uppercase bg-[#092A4A]/10 dark:bg-[#3B82F6]/10 px-1.5 py-0.5 rounded">
+                          {tech.name}
+                        </span>
+                      </div>
+                      <p className="font-mono-tech text-[11px] text-[#4B6173] dark:text-[#94A3B8] leading-relaxed pl-1">
+                        {tech.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 
           {/* PROJECTS SECTION */}
           {section === 'projects' && (
             <div className="space-y-6">
-              <div className="border-b border-[#092A4A]/15 pb-4">
-                <div className="inline-block font-mono-tech text-xs bg-[#EADBC3] text-[#092A4A] px-2.5 py-0.5 rounded border border-[#C8B79D] mb-2 font-semibold">
+              <div className="border-b border-[#092A4A]/15 dark:border-[#3B82F6]/15 pb-4">
+                <div className="inline-block font-mono-tech text-xs bg-[#EADBC3] dark:bg-[#151520] text-[#092A4A] dark:text-[#6EB5F7] px-2.5 py-0.5 rounded border border-[#C8B79D] dark:border-[#2B3040] mb-2 font-semibold">
                   LV 02 • MISSION CATALOGUE
                 </div>
-                <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#092A4A]">
+                <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#092A4A] dark:text-[#6EB5F7]">
                   Engineered Projects & Systems
                 </h2>
-                <p className="font-mono-tech text-sm text-[#4B6173] mt-2">
+                <p className="font-mono-tech text-sm text-[#4B6173] dark:text-[#94A3B8] mt-2">
                   Each project represents a distinct challenge in full-stack engineering, performance scaling, or intelligent agent orchestration.
                 </p>
               </div>
@@ -224,24 +245,24 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
                 {PROJECTS.map((proj) => (
                   <div
                     key={proj.id}
-                    className="bg-[#EADBC3]/50 p-5 rounded-lg border border-[#C8B79D] flex flex-col justify-between hover:border-[#092A4A] transition-colors shadow-xs"
+                    className="bg-[#EADBC3]/50 dark:bg-[#151520]/50 p-5 rounded-lg border border-[#C8B79D] dark:border-[#2B3040] flex flex-col justify-between hover:border-[#092A4A] dark:border-[#3B82F6] transition-colors shadow-xs"
                   >
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="font-mono-tech text-[10px] text-[#092A4A] font-bold tracking-widest bg-[#F4E9D5] px-2 py-0.5 rounded border border-[#C8B79D]">
+                        <span className="font-mono-tech text-[10px] text-[#092A4A] dark:text-[#6EB5F7] font-bold tracking-widest bg-[#F4E9D5] dark:bg-[#0A0A0F] px-2 py-0.5 rounded border border-[#C8B79D] dark:border-[#2B3040]">
                           {proj.code}
                         </span>
                         <span className="font-pixel text-[9px] text-[#D7A93D]">{proj.level}</span>
                       </div>
 
-                      <h3 className="font-display font-bold text-lg text-[#092A4A] mb-1">
+                      <h3 className="font-display font-bold text-lg text-[#092A4A] dark:text-[#6EB5F7] mb-1">
                         {proj.title}
                       </h3>
                       <h4 className="font-mono-tech text-xs text-[#123F68] font-medium mb-3">
                         {proj.subtitle}
                       </h4>
 
-                      <p className="font-mono-tech text-xs text-[#4B6173] leading-relaxed mb-4">
+                      <p className="font-mono-tech text-xs text-[#4B6173] dark:text-[#94A3B8] leading-relaxed mb-4">
                         {proj.description}
                       </p>
 
@@ -250,7 +271,7 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
                         {proj.techStack.map((tech, idx) => (
                           <span
                             key={idx}
-                            className="font-mono-tech text-[10px] px-2 py-0.5 bg-[#F4E9D5] text-[#092A4A] rounded border border-[#C8B79D]"
+                            className="font-mono-tech text-[10px] px-2 py-0.5 bg-[#F4E9D5] dark:bg-[#0A0A0F] text-[#092A4A] dark:text-[#6EB5F7] rounded border border-[#C8B79D] dark:border-[#2B3040]"
                           >
                             {tech}
                           </span>
@@ -260,7 +281,7 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
                       {/* Key features */}
                       <ul className="space-y-1 mb-4">
                         {proj.features.map((feat, idx) => (
-                          <li key={idx} className="flex items-start gap-2 text-xs font-mono-tech text-[#10283F]">
+                          <li key={idx} className="flex items-start gap-2 text-xs font-mono-tech text-[#10283F] dark:text-[#E0E6ED]">
                             <span className="text-[#3DA66B] font-bold">✓</span>
                             <span>{feat}</span>
                           </li>
@@ -269,7 +290,7 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
                     </div>
 
                     {/* Links */}
-                    <div className="flex items-center justify-between pt-3 border-t border-[#092A4A]/10 mt-2">
+                    <div className="flex items-center justify-between pt-3 border-t border-[#092A4A]/10 dark:border-[#3B82F6]/10 mt-2">
                       {proj.metrics && (
                         <span className="font-mono-tech text-[10px] text-[#3DA66B] font-semibold">
                           ⚡ {proj.metrics}
@@ -281,7 +302,7 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
                           target="_blank"
                           rel="noreferrer"
                           onClick={() => soundManager.playNavigate()}
-                          className="flex items-center gap-1 text-xs font-mono-tech px-2.5 py-1 bg-[#092A4A] text-[#F4E9D5] rounded hover:bg-[#123F68] transition-colors"
+                          className="flex items-center gap-1 text-xs font-mono-tech px-2.5 py-1 bg-[#092A4A] dark:bg-[#3B82F6] text-[#F4E9D5] dark:text-[#0A0A0F] rounded hover:bg-[#123F68] dark:hover:bg-[#2563EB] dark:bg-[#2563EB] transition-colors"
                         >
                           <Github size={13} />
                           <span>Code</span>
@@ -297,15 +318,15 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
           {/* BLOG SECTION */}
           {section === 'blog' && (
             <div className="space-y-6">
-              <div className="border-b border-[#092A4A]/15 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="border-b border-[#092A4A]/15 dark:border-[#3B82F6]/15 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <div className="inline-block font-mono-tech text-xs bg-[#EADBC3] text-[#092A4A] px-2.5 py-0.5 rounded border border-[#C8B79D] mb-2 font-semibold">
+                  <div className="inline-block font-mono-tech text-xs bg-[#EADBC3] dark:bg-[#151520] text-[#092A4A] dark:text-[#6EB5F7] px-2.5 py-0.5 rounded border border-[#C8B79D] dark:border-[#2B3040] mb-2 font-semibold">
                     LV 03 • ARTICLE DATABASE
                   </div>
-                  <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#092A4A]">
+                  <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#092A4A] dark:text-[#6EB5F7]">
                     Engineering Articles & Notes
                   </h2>
-                  <p className="font-mono-tech text-sm text-[#4B6173] mt-1">
+                  <p className="font-mono-tech text-sm text-[#4B6173] dark:text-[#94A3B8] mt-1">
                     Technical deep-dives on deep learning, real-time web architecture, and algorithms.
                   </p>
                 </div>
@@ -314,7 +335,7 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
                   href={PERSONAL_INFO.socials.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-[#092A4A] hover:bg-[#123F68] text-[#F4E9D5] text-xs font-mono-tech rounded border border-[#061B30] transition-colors"
+                  className="shrink-0 flex items-center gap-1.5 px-3 py-1.5 bg-[#092A4A] dark:bg-[#3B82F6] hover:bg-[#123F68] dark:hover:bg-[#2563EB] dark:bg-[#2563EB] text-[#F4E9D5] dark:text-[#0A0A0F] text-xs font-mono-tech rounded border border-[#061B30] dark:border-[#1E3A8A] transition-colors"
                 >
                   <ExternalLink size={13} />
                   <span>LinkedIn Articles</span>
@@ -323,14 +344,14 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
 
               {selectedArticle ? (
                 /* Full Article View */
-                <div className="bg-[#EADBC3]/50 p-6 rounded-lg border border-[#C8B79D] space-y-4">
+                <div className="bg-[#EADBC3]/50 dark:bg-[#151520]/50 p-6 rounded-lg border border-[#C8B79D] dark:border-[#2B3040] space-y-4">
                   <div className="flex items-center justify-between">
                     <button
                       onClick={() => {
                         soundManager.playBack();
                         setSelectedArticle(null);
                       }}
-                      className="font-mono-tech text-xs text-[#092A4A] hover:underline flex items-center gap-1 font-semibold"
+                      className="font-mono-tech text-xs text-[#092A4A] dark:text-[#6EB5F7] hover:underline flex items-center gap-1 font-semibold"
                     >
                       ← BACK TO ARTICLE LIST
                     </button>
@@ -339,41 +360,41 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
                       href={selectedArticle.link || PERSONAL_INFO.socials.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[11px] font-mono-tech text-[#092A4A] hover:underline flex items-center gap-1"
+                      className="text-[11px] font-mono-tech text-[#092A4A] dark:text-[#6EB5F7] hover:underline flex items-center gap-1"
                     >
                       <span>Share / Discuss on LinkedIn</span>
                       <ExternalLink size={12} />
                     </a>
                   </div>
 
-                  <div className="flex items-center gap-3 font-mono-tech text-xs text-[#4B6173]">
-                    <span className="bg-[#092A4A] text-[#F4E9D5] px-2 py-0.5 rounded font-bold">
+                  <div className="flex items-center gap-3 font-mono-tech text-xs text-[#4B6173] dark:text-[#94A3B8]">
+                    <span className="bg-[#092A4A] dark:bg-[#3B82F6] text-[#F4E9D5] dark:text-[#0A0A0F] px-2 py-0.5 rounded font-bold">
                       DOC {selectedArticle.code}
                     </span>
                     <span>{selectedArticle.category}</span>
                     <span>•</span>
                     <span>{selectedArticle.readTime}</span>
                     <span>•</span>
-                    <span className="text-[#092A4A] font-semibold">By {PERSONAL_INFO.name}</span>
+                    <span className="text-[#092A4A] dark:text-[#6EB5F7] font-semibold">By {PERSONAL_INFO.name}</span>
                   </div>
 
-                  <h3 className="font-display font-bold text-2xl text-[#092A4A]">
+                  <h3 className="font-display font-bold text-2xl text-[#092A4A] dark:text-[#6EB5F7]">
                     {selectedArticle.title}
                   </h3>
 
-                  <div className="font-mono-tech text-xs sm:text-sm text-[#10283F] leading-relaxed whitespace-pre-line pt-4 border-t border-[#092A4A]/15">
+                  <div className="font-mono-tech text-xs sm:text-sm text-[#10283F] dark:text-[#E0E6ED] leading-relaxed whitespace-pre-line pt-4 border-t border-[#092A4A]/15 dark:border-[#3B82F6]/15">
                     {selectedArticle.content}
                   </div>
 
-                  <div className="pt-4 border-t border-[#092A4A]/15 flex items-center justify-between">
-                    <span className="font-mono-tech text-xs text-[#4B6173]">
+                  <div className="pt-4 border-t border-[#092A4A]/15 dark:border-[#3B82F6]/15 flex items-center justify-between">
+                    <span className="font-mono-tech text-xs text-[#4B6173] dark:text-[#94A3B8]">
                       Author: {PERSONAL_INFO.name} • Software Engineer
                     </span>
                     <a
                       href={selectedArticle.link || PERSONAL_INFO.socials.linkedin}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-3 py-1 bg-[#092A4A] text-[#F4E9D5] text-xs font-mono-tech rounded hover:bg-[#123F68]"
+                      className="px-3 py-1 bg-[#092A4A] dark:bg-[#3B82F6] text-[#F4E9D5] dark:text-[#0A0A0F] text-xs font-mono-tech rounded hover:bg-[#123F68] dark:hover:bg-[#2563EB] dark:bg-[#2563EB]"
                     >
                       {selectedArticle.link ? "Read on LinkedIn" : "Connect on LinkedIn"}
                     </a>
@@ -389,24 +410,24 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
                         soundManager.playSelect();
                         setSelectedArticle(art);
                       }}
-                      className="group bg-[#EADBC3]/40 hover:bg-[#EADBC3] p-4 sm:p-5 rounded-lg border border-[#C8B79D] hover:border-[#092A4A] transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs"
+                      className="group bg-[#EADBC3]/40 dark:bg-[#151520]/40 hover:bg-[#EADBC3] dark:hover:bg-[#151520] dark:bg-[#151520] p-4 sm:p-5 rounded-lg border border-[#C8B79D] dark:border-[#2B3040] hover:border-[#092A4A] dark:border-[#3B82F6] transition-all cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs"
                     >
                       <div className="space-y-1.5">
                         <div className="flex items-center gap-2.5 font-mono-tech text-xs">
-                          <span className="text-[#092A4A] font-bold">DOC {art.code}</span>
-                          <span className="text-[#4B6173]">/</span>
+                          <span className="text-[#092A4A] dark:text-[#6EB5F7] font-bold">DOC {art.code}</span>
+                          <span className="text-[#4B6173] dark:text-[#94A3B8]">/</span>
                           <span className="text-[#3DA66B] font-semibold">{art.category}</span>
-                          <span className="text-[#4B6173]">({art.readTime})</span>
+                          <span className="text-[#4B6173] dark:text-[#94A3B8]">({art.readTime})</span>
                         </div>
-                        <h4 className="font-display font-bold text-base sm:text-lg text-[#092A4A] group-hover:text-[#123F68] transition-colors">
+                        <h4 className="font-display font-bold text-base sm:text-lg text-[#092A4A] dark:text-[#6EB5F7] group-hover:text-[#123F68] transition-colors">
                           {art.title}
                         </h4>
-                        <p className="font-mono-tech text-xs text-[#4B6173] line-clamp-2">
+                        <p className="font-mono-tech text-xs text-[#4B6173] dark:text-[#94A3B8] line-clamp-2">
                           {art.summary}
                         </p>
                       </div>
 
-                      <div className="shrink-0 flex items-center gap-1 font-mono-tech text-xs text-[#092A4A] font-semibold group-hover:translate-x-1 transition-transform">
+                      <div className="shrink-0 flex items-center gap-1 font-mono-tech text-xs text-[#092A4A] dark:text-[#6EB5F7] font-semibold group-hover:translate-x-1 transition-transform">
                         <span>READ DOC</span>
                         <span>→</span>
                       </div>
@@ -420,35 +441,35 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
           {/* CONTACT SECTION */}
           {section === 'contact' && (
             <div className="space-y-6">
-              <div className="border-b border-[#092A4A]/15 pb-4">
-                <div className="inline-block font-mono-tech text-xs bg-[#EADBC3] text-[#092A4A] px-2.5 py-0.5 rounded border border-[#C8B79D] mb-2 font-semibold">
+              <div className="border-b border-[#092A4A]/15 dark:border-[#3B82F6]/15 pb-4">
+                <div className="inline-block font-mono-tech text-xs bg-[#EADBC3] dark:bg-[#151520] text-[#092A4A] dark:text-[#6EB5F7] px-2.5 py-0.5 rounded border border-[#C8B79D] dark:border-[#2B3040] mb-2 font-semibold">
                   LV 04 • TRANSMISSION CHANNEL
                 </div>
-                <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#092A4A]">
+                <h2 className="font-display font-bold text-2xl sm:text-3xl text-[#092A4A] dark:text-[#6EB5F7]">
                   Transmit a Message
                 </h2>
-                <p className="font-mono-tech text-sm text-[#4B6173] mt-2">
+                <p className="font-mono-tech text-sm text-[#4B6173] dark:text-[#94A3B8] mt-2">
                   Open to full-time roles, engineering consultations, and innovative web projects. Send a direct transmission below.
                 </p>
               </div>
 
               {transmissionSuccess ? (
-                <div className="bg-[#EADBC3]/70 p-6 rounded-lg border-2 border-[#3DA66B] text-center space-y-3">
-                  <div className="w-12 h-12 rounded-full bg-[#3DA66B] text-[#F4E9D5] flex items-center justify-center mx-auto">
+                <div className="bg-[#EADBC3]/70 dark:bg-[#151520]/70 p-6 rounded-lg border-2 border-[#3DA66B] text-center space-y-3">
+                  <div className="w-12 h-12 rounded-full bg-[#3DA66B] text-[#F4E9D5] dark:text-[#0A0A0F] flex items-center justify-center mx-auto">
                     <CheckCircle2 size={28} />
                   </div>
-                  <h3 className="font-display font-bold text-xl text-[#092A4A]">
+                  <h3 className="font-display font-bold text-xl text-[#092A4A] dark:text-[#6EB5F7]">
                     Transmission Confirmed!
                   </h3>
-                  <div className="font-mono-tech text-xs text-[#4B6173]">
-                    Receipt ID: <span className="font-bold text-[#092A4A]">{transmissionSuccess}</span>
+                  <div className="font-mono-tech text-xs text-[#4B6173] dark:text-[#94A3B8]">
+                    Receipt ID: <span className="font-bold text-[#092A4A] dark:text-[#6EB5F7]">{transmissionSuccess}</span>
                   </div>
-                  <p className="font-mono-tech text-xs text-[#10283F] max-w-md mx-auto">
+                  <p className="font-mono-tech text-xs text-[#10283F] dark:text-[#E0E6ED] max-w-md mx-auto">
                     Your transmission has been logged directly into Suraj's developer terminal. He will reply via your provided email shortly!
                   </p>
                   <button
                     onClick={() => setTransmissionSuccess(null)}
-                    className="font-mono-tech text-xs px-4 py-2 bg-[#092A4A] text-[#F4E9D5] rounded hover:bg-[#123F68]"
+                    className="font-mono-tech text-xs px-4 py-2 bg-[#092A4A] dark:bg-[#3B82F6] text-[#F4E9D5] dark:text-[#0A0A0F] rounded hover:bg-[#123F68] dark:hover:bg-[#2563EB] dark:bg-[#2563EB]"
                   >
                     SEND ANOTHER TRANSMISSION
                   </button>
@@ -456,37 +477,32 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
               ) : (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {/* Direct Contact info card */}
-                  <div className="bg-[#EADBC3]/50 p-5 rounded-lg border border-[#C8B79D] space-y-4">
-                    <div className="font-display font-bold text-base text-[#092A4A]">
+                  <div className="bg-[#EADBC3]/50 dark:bg-[#151520]/50 p-5 rounded-lg border border-[#C8B79D] dark:border-[#2B3040] space-y-4">
+                    <div className="font-display font-bold text-base text-[#092A4A] dark:text-[#6EB5F7]">
                       Direct Dispatch
                     </div>
                     <div className="space-y-2 text-xs font-mono-tech">
-                      <div className="text-[#4B6173]">Direct Email:</div>
-                      <div className="bg-[#F4E9D5] p-2 rounded border border-[#C8B79D] break-all font-semibold text-[#092A4A]">
+                      <div className="text-[#4B6173] dark:text-[#94A3B8]">Direct Email:</div>
+                      <div className="bg-[#F4E9D5] dark:bg-[#0A0A0F] p-2 rounded border border-[#C8B79D] dark:border-[#2B3040] break-all font-semibold text-[#092A4A] dark:text-[#6EB5F7]">
                         {PERSONAL_INFO.socials.email}
                       </div>
                       <button
                         onClick={handleCopyEmail}
-                        className="flex items-center gap-1.5 text-xs text-[#092A4A] hover:underline pt-0.5 font-semibold cursor-pointer"
+                        className="flex items-center gap-1.5 text-xs text-[#092A4A] dark:text-[#6EB5F7] hover:underline pt-0.5 font-semibold cursor-pointer"
                       >
                         <Copy size={13} />
                         <span>{copiedEmail ? 'Copied to clipboard!' : 'Copy Email Address'}</span>
                       </button>
 
-                      {PERSONAL_INFO.phone && (
-                        <div className="pt-2">
-                          <div className="text-[#4B6173]">Phone / WhatsApp:</div>
-                          <div className="font-semibold text-[#092A4A]">{PERSONAL_INFO.phone}</div>
-                        </div>
-                      )}
+                      {/* Phone block removed */}
                     </div>
 
-                    <div className="pt-2 border-t border-[#092A4A]/10 flex items-center gap-2">
+                    <div className="pt-2 border-t border-[#092A4A]/10 dark:border-[#3B82F6]/10 flex items-center gap-2">
                       <a
                         href={PERSONAL_INFO.socials.github}
                         target="_blank"
                         rel="noreferrer"
-                        className="px-2.5 py-1 bg-[#F4E9D5] border border-[#C8B79D] rounded text-xs font-mono-tech text-[#092A4A] hover:bg-[#092A4A] hover:text-[#F4E9D5] transition-colors"
+                        className="px-2.5 py-1 bg-[#F4E9D5] dark:bg-[#0A0A0F] border border-[#C8B79D] dark:border-[#2B3040] rounded text-xs font-mono-tech text-[#092A4A] dark:text-[#6EB5F7] hover:bg-[#092A4A] dark:hover:bg-[#3B82F6] dark:bg-[#3B82F6] hover:text-[#F4E9D5] dark:text-[#0A0A0F] transition-colors"
                       >
                         GitHub
                       </a>
@@ -494,15 +510,15 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
                         href={PERSONAL_INFO.socials.linkedin}
                         target="_blank"
                         rel="noreferrer"
-                        className="px-2.5 py-1 bg-[#F4E9D5] border border-[#C8B79D] rounded text-xs font-mono-tech text-[#092A4A] hover:bg-[#092A4A] hover:text-[#F4E9D5] transition-colors"
+                        className="px-2.5 py-1 bg-[#F4E9D5] dark:bg-[#0A0A0F] border border-[#C8B79D] dark:border-[#2B3040] rounded text-xs font-mono-tech text-[#092A4A] dark:text-[#6EB5F7] hover:bg-[#092A4A] dark:hover:bg-[#3B82F6] dark:bg-[#3B82F6] hover:text-[#F4E9D5] dark:text-[#0A0A0F] transition-colors"
                       >
                         LinkedIn
                       </a>
                     </div>
 
-                    <div className="pt-2 border-t border-[#092A4A]/10 font-mono-tech text-xs text-[#4B6173] leading-relaxed">
-                      📍 Location: <span className="text-[#092A4A] font-semibold">{PERSONAL_INFO.location}</span><br />
-                      🎓 University: <span className="text-[#092A4A] font-semibold">KIIT Deemed University</span><br />
+                    <div className="pt-2 border-t border-[#092A4A]/10 dark:border-[#3B82F6]/10 font-mono-tech text-xs text-[#4B6173] dark:text-[#94A3B8] leading-relaxed">
+                      📍 Location: <span className="text-[#092A4A] dark:text-[#6EB5F7] font-semibold">{PERSONAL_INFO.location}</span><br />
+                      🎓 University: <span className="text-[#092A4A] dark:text-[#6EB5F7] font-semibold">KIIT Deemed University</span><br />
                       ⚡ Response SLA: <span className="text-[#3DA66B] font-semibold">&lt; 24 Hours</span>
                     </div>
                   </div>
@@ -510,7 +526,7 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
                   {/* Transmission Form */}
                   <form onSubmit={handleSendTransmission} className="md:col-span-2 space-y-4">
                     <div>
-                      <label className="block font-mono-tech text-xs font-semibold text-[#092A4A] mb-1">
+                      <label className="block font-mono-tech text-xs font-semibold text-[#092A4A] dark:text-[#6EB5F7] mb-1">
                         Callsign / Your Name *
                       </label>
                       <input
@@ -519,12 +535,12 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
                         value={contactName}
                         onChange={(e) => setContactName(e.target.value)}
                         placeholder="e.g. Alex Vance"
-                        className="w-full font-mono-tech text-sm px-3.5 py-2.5 bg-[#F4E9D5] border border-[#C8B79D] rounded text-[#10283F] placeholder-[#4B6173]/60 focus:outline-none focus:border-[#092A4A] focus:ring-1 focus:ring-[#092A4A]"
+                        className="w-full font-mono-tech text-sm px-3.5 py-2.5 bg-[#F4E9D5] dark:bg-[#0A0A0F] border border-[#C8B79D] dark:border-[#2B3040] rounded text-[#10283F] dark:text-[#E0E6ED] placeholder-[#4B6173]/60 focus:outline-none focus:border-[#092A4A] dark:border-[#3B82F6] focus:ring-1 focus:ring-[#092A4A]"
                       />
                     </div>
 
                     <div>
-                      <label className="block font-mono-tech text-xs font-semibold text-[#092A4A] mb-1">
+                      <label className="block font-mono-tech text-xs font-semibold text-[#092A4A] dark:text-[#6EB5F7] mb-1">
                         Reply Vector / Email Address *
                       </label>
                       <input
@@ -533,12 +549,12 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
                         value={contactEmail}
                         onChange={(e) => setContactEmail(e.target.value)}
                         placeholder="e.g. alex@company.com"
-                        className="w-full font-mono-tech text-sm px-3.5 py-2.5 bg-[#F4E9D5] border border-[#C8B79D] rounded text-[#10283F] placeholder-[#4B6173]/60 focus:outline-none focus:border-[#092A4A] focus:ring-1 focus:ring-[#092A4A]"
+                        className="w-full font-mono-tech text-sm px-3.5 py-2.5 bg-[#F4E9D5] dark:bg-[#0A0A0F] border border-[#C8B79D] dark:border-[#2B3040] rounded text-[#10283F] dark:text-[#E0E6ED] placeholder-[#4B6173]/60 focus:outline-none focus:border-[#092A4A] dark:border-[#3B82F6] focus:ring-1 focus:ring-[#092A4A]"
                       />
                     </div>
 
                     <div>
-                      <label className="block font-mono-tech text-xs font-semibold text-[#092A4A] mb-1">
+                      <label className="block font-mono-tech text-xs font-semibold text-[#092A4A] dark:text-[#6EB5F7] mb-1">
                         Transmission Content / Message *
                       </label>
                       <textarea
@@ -547,14 +563,14 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
                         value={contactMessage}
                         onChange={(e) => setContactMessage(e.target.value)}
                         placeholder="Let's build scalable web applications together..."
-                        className="w-full font-mono-tech text-sm px-3.5 py-2.5 bg-[#F4E9D5] border border-[#C8B79D] rounded text-[#10283F] placeholder-[#4B6173]/60 focus:outline-none focus:border-[#092A4A] focus:ring-1 focus:ring-[#092A4A] resize-none"
+                        className="w-full font-mono-tech text-sm px-3.5 py-2.5 bg-[#F4E9D5] dark:bg-[#0A0A0F] border border-[#C8B79D] dark:border-[#2B3040] rounded text-[#10283F] dark:text-[#E0E6ED] placeholder-[#4B6173]/60 focus:outline-none focus:border-[#092A4A] dark:border-[#3B82F6] focus:ring-1 focus:ring-[#092A4A] resize-none"
                       />
                     </div>
 
                     <button
                       type="submit"
                       disabled={isSubmitting}
-                      className="w-full py-3 px-6 bg-[#092A4A] hover:bg-[#123F68] disabled:opacity-70 text-[#F4E9D5] font-mono-tech font-bold text-sm rounded transition-all shadow-xs flex items-center justify-center gap-2 active:scale-[0.99]"
+                      className="w-full py-3 px-6 bg-[#092A4A] dark:bg-[#3B82F6] hover:bg-[#123F68] dark:hover:bg-[#2563EB] dark:bg-[#2563EB] disabled:opacity-70 text-[#F4E9D5] dark:text-[#0A0A0F] font-mono-tech font-bold text-sm rounded transition-all shadow-xs flex items-center justify-center gap-2 active:scale-[0.99]"
                     >
                       <Send size={16} />
                       <span>{isSubmitting ? 'TRANSMITTING PACKETS...' : 'SEND TRANSMISSION'}</span>

@@ -3,7 +3,6 @@ import { TechStackItem, Project, Article, JourneyMetric } from '../types';
 export const PERSONAL_INFO = {
   name: 'Suraj Kumar Yadav',
   role: 'Software Engineer',
-  phone: '+91 9508998437',
   tagline: 'Building scalable full-stack systems and AI-powered applications.',
   bio: "Results-driven Software Engineer with 1+ year of hands-on industry experience designing, developing, and deploying scalable full-stack systems and AI-powered applications in production environments. Demonstrated expertise in building distributed, secure, and high-performance software solutions.",
   location: 'Bhubaneswar, Odisha, India',
@@ -24,11 +23,11 @@ export const PERSONAL_INFO = {
 export const TECH_STACK: TechStackItem[] = [
   {
     id: 'python',
-    name: 'Python & TS',
+    name: 'Languages',
     category: 'backend',
     iconKey: 'python',
     proficiency: 95,
-    description: 'Python, TypeScript, JavaScript (ES6+), Java, C++, SQL',
+    description: 'Python, JavaScript (ES6+), TypeScript, Java, C, C++, SQL',
   },
   {
     id: 'frontend',
@@ -36,7 +35,7 @@ export const TECH_STACK: TechStackItem[] = [
     category: 'frontend',
     iconKey: 'react',
     proficiency: 92,
-    description: 'React.js, Vue.js 3, Next.js, Vite, TailwindCSS, Zustand',
+    description: 'React.js, Vue.js 3, Next.js, Vite, TailwindCSS, HTML5, CSS3, Three.js, Zustand',
   },
   {
     id: 'backend',
@@ -44,7 +43,7 @@ export const TECH_STACK: TechStackItem[] = [
     category: 'backend',
     iconKey: 'nodejs',
     proficiency: 90,
-    description: 'Node.js, Express.js, FastAPI, RESTful APIs, WebSockets, SSE',
+    description: 'Node.js, Express.js, FastAPI, RESTful APIs, WebSockets, Server-Sent Events (SSE)',
   },
   {
     id: 'ai_ml',
@@ -52,7 +51,7 @@ export const TECH_STACK: TechStackItem[] = [
     category: 'backend',
     iconKey: 'brain',
     proficiency: 88,
-    description: 'LangGraph, LiteLLM, RAG, TensorFlow, PyTorch, FAISS, Pydantic',
+    description: 'LangGraph, LiteLLM, RAG (BM25/TF-IDF/Vector), TensorFlow, PyTorch, Scikit-Learn, FAISS, Pydantic',
   },
   {
     id: 'database',
@@ -60,7 +59,7 @@ export const TECH_STACK: TechStackItem[] = [
     category: 'database',
     iconKey: 'postgresql',
     proficiency: 86,
-    description: 'MongoDB, PostgreSQL, Redis, MongoDB Atlas (Vector), Pinecone, TimescaleDB',
+    description: 'MongoDB, PostgreSQL, Redis, MongoDB Atlas (Vector Search), Pinecone, TimescaleDB',
   },
   {
     id: 'cloud_devops',
@@ -68,7 +67,23 @@ export const TECH_STACK: TechStackItem[] = [
     category: 'devops',
     iconKey: 'docker',
     proficiency: 85,
-    description: 'Docker, GKE, AWS (Bedrock, EKS), CI/CD, Kafka, Celery',
+    description: 'Docker, Docker Compose, Google Kubernetes Engine (GKE), AWS (Bedrock, EKS), CI/CD',
+  },
+  {
+    id: 'security',
+    name: 'Security',
+    category: 'backend',
+    iconKey: 'security',
+    proficiency: 84,
+    description: 'OAuth 2.0, JWT, Role-Based Access Control (RBAC), Token Encryption, SSO',
+  },
+  {
+    id: 'tools',
+    name: 'Tools',
+    category: 'frontend',
+    iconKey: 'tools',
+    proficiency: 85,
+    description: 'Git, GitHub, Chrome Extension API (MV3), Groq, Google Maps API, Kafka, Celery',
   },
 ];
 

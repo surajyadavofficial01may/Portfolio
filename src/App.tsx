@@ -27,7 +27,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-tech-grid text-[#10283F] flex flex-col relative overflow-x-hidden selection:bg-[#092A4A] selection:text-[#F4E9D5]">
+    <div className="min-h-screen bg-tech-grid text-[#10283F] dark:text-[#E0E6ED] flex flex-col relative overflow-x-hidden selection:bg-[#092A4A] dark:bg-[#3B82F6] selection:text-[#F4E9D5] dark:text-[#0A0A0F]">
       {/* Header Navigation */}
       <Header
         activeSection={activeSection}
@@ -79,12 +79,12 @@ export default function App() {
       <AIAssistantCompanion />
 
       {/* Blueprint Bottom Line: THE JOURNEY CONTINUES... (matching photo) */}
-      <div className="w-full max-w-7xl mx-auto py-6 px-4 flex items-center justify-center gap-3 font-mono-tech text-[11px] text-[#4B6173] select-none">
-        <span className="text-xs text-[#092A4A]/40">+</span>
-        <div className="w-24 sm:w-48 h-px bg-[#092A4A]/20" />
+      <div className="w-full max-w-7xl mx-auto py-6 px-4 flex items-center justify-center gap-3 font-mono-tech text-[11px] text-[#4B6173] dark:text-[#94A3B8] select-none">
+        <span className="text-xs text-[#092A4A]/40 dark:text-[#6EB5F7]/40">+</span>
+        <div className="w-24 sm:w-48 h-px bg-[#092A4A]/20 dark:bg-[#3B82F6]/20" />
         <span className="tracking-widest font-semibold text-[#665440]">THE JOURNEY CONTINUES...</span>
-        <div className="w-24 sm:w-48 h-px bg-[#092A4A]/20" />
-        <span className="text-xs text-[#092A4A]/40">+</span>
+        <div className="w-24 sm:w-48 h-px bg-[#092A4A]/20 dark:bg-[#3B82F6]/20" />
+        <span className="text-xs text-[#092A4A]/40 dark:text-[#6EB5F7]/40">+</span>
       </div>
     </div>
   );

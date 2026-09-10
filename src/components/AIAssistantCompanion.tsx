@@ -166,18 +166,18 @@ export const AIAssistantCompanion: React.FC = () => {
           {/* Top Bar: AI ASSISTANT • ONLINE */}
           <div className="flex items-center justify-between pb-1.5 border-b border-[#16385B]/60 mb-2">
             <div className="flex items-center gap-1.5 font-mono-tech text-[11px] font-bold">
-              <span className="text-[#F4E9D5] tracking-wider">AI ASSISTANT</span>
-              <span className="text-[#4B6173]">•</span>
+              <span className="text-[#F4E9D5] dark:text-[#0A0A0F] tracking-wider">AI ASSISTANT</span>
+              <span className="text-[#4B6173] dark:text-[#94A3B8]">•</span>
               <div className="flex items-center gap-1 text-[#5FD182]">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#5FD182] animate-pulse" />
                 <span className="tracking-wide text-[10px]">ONLINE</span>
               </div>
             </div>
 
-            <div className="flex items-center gap-2 text-[#4B6173]">
+            <div className="flex items-center gap-2 text-[#4B6173] dark:text-[#94A3B8]">
               <button
                 onClick={() => setIsMinimized((prev) => !prev)}
-                className="hover:text-[#F4E9D5] transition-colors p-0.5 cursor-pointer"
+                className="hover:text-[#F4E9D5] dark:text-[#0A0A0F] transition-colors p-0.5 cursor-pointer"
                 title={isMinimized ? "Expand" : "Minimize"}
               >
                 {isMinimized ? <Maximize2 size={12} /> : <Minimize2 size={12} />}
@@ -197,7 +197,7 @@ export const AIAssistantCompanion: React.FC = () => {
                     <div
                       className={`max-w-[92%] px-2.5 py-1.5 rounded-lg leading-relaxed text-[11px] sm:text-xs ${
                         m.sender === 'user'
-                          ? 'bg-[#123F68] text-[#F4E9D5] rounded-br-none border border-[#10283F]'
+                          ? 'bg-[#123F68] dark:bg-[#2563EB] text-[#F4E9D5] dark:text-[#0A0A0F] rounded-br-none border border-[#10283F]'
                           : 'bg-[#0B253D] text-[#EADBC3] rounded-bl-none border border-[#16385B]'
                       }`}
                     >
@@ -230,12 +230,12 @@ export const AIAssistantCompanion: React.FC = () => {
                   value={inputVal}
                   onChange={(e) => setInputVal(e.target.value)}
                   placeholder="Type your question..."
-                  className="flex-1 bg-[#051321] text-[#F4E9D5] font-mono-tech text-[11px] px-2.5 py-1.5 rounded-md border border-[#16385B] placeholder-[#4B6173] focus:outline-none focus:border-[#5FD182]"
+                  className="flex-1 bg-[#051321] text-[#F4E9D5] dark:text-[#0A0A0F] font-mono-tech text-[11px] px-2.5 py-1.5 rounded-md border border-[#16385B] placeholder-[#4B6173] focus:outline-none focus:border-[#5FD182]"
                 />
                 <button
                   type="submit"
                   disabled={!inputVal.trim() || isLoading}
-                  className="w-7 h-7 rounded-md bg-[#123F68] hover:bg-[#5FD182] text-[#F4E9D5] hover:text-[#071829] disabled:opacity-40 flex items-center justify-center transition-colors shrink-0 cursor-pointer"
+                  className="w-7 h-7 rounded-md bg-[#123F68] dark:bg-[#2563EB] hover:bg-[#5FD182] text-[#F4E9D5] dark:text-[#0A0A0F] hover:text-[#071829] disabled:opacity-40 flex items-center justify-center transition-colors shrink-0 cursor-pointer"
                 >
                   <Send size={12} />
                 </button>

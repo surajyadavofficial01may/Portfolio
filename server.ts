@@ -102,8 +102,8 @@ app.post("/api/chat", async (req, res) => {
       reply = "Suraj's highlighted projects include:\n• **Aiden**: An Emotionally Intelligent AI Companion with persistent memory.\n• **AI Quantitative Stock System**: A predictive analytics platform with 100+ technical indicators.\n• **ZipIgnore**: A Python CLI packaging utility published on PyPI.\n• **MeDict AI**: Deep learning lung cancer detection with 81% accuracy.";
     } else if (lower.includes("experience") || lower.includes("internship") || lower.includes("years") || lower.includes("background")) {
       reply = "Suraj is currently a **Software Engineer at Spotline, Inc.** where he leads Agentic-RAG systems and DB validation platforms. Previously, he was a Salesforce Development Intern at SmartInternz. He has led 3 end-to-end production systems within his first year!";
-    } else if (lower.includes("hire") || lower.includes("available") || lower.includes("contact") || lower.includes("email") || lower.includes("phone")) {
-      reply = "Suraj is currently **seeking opportunities at Google Payments**! You can email him at **thesuraj396@gmail.com**, phone **+91 9508998437**, or connect via **LinkedIn (linkedin.com/in/surajyadav01)** and **GitHub (github.com/Thesuraj01)**.";
+    } else if (lower.includes("hire") || lower.includes("available") || lower.includes("contact") || lower.includes("email")) {
+      reply = "Suraj is currently **seeking opportunities at Google Payments**! You can email him at **thesuraj396@gmail.com**, or connect via **LinkedIn (linkedin.com/in/surajyadav01)** and **GitHub (github.com/Thesuraj01)**.";
     } else if (lower.includes("education") || lower.includes("college") || lower.includes("university")) {
       reply = "Suraj holds a **Bachelor of Technology in Computer Science and Engineering** (CGPA: 8.35/10.0) from **KIIT Deemed University**. He is also an **AWS Academy Graduate** and certified by Cognite.";
     } else if (lower.includes("location") || lower.includes("where")) {

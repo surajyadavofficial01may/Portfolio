@@ -93,3 +93,29 @@
   image-rendering: -moz-crisp-edges;
   image-rendering: crisp-edges;
 }
+
+.dark body {
+  background-color: #0A0A0F;
+  color: #E0E6ED;
+}
+
+.dark .bg-tech-grid {
+  background-color: #0A0A0F;
+  background-image: 
+    linear-gradient(to right, rgba(110, 181, 247, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(110, 181, 247, 0.05) 1px, transparent 1px);
+}
+
+.dark .bg-blueprint-lines {
+  background-image: radial-gradient(rgba(110, 181, 247, 0.08) 1px, transparent 1px);
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: #151520;
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: #2B3040;
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #3B82F6;
+}

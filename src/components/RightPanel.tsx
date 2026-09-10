@@ -12,22 +12,22 @@ export const RightPanel: React.FC<RightPanelProps> = ({ onOpenProject, onExplore
   const getMetricIcon = (name: string) => {
     switch (name) {
       case 'Briefcase':
-        return <Briefcase size={16} className="text-[#092A4A]" />;
+        return <Briefcase size={16} className="text-[#092A4A] dark:text-[#6EB5F7]" />;
       case 'CodeXml':
-        return <Code size={16} className="text-[#092A4A]" />;
+        return <Code size={16} className="text-[#092A4A] dark:text-[#6EB5F7]" />;
       case 'Layers':
-        return <Layers size={16} className="text-[#092A4A]" />;
+        return <Layers size={16} className="text-[#092A4A] dark:text-[#6EB5F7]" />;
       case 'Brain':
-        return <Brain size={16} className="text-[#092A4A]" />;
+        return <Brain size={16} className="text-[#092A4A] dark:text-[#6EB5F7]" />;
       default:
-        return <Sparkles size={16} className="text-[#092A4A]" />;
+        return <Sparkles size={16} className="text-[#092A4A] dark:text-[#6EB5F7]" />;
     }
   };
 
   const getHighlightIcon = (index: number) => {
     switch (index) {
       case 0:
-        return <Terminal size={14} className="text-[#092A4A] shrink-0 mt-0.5" />;
+        return <Terminal size={14} className="text-[#092A4A] dark:text-[#6EB5F7] shrink-0 mt-0.5" />;
       case 1:
         return <Sparkles size={14} className="text-[#D7A93D] shrink-0 mt-0.5" />;
       case 2:
@@ -43,8 +43,8 @@ export const RightPanel: React.FC<RightPanelProps> = ({ onOpenProject, onExplore
       {/* My Journey Metrics (4 in a single row matching photo!) */}
       <div className="flex flex-col">
         <div className="flex items-center gap-1.5 mb-2.5">
-          <span className="text-[#092A4A] text-xs">❖</span>
-          <h3 className="font-display font-bold text-xs tracking-wider uppercase text-[#092A4A]">
+          <span className="text-[#092A4A] dark:text-[#6EB5F7] text-xs">❖</span>
+          <h3 className="font-display font-bold text-xs tracking-wider uppercase text-[#092A4A] dark:text-[#6EB5F7]">
             MY JOURNEY
           </h3>
         </div>
@@ -54,15 +54,15 @@ export const RightPanel: React.FC<RightPanelProps> = ({ onOpenProject, onExplore
           {JOURNEY_METRICS.map((metric, idx) => (
             <div
               key={idx}
-              className="bg-[#F4E9D5] p-2 sm:p-2.5 rounded-lg border border-[#C8B79D] shadow-2xs flex flex-col items-center justify-between text-center hover:border-[#092A4A]/50 transition-colors"
+              className="bg-[#F4E9D5] dark:bg-[#0A0A0F] p-2 sm:p-2.5 rounded-lg border border-[#C8B79D] dark:border-[#2B3040] shadow-2xs flex flex-col items-center justify-between text-center hover:border-[#092A4A]/50 dark:border-[#3B82F6]/50 transition-colors"
             >
-              <div className="w-6 h-6 rounded bg-[#EADBC3]/70 flex items-center justify-center mb-1">
+              <div className="w-6 h-6 rounded bg-[#EADBC3]/70 dark:bg-[#151520]/70 flex items-center justify-center mb-1">
                 {getMetricIcon(metric.iconName)}
               </div>
-              <span className="font-display font-bold text-lg sm:text-xl text-[#092A4A] leading-tight mb-1">
+              <span className="font-display font-bold text-lg sm:text-xl text-[#092A4A] dark:text-[#6EB5F7] leading-tight mb-1">
                 {metric.value}
               </span>
-              <div className="font-mono-tech text-[9px] sm:text-[9.5px] text-[#4B6173] leading-tight line-clamp-2">
+              <div className="font-mono-tech text-[9px] sm:text-[9.5px] text-[#4B6173] dark:text-[#94A3B8] leading-tight line-clamp-2">
                 {metric.label} {metric.sublabel}
               </div>
             </div>
@@ -73,24 +73,20 @@ export const RightPanel: React.FC<RightPanelProps> = ({ onOpenProject, onExplore
       {/* Specialties Pill Badges */}
       <div className="flex flex-col">
         <div className="flex items-center gap-1.5 mb-2.5">
-          <span className="text-[#092A4A] text-xs">⚙</span>
-          <h3 className="font-display font-bold text-xs tracking-wider uppercase text-[#092A4A]">
+          <span className="text-[#092A4A] dark:text-[#6EB5F7] text-xs">⚙</span>
+          <h3 className="font-display font-bold text-xs tracking-wider uppercase text-[#092A4A] dark:text-[#6EB5F7]">
             SPECIALTIES
           </h3>
         </div>
 
         <div className="flex flex-wrap gap-1.5">
           {SPECIALTIES.map((item, idx) => (
-            <button
+            <span
               key={idx}
-              onClick={() => {
-                soundManager.playNavigate();
-                onExploreSpecialty?.(item);
-              }}
-              className="font-mono-tech text-[10.5px] px-2.5 py-1 bg-[#F4E9D5] hover:bg-[#092A4A] text-[#10283F] hover:text-[#F4E9D5] rounded-lg border border-[#C8B79D] transition-all duration-150 shadow-2xs whitespace-nowrap active:scale-95 cursor-pointer"
+              className="font-mono-tech text-[10.5px] px-2.5 py-1 bg-[#F4E9D5] dark:bg-[#0A0A0F] hover:bg-[#092A4A] dark:hover:bg-[#3B82F6] dark:bg-[#3B82F6] text-[#10283F] dark:text-[#E0E6ED] hover:text-[#F4E9D5] dark:text-[#0A0A0F] rounded-lg border border-[#C8B79D] dark:border-[#2B3040] transition-colors duration-150 shadow-2xs whitespace-nowrap cursor-default"
             >
               {item}
-            </button>
+            </span>
           ))}
         </div>
       </div>
@@ -102,10 +98,10 @@ export const RightPanel: React.FC<RightPanelProps> = ({ onOpenProject, onExplore
           onOpenProject?.('proj-1');
         }}
         id="currently-building-card"
-        className="group bg-[#F4E9D5] hover:bg-[#EADBC3] p-3 sm:p-3.5 rounded-xl border border-[#C8B79D] shadow-xs flex items-center gap-3 cursor-pointer transition-all duration-150"
+        className="group bg-[#F4E9D5] dark:bg-[#0A0A0F] hover:bg-[#EADBC3] dark:hover:bg-[#151520] dark:bg-[#151520] p-3 sm:p-3.5 rounded-xl border border-[#C8B79D] dark:border-[#2B3040] shadow-xs flex items-center gap-3 cursor-pointer transition-all duration-150"
       >
         {/* Left Dark Icon Container */}
-        <div className="w-10 h-10 rounded-lg bg-[#092A4A] text-[#F4E9D5] flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+        <div className="w-10 h-10 rounded-lg bg-[#092A4A] dark:bg-[#3B82F6] text-[#F4E9D5] dark:text-[#0A0A0F] flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
           <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <rect x="2" y="3" width="20" height="14" rx="2" ry="2" />
             <line x1="8" y1="21" x2="16" y2="21" />
@@ -116,7 +112,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({ onOpenProject, onExplore
         {/* Right Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-1 mb-1">
-            <span className="text-[9.5px] font-mono-tech text-[#4B6173] tracking-wider uppercase font-semibold">
+            <span className="text-[9.5px] font-mono-tech text-[#4B6173] dark:text-[#94A3B8] tracking-wider uppercase font-semibold">
               &lt; CURRENTLY BUILDING
             </span>
             <div className="flex items-center gap-1 bg-[#3DA66B]/15 text-[#257336] px-2 py-0.5 rounded-full border border-[#3DA66B]/30 text-[9.5px] font-mono-tech font-semibold">
@@ -125,30 +121,30 @@ export const RightPanel: React.FC<RightPanelProps> = ({ onOpenProject, onExplore
             </div>
           </div>
 
-          <h4 className="font-display font-bold text-sm text-[#092A4A] group-hover:text-[#123F68] transition-colors truncate">
+          <h4 className="font-display font-bold text-sm text-[#092A4A] dark:text-[#6EB5F7] group-hover:text-[#123F68] transition-colors truncate">
             {CURRENTLY_BUILDING.title}
           </h4>
 
-          <p className="font-mono-tech text-[11px] text-[#4B6173] leading-tight line-clamp-1">
+          <p className="font-mono-tech text-[11px] text-[#4B6173] dark:text-[#94A3B8] leading-tight line-clamp-1">
             {CURRENTLY_BUILDING.subtitle}
           </p>
         </div>
 
-        <ChevronRight size={16} className="text-[#092A4A]/50 group-hover:text-[#092A4A] group-hover:translate-x-0.5 transition-all shrink-0" />
+        <ChevronRight size={16} className="text-[#092A4A]/50 dark:text-[#6EB5F7]/50 group-hover:text-[#092A4A] dark:text-[#6EB5F7] group-hover:translate-x-0.5 transition-all shrink-0" />
       </div>
 
       {/* Recent Highlights */}
       <div className="flex flex-col">
         <div className="flex items-center gap-1.5 mb-2.5">
-          <span className="text-[#092A4A] text-xs">❖</span>
-          <h3 className="font-display font-bold text-xs tracking-wider uppercase text-[#092A4A]">
+          <span className="text-[#092A4A] dark:text-[#6EB5F7] text-xs">❖</span>
+          <h3 className="font-display font-bold text-xs tracking-wider uppercase text-[#092A4A] dark:text-[#6EB5F7]">
             RECENT HIGHLIGHTS
           </h3>
         </div>
 
         <ul className="flex flex-col gap-2">
           {RECENT_HIGHLIGHTS.map((item, idx) => (
-            <li key={idx} className="flex items-start gap-2 text-xs font-mono-tech text-[#10283F] leading-snug">
+            <li key={idx} className="flex items-start gap-2 text-xs font-mono-tech text-[#10283F] dark:text-[#E0E6ED] leading-snug">
               {getHighlightIcon(idx)}
               <span>{item}</span>
             </li>
