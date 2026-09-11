@@ -89,7 +89,7 @@ export const TECH_STACK: TechStackItem[] = [
 
 export const JOURNEY_METRICS: JourneyMetric[] = [
   {
-    value: '2+',
+    value: '1+',
     label: 'Years',
     sublabel: 'Experience',
     iconName: 'Briefcase',
