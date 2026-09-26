@@ -6,6 +6,7 @@ import { RetroConsole } from './components/RetroConsole';
 import { RightPanel } from './components/RightPanel';
 import { SectionModal } from './components/SectionModal';
 import { AIAssistantCompanion } from './components/AIAssistantCompanion';
+import { MobileBottomNav } from './components/MobileBottomNav';
 
 export default function App() {
   const [activeSection, setActiveSection] = useState<NavSection>('home');
@@ -27,7 +28,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-tech-grid text-[#10283F] dark:text-[#E0E6ED] flex flex-col relative overflow-x-hidden selection:bg-[#092A4A] dark:bg-[#3B82F6] selection:text-[#F4E9D5] dark:text-[#0A0A0F]">
+    <div className="min-h-screen bg-tech-grid text-[#10283F] dark:text-[#E0E6ED] flex flex-col relative overflow-x-hidden selection:bg-[#092A4A] dark:bg-[#3B82F6] selection:text-[#F4E9D5] dark:text-[#0A0A0F] pb-24 lg:pb-0 pt-[76px] sm:pt-[88px]">
       {/* Header Navigation */}
       <Header
         activeSection={activeSection}
@@ -79,6 +80,18 @@ export default function App() {
       <AIAssistantCompanion />
 
       {/* Blueprint Bottom Line: THE JOURNEY CONTINUES... (matching photo) */}
+      <MobileBottomNav
+        activeSection={activeSection}
+        onSelectSection={(sec) => {
+          if (sec === 'home') {
+            setActiveSection('home');
+            setModalSection(null);
+          } else {
+            handleOpenSectionDetail(sec);
+          }
+        }}
+      />
+
       <div className="w-full max-w-7xl mx-auto py-6 px-4 flex items-center justify-center gap-3 font-mono-tech text-[11px] text-[#4B6173] dark:text-[#94A3B8] select-none">
         <span className="text-xs text-[#092A4A]/40 dark:text-[#6EB5F7]/40">+</span>
         <div className="w-24 sm:w-48 h-px bg-[#092A4A]/20 dark:bg-[#3B82F6]/20" />

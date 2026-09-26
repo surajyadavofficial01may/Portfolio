@@ -95,7 +95,7 @@ export const AIAssistantCompanion: React.FC = () => {
 
   return (
     <div 
-      className="fixed bottom-4 right-4 z-40 select-none flex flex-col items-end"
+      className="fixed bottom-20 lg:bottom-4 right-4 z-40 select-none flex flex-col items-end"
       id="companion-ai-container"
     >
       {/* Robot Companion Head Device (sitting on top-right of terminal, matching photo!) */}
