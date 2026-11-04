@@ -629,15 +629,15 @@ export const RetroConsole: React.FC<RetroConsoleProps> = ({
       </div>
 
       {/* HELPER CONTROLS GUIDE & QUEST MODE TOGGLE */}
-      <div className="mt-4 w-full flex flex-col sm:flex-row items-center justify-center gap-2 font-mono-tech text-xs text-[#4B6173] dark:text-[#94A3B8] text-center px-2">
+      <div className="mt-4 w-full flex flex-col sm:flex-row items-center justify-center gap-2 font-mono-tech text-xs text-[#4B6173] dark:text-[#CBD5E1] text-center px-2">
         <button
           type="button"
           onClick={pressStart}
-          className="min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#EADBC3] dark:bg-[#151520] hover:bg-[#D7C3A6] dark:hover:bg-[#1E2436] text-[#092A4A] dark:text-[#6EB5F7] border border-[#C8B79D] dark:border-[#2B3040] transition-colors font-bold shadow-xs cursor-pointer"
+          className="min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#EADBC3] dark:bg-[#172942] hover:bg-[#D7C3A6] dark:hover:bg-[#2563EB] text-[#092A4A] dark:text-[#F8FAFC] dark:hover:text-white border border-[#C8B79D] dark:border-[#3B82F6]/60 transition-colors font-bold shadow-xs cursor-pointer"
         >
           <span>{mode === 'menu' ? 'Launch Quest Mode' : 'Return to RPG Menu'}</span>
         </button>
-        <span className="text-[11px] text-[#5C4A38] dark:text-[#94A3B8] leading-snug max-w-[300px] sm:max-w-none">
+        <span className="text-[11px] text-[#5C4A38] dark:text-[#CBD5E1] leading-snug max-w-[300px] sm:max-w-none">
           D-Pad / Arrows to move • [A] to open • [B] for back
         </span>
       </div>

@@ -20,6 +20,7 @@ export interface Project {
   metrics?: string;
   githubUrl: string;
   demoUrl?: string;
+  linkedinUrl?: string;
   badge?: string;
   level: string;
 }

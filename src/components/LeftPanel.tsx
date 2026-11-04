@@ -22,36 +22,36 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
   return (
     <aside
       aria-label="Developer Identity and Tech Stack"
-      className="w-full flex flex-col gap-5 select-none relative p-3.5 sm:p-4 lg:p-3.5 xl:p-4 rounded-xl border border-dashed border-[#092A4A]/25 dark:border-[#3B82F6]/25 bg-[#EADBC3]/25 dark:bg-[#151520]/40"
+      className="w-full flex flex-col gap-5 select-none relative p-3.5 sm:p-4 lg:p-3.5 xl:p-4 rounded-xl border border-dashed border-[#092A4A]/25 dark:border-[#3B82F6]/50 bg-[#EADBC3]/25 dark:bg-[#111E32]/90 dark:shadow-[0_10px_30px_rgba(0,0,0,0.45)]"
       id="left-panel"
     >
       {/* Blueprint Corner Accents */}
-      <span className="absolute -top-1.5 -left-1.5 text-xs font-mono-tech text-[#092A4A]/50 dark:text-[#6EB5F7]/50 select-none pointer-events-none" aria-hidden="true">┌</span>
-      <span className="absolute -top-1.5 -right-1.5 text-xs font-mono-tech text-[#092A4A]/50 dark:text-[#6EB5F7]/50 select-none pointer-events-none" aria-hidden="true">┐</span>
-      <span className="absolute -bottom-1.5 -left-1.5 text-xs font-mono-tech text-[#092A4A]/50 dark:text-[#6EB5F7]/50 select-none pointer-events-none" aria-hidden="true">└</span>
-      <span className="absolute -bottom-1.5 -right-1.5 text-xs font-mono-tech text-[#092A4A]/50 dark:text-[#6EB5F7]/50 select-none pointer-events-none" aria-hidden="true">┘</span>
+      <span className="absolute -top-1.5 -left-1.5 text-xs font-mono-tech text-[#092A4A]/50 dark:text-[#7DD3FC] select-none pointer-events-none" aria-hidden="true">┌</span>
+      <span className="absolute -top-1.5 -right-1.5 text-xs font-mono-tech text-[#092A4A]/50 dark:text-[#7DD3FC] select-none pointer-events-none" aria-hidden="true">┐</span>
+      <span className="absolute -bottom-1.5 -left-1.5 text-xs font-mono-tech text-[#092A4A]/50 dark:text-[#7DD3FC] select-none pointer-events-none" aria-hidden="true">└</span>
+      <span className="absolute -bottom-1.5 -right-1.5 text-xs font-mono-tech text-[#092A4A]/50 dark:text-[#7DD3FC] select-none pointer-events-none" aria-hidden="true">┘</span>
 
       {/* Bio / Hero Identity Block */}
       <div className="flex flex-col relative" id="hero-section">
         {/* Role Kicker */}
-        <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded bg-[#092A4A]/10 dark:bg-[#3B82F6]/15 text-[#092A4A] dark:text-[#6EB5F7] font-mono-tech text-[11px] font-semibold tracking-wider mb-2 w-fit">
+        <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded bg-[#092A4A]/10 dark:bg-[#172942] border border-transparent dark:border-[#2E4C75] text-[#092A4A] dark:text-[#7DD3FC] font-mono-tech text-[11px] font-semibold tracking-wider mb-2 w-fit">
           <span aria-hidden="true">&lt;</span>
           <span>SOFTWARE ENGINEER</span>
           <span aria-hidden="true">&gt;</span>
         </div>
 
         {/* Developer Name */}
-        <h1 className="font-display font-bold text-fluid-hero text-[#092A4A] dark:text-[#6EB5F7] tracking-tight mb-2">
+        <h1 className="font-display font-bold text-fluid-hero text-[#092A4A] dark:text-[#F8FAFC] tracking-tight mb-2">
           {PERSONAL_INFO.name}
         </h1>
 
         {/* Hero Tagline */}
-        <h2 className="font-mono-tech font-bold text-xs sm:text-sm text-[#10283F] dark:text-[#E0E6ED] leading-snug mb-2.5">
+        <h2 className="font-mono-tech font-bold text-xs sm:text-sm text-[#10283F] dark:text-[#93C5FD] leading-snug mb-2.5">
           {PERSONAL_INFO.tagline}
         </h2>
 
         {/* Short Bio */}
-        <p className="font-mono-tech text-fluid-body text-[#4B6173] dark:text-[#94A3B8] mb-4">
+        <p className="font-mono-tech text-fluid-body text-[#4B6173] dark:text-[#E2E8F0] mb-4">
           {PERSONAL_INFO.bio}
         </p>
 
@@ -64,7 +64,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
               soundManager.playSelect();
               onOpenProjects?.();
             }}
-            className="min-h-[44px] px-3 py-2 rounded-lg bg-[#092A4A] dark:bg-[#3B82F6] hover:bg-[#123F68] dark:hover:bg-[#2563EB] text-[#F4E9D5] dark:text-[#0A0A0F] font-mono-tech font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer active:scale-[0.98]"
+            className="min-h-[44px] px-3 py-2 rounded-lg bg-[#092A4A] dark:bg-[#2563EB] hover:bg-[#123F68] dark:hover:bg-[#3B82F6] text-[#F4E9D5] dark:text-white border border-transparent dark:border-[#60A5FA]/60 font-mono-tech font-bold text-xs flex items-center justify-center gap-1.5 shadow-xs transition-all cursor-pointer active:scale-[0.98]"
           >
             <Briefcase size={14} className="shrink-0" />
             <span className="truncate">View Projects</span>
@@ -77,36 +77,36 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
               soundManager.playSelect();
               onOpenContact?.();
             }}
-            className="min-h-[44px] px-3 py-2 rounded-lg bg-[#F4E9D5] dark:bg-[#0A0A0F] hover:bg-[#EADBC3] dark:hover:bg-[#1E2436] text-[#092A4A] dark:text-[#6EB5F7] border border-[#092A4A]/40 dark:border-[#3B82F6]/40 font-mono-tech font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer active:scale-[0.98]"
+            className="min-h-[44px] px-3 py-2 rounded-lg bg-[#F4E9D5] dark:bg-[#172942] hover:bg-[#EADBC3] dark:hover:bg-[#1E3554] text-[#092A4A] dark:text-[#F8FAFC] border border-[#092A4A]/40 dark:border-[#3B82F6]/60 font-mono-tech font-bold text-xs flex items-center justify-center gap-1.5 shadow-2xs transition-all cursor-pointer active:scale-[0.98]"
           >
-            <Send size={14} className="shrink-0" />
+            <Send size={14} className="shrink-0 text-[#092A4A] dark:text-[#7DD3FC]" />
             <span className="truncate">Contact Me</span>
           </button>
         </div>
 
         {/* Location & Availability Information Cards */}
         <div className="grid grid-cols-1 min-[350px]:grid-cols-2 gap-2">
-          <div className="flex items-center gap-2 bg-[#F4E9D5] dark:bg-[#0A0A0F] p-2.5 rounded-lg border border-[#C8B79D] dark:border-[#2B3040] min-w-0">
-            <MapPin size={15} className="text-[#092A4A] dark:text-[#6EB5F7] shrink-0" />
+          <div className="flex items-center gap-2 bg-[#F4E9D5] dark:bg-[#172942] p-2.5 rounded-lg border border-[#C8B79D] dark:border-[#2E4C75] dark:shadow-[0_2px_10px_rgba(0,0,0,0.3)] min-w-0">
+            <MapPin size={15} className="text-[#092A4A] dark:text-[#7DD3FC] shrink-0" />
             <div className="flex flex-col min-w-0">
-              <span className="text-[9.5px] font-mono-tech text-[#4B6173] dark:text-[#94A3B8] uppercase tracking-wider">
+              <span className="text-[9.5px] font-mono-tech text-[#4B6173] dark:text-[#CBD5E1] uppercase tracking-wider">
                 Location
               </span>
-              <span className="text-xs font-mono-tech font-semibold text-[#10283F] dark:text-[#E0E6ED] truncate">
+              <span className="text-xs font-mono-tech font-semibold text-[#10283F] dark:text-[#F8FAFC] truncate">
                 India
               </span>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 bg-[#F4E9D5] dark:bg-[#0A0A0F] p-2.5 rounded-lg border border-[#C8B79D] dark:border-[#2B3040] min-w-0">
+          <div className="flex items-center gap-2 bg-[#F4E9D5] dark:bg-[#172942] p-2.5 rounded-lg border border-[#C8B79D] dark:border-[#2E4C75] dark:shadow-[0_2px_10px_rgba(0,0,0,0.3)] min-w-0">
             <span className="relative flex h-2.5 w-2.5 shrink-0 ml-0.5" aria-hidden="true">
-              <span className=" relative inline-flex rounded-full h-2.5 w-2.5 bg-[#3DA66B]" />
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-[#3DA66B] dark:bg-[#34D399]" />
             </span>
             <div className="flex flex-col min-w-0">
-              <span className="text-[9.5px] font-mono-tech text-[#4B6173] dark:text-[#94A3B8] uppercase tracking-wider">
+              <span className="text-[9.5px] font-mono-tech text-[#4B6173] dark:text-[#CBD5E1] uppercase tracking-wider">
                 Availability
               </span>
-              <span className="text-[11px] font-mono-tech font-semibold text-[#10283F] dark:text-[#E0E6ED] leading-tight truncate">
+              <span className="text-[11px] font-mono-tech font-semibold text-[#10283F] dark:text-[#F8FAFC] leading-tight truncate">
                 Open to opportunities
               </span>
             </div>
@@ -117,8 +117,8 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
       {/* Connect With Me (44px+ touch targets) */}
       <div className="flex flex-col">
         <div className="flex items-center gap-1.5 mb-2.5">
-          <span className="text-[#092A4A] dark:text-[#6EB5F7] text-xs" aria-hidden="true">❖</span>
-          <h3 className="font-display font-bold text-xs tracking-wider uppercase text-[#092A4A] dark:text-[#6EB5F7]">
+          <span className="text-[#092A4A] dark:text-[#7DD3FC] text-xs" aria-hidden="true">❖</span>
+          <h3 className="font-display font-bold text-xs tracking-wider uppercase text-[#092A4A] dark:text-[#7DD3FC]">
             CONNECT WITH ME
           </h3>
         </div>
@@ -132,7 +132,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
             id="social-github-btn"
             aria-label="GitHub Profile"
             title="GitHub Profile"
-            className="flex items-center justify-center min-h-[44px] rounded-lg bg-[#092A4A] dark:bg-[#3B82F6] hover:bg-[#123F68] dark:hover:bg-[#2563EB] text-[#F4E9D5] dark:text-[#0A0A0F] transition-all duration-150 shadow-xs active:scale-95 border border-[#061B30] dark:border-[#1E3A8A]"
+            className="flex items-center justify-center min-h-[44px] rounded-lg bg-[#092A4A] dark:bg-[#2563EB] hover:bg-[#123F68] dark:hover:bg-[#3B82F6] text-[#F4E9D5] dark:text-white transition-all duration-150 shadow-xs active:scale-95 border border-[#061B30] dark:border-[#60A5FA]/70"
           >
             <Github size={18} />
           </a>
@@ -145,7 +145,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
             id="social-linkedin-btn"
             aria-label="LinkedIn Profile"
             title="LinkedIn Profile"
-            className="flex items-center justify-center min-h-[44px] rounded-lg bg-[#092A4A] dark:bg-[#3B82F6] hover:bg-[#123F68] dark:hover:bg-[#2563EB] text-[#F4E9D5] dark:text-[#0A0A0F] transition-all duration-150 shadow-xs active:scale-95 border border-[#061B30] dark:border-[#1E3A8A]"
+            className="flex items-center justify-center min-h-[44px] rounded-lg bg-[#092A4A] dark:bg-[#2563EB] hover:bg-[#123F68] dark:hover:bg-[#3B82F6] text-[#F4E9D5] dark:text-white transition-all duration-150 shadow-xs active:scale-95 border border-[#061B30] dark:border-[#60A5FA]/70"
           >
             <Linkedin size={18} />
           </a>
@@ -158,7 +158,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
             id="social-x-btn"
             aria-label="External Portfolio Website"
             title="Portfolio Website"
-            className="flex items-center justify-center min-h-[44px] rounded-lg bg-[#092A4A] dark:bg-[#3B82F6] hover:bg-[#123F68] dark:hover:bg-[#2563EB] text-[#F4E9D5] dark:text-[#0A0A0F] transition-all duration-150 shadow-xs active:scale-95 border border-[#061B30] dark:border-[#1E3A8A]"
+            className="flex items-center justify-center min-h-[44px] rounded-lg bg-[#092A4A] dark:bg-[#2563EB] hover:bg-[#123F68] dark:hover:bg-[#3B82F6] text-[#F4E9D5] dark:text-white transition-all duration-150 shadow-xs active:scale-95 border border-[#061B30] dark:border-[#60A5FA]/70"
           >
             <Globe size={18} />
           </a>
@@ -172,7 +172,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
             id="social-email-btn"
             aria-label="Send Email or Open Contact Form"
             title="Send Email / Contact"
-            className="flex items-center justify-center min-h-[44px] rounded-lg bg-[#092A4A] dark:bg-[#3B82F6] hover:bg-[#123F68] dark:hover:bg-[#2563EB] text-[#F4E9D5] dark:text-[#0A0A0F] transition-all duration-150 shadow-xs active:scale-95 border border-[#061B30] dark:border-[#1E3A8A] cursor-pointer"
+            className="flex items-center justify-center min-h-[44px] rounded-lg bg-[#092A4A] dark:bg-[#2563EB] hover:bg-[#123F68] dark:hover:bg-[#3B82F6] text-[#F4E9D5] dark:text-white transition-all duration-150 shadow-xs active:scale-95 border border-[#061B30] dark:border-[#60A5FA]/70 cursor-pointer"
           >
             <Mail size={18} />
           </button>
@@ -183,12 +183,12 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
       <div className="flex flex-col">
         <div className="flex items-center justify-between mb-2.5">
           <div className="flex items-center gap-1.5">
-            <span className="text-[#092A4A] dark:text-[#6EB5F7] text-xs" aria-hidden="true">❖</span>
-            <h3 className="font-display font-bold text-xs tracking-wider uppercase text-[#092A4A] dark:text-[#6EB5F7]">
+            <span className="text-[#092A4A] dark:text-[#7DD3FC] text-xs" aria-hidden="true">❖</span>
+            <h3 className="font-display font-bold text-xs tracking-wider uppercase text-[#092A4A] dark:text-[#7DD3FC]">
               TECH STACK
             </h3>
           </div>
-          <span className="font-mono-tech text-[10px] text-[#4B6173] dark:text-[#94A3B8]">
+          <span className="font-mono-tech text-[10px] text-[#4B6173] dark:text-[#CBD5E1]">
             Tap to inspect
           </span>
         </div>
@@ -206,16 +206,16 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                 }}
                 aria-expanded={isSelected}
                 title={tech.description}
-                className={`group flex flex-col items-center justify-center min-h-[64px] p-2 sm:p-2.5 rounded-lg border transition-all duration-150 cursor-pointer shadow-2xs text-center ${
+                className={`group flex flex-col items-center justify-center min-h-[64px] p-2 sm:p-2.5 rounded-lg border transition-all duration-150 cursor-pointer shadow-2xs dark:shadow-[0_2px_10px_rgba(0,0,0,0.3)] text-center ${
                   isSelected
-                    ? 'bg-[#EADBC3] dark:bg-[#1E2436] border-[#092A4A] dark:border-[#6EB5F7] shadow-inner'
-                    : 'bg-[#F4E9D5] dark:bg-[#0A0A0F] hover:bg-[#EADBC3] dark:hover:bg-[#151520] border-[#C8B79D] dark:border-[#2B3040]'
+                    ? 'bg-[#EADBC3] dark:bg-[#1E3554] border-[#092A4A] dark:border-[#60A5FA] shadow-inner'
+                    : 'bg-[#F4E9D5] dark:bg-[#172942] hover:bg-[#EADBC3] dark:hover:bg-[#1E3554] border-[#C8B79D] dark:border-[#2E4C75] dark:hover:border-[#60A5FA]'
                 }`}
               >
                 <div className="w-7 h-7 flex items-center justify-center mb-1">
                   <TechIcon name={tech.iconKey} className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <span className="font-mono-tech font-semibold text-[10.5px] sm:text-[11px] text-[#092A4A] dark:text-[#6EB5F7] truncate w-full">
+                <span className="font-mono-tech font-semibold text-[10.5px] sm:text-[11px] text-[#092A4A] dark:text-[#F8FAFC] truncate w-full">
                   {tech.name}
                 </span>
               </button>
@@ -225,22 +225,22 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
 
         {/* Inline Skill Details view */}
         {activeSkill && (
-          <div className="mt-3 bg-[#EADBC3]/80 dark:bg-[#151520]/90 p-3.5 rounded-lg border border-[#092A4A]/25 dark:border-[#3B82F6]/30 relative animate-in fade-in duration-150">
+          <div className="mt-3 bg-[#EADBC3]/80 dark:bg-[#172942] p-3.5 rounded-lg border border-[#092A4A]/25 dark:border-[#60A5FA]/60 relative animate-in fade-in duration-150 shadow-sm">
             <button
               type="button"
               aria-label="Close skill details"
               onClick={() => setActiveSkillId(null)}
-              className="absolute top-1 right-1 w-9 h-9 flex items-center justify-center text-[#092A4A]/60 dark:text-[#6EB5F7]/60 hover:text-[#092A4A] dark:hover:text-[#6EB5F7] cursor-pointer rounded-md"
+              className="absolute top-1 right-1 w-9 h-9 flex items-center justify-center text-[#092A4A]/60 dark:text-[#CBD5E1] hover:text-[#092A4A] dark:hover:text-white cursor-pointer rounded-md"
             >
               <X size={15} />
             </button>
             <div className="flex items-center gap-2 mb-1.5 pr-8">
               <TechIcon name={activeSkill.iconKey} className="w-4 h-4 shrink-0" />
-              <span className="font-mono-tech font-bold text-xs text-[#092A4A] dark:text-[#6EB5F7] uppercase">
+              <span className="font-mono-tech font-bold text-xs text-[#092A4A] dark:text-[#7DD3FC] uppercase">
                 {activeSkill.name} Stack
               </span>
             </div>
-            <p className="font-mono-tech text-xs text-[#10283F] dark:text-[#E0E6ED] leading-relaxed mb-2.5">
+            <p className="font-mono-tech text-xs text-[#10283F] dark:text-[#E2E8F0] leading-relaxed mb-2.5">
               {activeSkill.description}
             </p>
             <button
@@ -249,7 +249,7 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
                 soundManager.playSelect();
                 onSelectSkill?.(activeSkill.id);
               }}
-              className="font-mono-tech text-[11px] font-bold text-[#092A4A] dark:text-[#6EB5F7] underline cursor-pointer py-1"
+              className="font-mono-tech text-[11px] font-bold text-[#092A4A] dark:text-[#7DD3FC] underline cursor-pointer py-1"
             >
               Open Full Engineering Profile →
             </button>
@@ -260,20 +260,20 @@ export const LeftPanel: React.FC<LeftPanelProps> = ({
       {/* Pixel Mountain Graphic Accent & Tagline */}
       <div className="flex items-end justify-between pt-1 gap-2">
         <svg
-          className="w-20 sm:w-24 h-10 sm:h-11 pixelated text-[#092A4A]/65 dark:text-[#6EB5F7]/65 shrink-0"
+          className="w-20 sm:w-24 h-10 sm:h-11 pixelated text-[#092A4A]/65 dark:text-[#7DD3FC]/85 shrink-0"
           viewBox="0 0 64 24"
           fill="currentColor"
           aria-hidden="true"
         >
-          <polygon points="12,4 20,16 4,16" opacity="0.4" />
-          <polygon points="34,2 48,20 20,20" opacity="0.6" />
-          <polygon points="52,6 62,20 42,20" opacity="0.5" />
-          <rect x="0" y="20" width="64" height="4" fill="currentColor" opacity="0.8" />
-          <rect x="18" y="3" width="3" height="3" fill="currentColor" opacity="0.9" />
-          <rect x="33" y="2" width="4" height="3" fill="currentColor" opacity="0.9" />
+          <polygon points="12,4 20,16 4,16" opacity="0.45" />
+          <polygon points="34,2 48,20 20,20" opacity="0.7" />
+          <polygon points="52,6 62,20 42,20" opacity="0.55" />
+          <rect x="0" y="20" width="64" height="4" fill="currentColor" opacity="0.85" />
+          <rect x="18" y="3" width="3" height="3" fill="currentColor" opacity="0.95" />
+          <rect x="33" y="2" width="4" height="3" fill="currentColor" opacity="0.95" />
         </svg>
 
-        <div className="flex items-center gap-1 text-[11px] font-mono-tech text-[#4B6173] dark:text-[#94A3B8] truncate">
+        <div className="flex items-center gap-1 text-[11px] font-mono-tech text-[#4B6173] dark:text-[#CBD5E1] truncate">
           <span aria-hidden="true">+</span>
           <span className="tracking-wider truncate">Code / Build / Grow →</span>
         </div>

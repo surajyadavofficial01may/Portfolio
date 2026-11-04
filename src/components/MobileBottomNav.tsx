@@ -20,7 +20,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ activeSection,
   return (
     <nav
       aria-label="Mobile Bottom Navigation"
-      className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#F4E9D5]/95 dark:bg-[#0A0A0F]/95 backdrop-blur-md border-t border-[#C8B79D] dark:border-[#2B3040] grid grid-cols-5 items-center px-1 py-1 z-[60] shadow-[0_-4px_12px_rgba(0,0,0,0.08)] pb-safe"
+      className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#F4E9D5]/95 dark:bg-[#0B1320]/95 backdrop-blur-md border-t border-[#C8B79D] dark:border-[#2E4C75] grid grid-cols-5 items-center px-1 py-1 z-[60] shadow-[0_-4px_16px_rgba(0,0,0,0.2)] pb-safe"
     >
       {items.map((item) => {
         const isActive = activeSection === item.id;
@@ -37,8 +37,8 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ activeSection,
             }}
             className={`relative flex flex-col items-center justify-center gap-0.5 min-h-[48px] min-w-0 py-1 rounded-lg transition-colors cursor-pointer ${
               isActive
-                ? 'text-[#092A4A] dark:text-[#6EB5F7] bg-[#092A4A]/8 dark:bg-[#3B82F6]/15'
-                : 'text-[#4B6173] dark:text-[#94A3B8] hover:text-[#092A4A] dark:hover:text-[#6EB5F7]'
+                ? 'text-[#092A4A] dark:text-[#7DD3FC] bg-[#092A4A]/8 dark:bg-[#172942]'
+                : 'text-[#4B6173] dark:text-[#CBD5E1] hover:text-[#092A4A] dark:hover:text-[#F8FAFC]'
             }`}
           >
             {item.icon}
@@ -46,7 +46,7 @@ export const MobileBottomNav: React.FC<MobileBottomNavProps> = ({ activeSection,
               {item.label}
             </span>
             {isActive && (
-              <span className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-b-sm bg-[#092A4A] dark:bg-[#6EB5F7]" />
+              <span className="absolute top-0 left-1/2 -translate-x-1/2 w-6 h-0.5 rounded-b-sm bg-[#092A4A] dark:bg-[#60A5FA]" />
             )}
           </button>
         );

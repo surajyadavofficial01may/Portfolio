@@ -17,43 +17,49 @@ export const RightPanel: React.FC<RightPanelProps> = ({
   const getMetricIcon = (name: string) => {
     switch (name) {
       case 'Briefcase':
-        return <Briefcase size={16} className="text-[#092A4A] dark:text-[#6EB5F7]" />;
+        return <Briefcase size={16} className="text-[#092A4A] dark:text-[#7DD3FC]" />;
       case 'CodeXml':
-        return <Code size={16} className="text-[#092A4A] dark:text-[#6EB5F7]" />;
+        return <Code size={16} className="text-[#092A4A] dark:text-[#7DD3FC]" />;
       case 'Layers':
-        return <Layers size={16} className="text-[#092A4A] dark:text-[#6EB5F7]" />;
+        return <Layers size={16} className="text-[#092A4A] dark:text-[#7DD3FC]" />;
       case 'Brain':
-        return <Brain size={16} className="text-[#092A4A] dark:text-[#6EB5F7]" />;
+        return <Brain size={16} className="text-[#092A4A] dark:text-[#7DD3FC]" />;
       default:
-        return <Sparkles size={16} className="text-[#092A4A] dark:text-[#6EB5F7]" />;
+        return <Sparkles size={16} className="text-[#092A4A] dark:text-[#7DD3FC]" />;
     }
   };
 
   const getHighlightIcon = (index: number) => {
     switch (index) {
       case 0:
-        return <Terminal size={14} className="text-[#092A4A] dark:text-[#6EB5F7] shrink-0 mt-0.5" />;
+        return <Terminal size={14} className="text-[#092A4A] dark:text-[#7DD3FC] shrink-0 mt-0.5" />;
       case 1:
-        return <Sparkles size={14} className="text-[#D7A93D] shrink-0 mt-0.5" />;
+        return <Sparkles size={14} className="text-[#D7A93D] dark:text-[#FBBF24] shrink-0 mt-0.5" />;
       case 2:
-        return <Cloud size={14} className="text-[#123F68] dark:text-[#6EB5F7] shrink-0 mt-0.5" />;
+        return <Cloud size={14} className="text-[#123F68] dark:text-[#60A5FA] shrink-0 mt-0.5" />;
       case 3:
       default:
-        return <ShieldCheck size={14} className="text-[#3DA66B] shrink-0 mt-0.5" />;
+        return <ShieldCheck size={14} className="text-[#3DA66B] dark:text-[#34D399] shrink-0 mt-0.5" />;
     }
   };
 
   return (
     <aside
       aria-label="Journey Metrics, Specialties and Highlights"
-      className="w-full flex flex-col gap-4 sm:gap-5 select-none"
+      className="w-full flex flex-col gap-4 sm:gap-5 select-none relative p-3.5 sm:p-4 lg:p-3.5 xl:p-4 rounded-xl border border-dashed border-[#092A4A]/25 dark:border-[#3B82F6]/50 bg-[#EADBC3]/25 dark:bg-[#111E32]/90 dark:shadow-[0_10px_30px_rgba(0,0,0,0.45)]"
       id="right-panel"
     >
+      {/* Blueprint Corner Accents */}
+      <span className="absolute -top-1.5 -left-1.5 text-xs font-mono-tech text-[#092A4A]/50 dark:text-[#7DD3FC] select-none pointer-events-none" aria-hidden="true">┌</span>
+      <span className="absolute -top-1.5 -right-1.5 text-xs font-mono-tech text-[#092A4A]/50 dark:text-[#7DD3FC] select-none pointer-events-none" aria-hidden="true">┐</span>
+      <span className="absolute -bottom-1.5 -left-1.5 text-xs font-mono-tech text-[#092A4A]/50 dark:text-[#7DD3FC] select-none pointer-events-none" aria-hidden="true">└</span>
+      <span className="absolute -bottom-1.5 -right-1.5 text-xs font-mono-tech text-[#092A4A]/50 dark:text-[#7DD3FC] select-none pointer-events-none" aria-hidden="true">┘</span>
+
       {/* My Journey Metrics (2x2 on very narrow screens <380px, 4-in-a-row on >=380px) */}
       <div className="flex flex-col">
         <div className="flex items-center gap-1.5 mb-2.5">
-          <span className="text-[#092A4A] dark:text-[#6EB5F7] text-xs" aria-hidden="true">❖</span>
-          <h3 className="font-display font-bold text-xs tracking-wider uppercase text-[#092A4A] dark:text-[#6EB5F7]">
+          <span className="text-[#092A4A] dark:text-[#7DD3FC] text-xs" aria-hidden="true">❖</span>
+          <h3 className="font-display font-bold text-xs tracking-wider uppercase text-[#092A4A] dark:text-[#7DD3FC]">
             MY JOURNEY
           </h3>
         </div>
@@ -62,15 +68,15 @@ export const RightPanel: React.FC<RightPanelProps> = ({
           {JOURNEY_METRICS.map((metric, idx) => (
             <div
               key={idx}
-              className="bg-[#F4E9D5] dark:bg-[#0A0A0F] p-2.5 rounded-lg border border-[#C8B79D] dark:border-[#2B3040] shadow-2xs flex flex-col items-center justify-between text-center hover:border-[#092A4A]/50 dark:hover:border-[#3B82F6]/50 transition-colors"
+              className="bg-[#F4E9D5] dark:bg-[#172942] p-2.5 rounded-lg border border-[#C8B79D] dark:border-[#2E4C75] shadow-2xs dark:shadow-[0_2px_10px_rgba(0,0,0,0.3)] flex flex-col items-center justify-between text-center hover:border-[#092A4A]/50 dark:hover:border-[#60A5FA] transition-colors"
             >
-              <div className="w-6 h-6 rounded bg-[#EADBC3]/70 dark:bg-[#151520] flex items-center justify-center mb-1">
+              <div className="w-6 h-6 rounded bg-[#EADBC3]/70 dark:bg-[#0B1320] flex items-center justify-center mb-1">
                 {getMetricIcon(metric.iconName)}
               </div>
-              <span className="font-display font-bold text-lg sm:text-xl text-[#092A4A] dark:text-[#6EB5F7] leading-tight mb-0.5 tabular-nums">
+              <span className="font-display font-bold text-lg sm:text-xl text-[#092A4A] dark:text-[#F8FAFC] leading-tight mb-0.5 tabular-nums">
                 {metric.value}
               </span>
-              <div className="font-mono-tech text-[10px] text-[#4B6173] dark:text-[#94A3B8] leading-tight">
+              <div className="font-mono-tech text-[10px] text-[#4B6173] dark:text-[#CBD5E1] leading-tight">
                 {metric.label} {metric.sublabel}
               </div>
             </div>
@@ -81,8 +87,8 @@ export const RightPanel: React.FC<RightPanelProps> = ({
       {/* Specialties Interactive Tags */}
       <div className="flex flex-col">
         <div className="flex items-center gap-1.5 mb-2.5">
-          <span className="text-[#092A4A] dark:text-[#6EB5F7] text-xs" aria-hidden="true">⚙</span>
-          <h3 className="font-display font-bold text-xs tracking-wider uppercase text-[#092A4A] dark:text-[#6EB5F7]">
+          <span className="text-[#092A4A] dark:text-[#7DD3FC] text-xs" aria-hidden="true">⚙</span>
+          <h3 className="font-display font-bold text-xs tracking-wider uppercase text-[#092A4A] dark:text-[#7DD3FC]">
             SPECIALTIES
           </h3>
         </div>
@@ -96,7 +102,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                 soundManager.playSelect();
                 onExploreSpecialty?.(item);
               }}
-              className="font-mono-tech text-[11px] px-2.5 py-1.5 min-h-[36px] bg-[#F4E9D5] dark:bg-[#151520] hover:bg-[#092A4A] dark:hover:bg-[#3B82F6] text-[#10283F] dark:text-[#E0E6ED] hover:text-[#F4E9D5] dark:hover:text-[#0A0A0F] rounded-lg border border-[#C8B79D] dark:border-[#2B3040] transition-colors duration-150 shadow-2xs cursor-pointer text-left"
+              className="font-mono-tech text-[11px] font-medium px-2.5 py-1.5 min-h-[36px] bg-[#F4E9D5] dark:bg-[#172942] hover:bg-[#092A4A] dark:hover:bg-[#2563EB] text-[#10283F] dark:text-[#F1F5F9] hover:text-[#F4E9D5] dark:hover:text-white rounded-lg border border-[#C8B79D] dark:border-[#2E4C75] dark:hover:border-[#60A5FA] transition-colors duration-150 shadow-2xs cursor-pointer text-left"
             >
               {item}
             </button>
@@ -112,10 +118,10 @@ export const RightPanel: React.FC<RightPanelProps> = ({
           onOpenProject?.('proj-2');
         }}
         id="currently-building-card"
-        className="w-full text-left group bg-[#F4E9D5] dark:bg-[#0A0A0F] hover:bg-[#EADBC3] dark:hover:bg-[#151520] p-3.5 rounded-xl border border-[#C8B79D] dark:border-[#2B3040] shadow-xs flex items-center gap-3 cursor-pointer transition-all duration-150"
+        className="w-full text-left group bg-[#F4E9D5] dark:bg-[#172942] hover:bg-[#EADBC3] dark:hover:bg-[#1E3554] p-3.5 rounded-xl border border-[#C8B79D] dark:border-[#2E4C75] dark:hover:border-[#60A5FA] shadow-xs dark:shadow-[0_4px_14px_rgba(0,0,0,0.35)] flex items-center gap-3 cursor-pointer transition-all duration-150"
       >
         {/* Left Dark Icon Container */}
-        <div className="w-11 h-11 rounded-lg bg-[#092A4A] dark:bg-[#3B82F6] text-[#F4E9D5] dark:text-[#0A0A0F] flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
+        <div className="w-11 h-11 rounded-lg bg-[#092A4A] dark:bg-[#2563EB] text-[#F4E9D5] dark:text-white border border-transparent dark:border-[#60A5FA]/60 flex items-center justify-center shrink-0 shadow-xs group-hover:scale-105 transition-transform">
           <svg
             className="w-5 h-5"
             viewBox="0 0 24 24"
@@ -135,26 +141,26 @@ export const RightPanel: React.FC<RightPanelProps> = ({
         {/* Right Info */}
         <div className="flex-1 min-w-0">
           <div className="flex flex-wrap items-center justify-between gap-1 mb-1">
-            <span className="text-[9.5px] font-mono-tech text-[#4B6173] dark:text-[#94A3B8] tracking-wider uppercase font-semibold">
+            <span className="text-[9.5px] font-mono-tech text-[#4B6173] dark:text-[#CBD5E1] tracking-wider uppercase font-semibold">
               &lt; CURRENTLY BUILDING
             </span>
-            <span className="inline-flex items-center gap-1 text-[#257336] dark:text-[#6EE087] text-[10px] font-mono-tech font-semibold">
+            <span className="inline-flex items-center gap-1 text-[#257336] dark:text-[#34D399] text-[10px] font-mono-tech font-semibold">
               <span>• In Progress</span>
             </span>
           </div>
 
-          <h4 className="font-display font-bold text-sm text-[#092A4A] dark:text-[#6EB5F7] group-hover:text-[#123F68] dark:group-hover:text-[#93C5FD] transition-colors truncate">
+          <h4 className="font-display font-bold text-sm text-[#092A4A] dark:text-[#F8FAFC] group-hover:text-[#123F68] dark:group-hover:text-[#7DD3FC] transition-colors truncate">
             {CURRENTLY_BUILDING.title}
           </h4>
 
-          <p className="font-mono-tech text-[11px] text-[#4B6173] dark:text-[#94A3B8] leading-snug line-clamp-2 mt-0.5">
+          <p className="font-mono-tech text-[11px] text-[#4B6173] dark:text-[#CBD5E1] leading-snug line-clamp-2 mt-0.5">
             {CURRENTLY_BUILDING.subtitle}
           </p>
         </div>
 
         <ChevronRight
           size={16}
-          className="text-[#092A4A]/50 dark:text-[#6EB5F7]/50 group-hover:text-[#092A4A] dark:group-hover:text-[#6EB5F7] group-hover:translate-x-0.5 transition-all shrink-0"
+          className="text-[#092A4A]/50 dark:text-[#7DD3FC] group-hover:text-[#092A4A] dark:group-hover:text-white group-hover:translate-x-0.5 transition-all shrink-0"
         />
       </button>
 
@@ -162,8 +168,8 @@ export const RightPanel: React.FC<RightPanelProps> = ({
       <div className="flex flex-col">
         <div className="flex items-center justify-between mb-2.5">
           <div className="flex items-center gap-1.5">
-            <span className="text-[#092A4A] dark:text-[#6EB5F7] text-xs" aria-hidden="true">❖</span>
-            <h3 className="font-display font-bold text-xs tracking-wider uppercase text-[#092A4A] dark:text-[#6EB5F7]">
+            <span className="text-[#092A4A] dark:text-[#7DD3FC] text-xs" aria-hidden="true">❖</span>
+            <h3 className="font-display font-bold text-xs tracking-wider uppercase text-[#092A4A] dark:text-[#7DD3FC]">
               RECENT HIGHLIGHTS
             </h3>
           </div>
@@ -174,7 +180,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
                 soundManager.playSelect();
                 onOpenBlog();
               }}
-              className="inline-flex items-center gap-1 font-mono-tech text-[11px] font-bold text-[#092A4A] dark:text-[#6EB5F7] hover:underline cursor-pointer py-0.5"
+              className="inline-flex items-center gap-1 font-mono-tech text-[11px] font-bold text-[#092A4A] dark:text-[#7DD3FC] hover:underline cursor-pointer py-0.5"
             >
               <BookOpen size={12} />
               <span>Articles →</span>
@@ -186,7 +192,7 @@ export const RightPanel: React.FC<RightPanelProps> = ({
           {RECENT_HIGHLIGHTS.map((item, idx) => (
             <li
               key={idx}
-              className="flex items-start gap-2 text-xs font-mono-tech text-[#10283F] dark:text-[#E0E6ED] leading-relaxed"
+              className="flex items-start gap-2 text-xs font-mono-tech text-[#10283F] dark:text-[#E2E8F0] leading-relaxed"
             >
               {getHighlightIcon(idx)}
               <span>{item}</span>

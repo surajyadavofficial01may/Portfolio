@@ -100,18 +100,18 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
 
   return (
     <>
-      <div className="fixed top-0 left-0 right-0 z-50 bg-[#F4E9D5]/95 dark:bg-[#0A0A0F]/95 backdrop-blur-sm border-b border-[#092A4A]/15 dark:border-[#3B82F6]/20 shadow-[0_4px_20px_-10px_rgba(0,0,0,0.1)]">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-[#F4E9D5]/95 dark:bg-[#0B1320]/95 backdrop-blur-sm border-b border-[#092A4A]/15 dark:border-[#2E4C75] shadow-[0_4px_20px_-10px_rgba(0,0,0,0.1)] dark:shadow-[0_4px_24px_-6px_rgba(0,0,0,0.65)]">
         <header className="w-full max-w-7xl mx-auto px-3 sm:px-6 h-16 sm:h-[72px] flex items-center justify-between gap-2 select-none">
           {/* Left: Pixel Avatar + Name & Title */}
           <button
             type="button"
             onClick={() => handleNavigate('home')}
-            className="flex items-center gap-2.5 sm:gap-3.5 cursor-pointer group text-left min-h-[44px] min-w-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#092A4A] dark:focus-visible:outline-[#6EB5F7] rounded-lg"
+            className="flex items-center gap-2.5 sm:gap-3.5 cursor-pointer group text-left min-h-[44px] min-w-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#092A4A] dark:focus-visible:outline-[#7DD3FC] rounded-lg"
             id="header-brand"
             aria-label="Suraj Yadav - Return to Home Console"
           >
             {/* Pixel Avatar */}
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-sm bg-[#092A4A] dark:bg-[#3B82F6] p-1 flex items-center justify-center shadow-sm border border-[#061B30] dark:border-[#1E3A8A] relative overflow-hidden shrink-0 transition-transform group-hover:scale-105">
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-sm bg-[#092A4A] dark:bg-[#1E3A8A] p-1 flex items-center justify-center shadow-sm border border-[#061B30] dark:border-[#60A5FA] relative overflow-hidden shrink-0 transition-transform group-hover:scale-105">
               <svg className="w-7 h-7 sm:w-8 sm:h-8 pixelated" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                 {/* Hair */}
                 <rect x="4" y="2" width="8" height="3" fill="#10283F" />
@@ -128,7 +128,7 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
                 <rect x="7.5" y="6" width="1" height="1" fill="#D7A93D" />
                 {/* Shirt / Body */}
                 <rect x="4" y="9" width="8" height="6" fill="#092A4A" />
-                <rect x="6" y="9" width="4" height="3" fill="currentColor" />
+                <rect x="6" y="9" width="4" height="3" fill="#F4E9D5" />
                 {/* Backpack strap */}
                 <rect x="4" y="9" width="1.5" height="5" fill="#C85C57" />
                 <rect x="10.5" y="9" width="1.5" height="5" fill="#C85C57" />
@@ -137,10 +137,10 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
             </div>
 
             <div className="min-w-0">
-              <span className="font-display font-bold text-base sm:text-xl text-[#092A4A] dark:text-[#6EB5F7] tracking-tight block truncate leading-tight">
+              <span className="font-display font-bold text-base sm:text-xl text-[#092A4A] dark:text-[#F8FAFC] tracking-tight block truncate leading-tight">
                 Suraj Yadav
               </span>
-              <span className="font-mono-tech text-[11px] sm:text-xs text-[#4B6173] dark:text-[#94A3B8] tracking-wide block truncate">
+              <span className="font-mono-tech text-[11px] sm:text-xs text-[#4B6173] dark:text-[#CBD5E1] tracking-wide block truncate">
                 Software Engineer
               </span>
             </div>
@@ -148,7 +148,7 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
 
           {/* Center: Desktop Navigation Bar with Blueprint Framing */}
           <div className="hidden lg:flex items-center gap-2" id="header-nav-container">
-            <span className="text-xs font-mono-tech text-[#092A4A]/40 dark:text-[#6EB5F7]/40 select-none" aria-hidden="true">{'{'}</span>
+            <span className="text-xs font-mono-tech text-[#092A4A]/40 dark:text-[#7DD3FC]/75 select-none" aria-hidden="true">{'{'}</span>
             <nav
               className="flex items-center gap-1.5 px-1 py-1 select-none"
               id="header-nav"
@@ -163,10 +163,10 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
                     id={`nav-btn-${item.id}`}
                     onClick={() => handleNavigate(item.id)}
                     aria-current={isActive ? 'page' : undefined}
-                    className={`font-mono-tech text-sm px-3.5 min-h-[44px] inline-flex items-center justify-center rounded transition-colors duration-150 cursor-pointer whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#092A4A] dark:focus-visible:outline-[#6EB5F7] ${
+                    className={`font-mono-tech text-sm px-3.5 min-h-[44px] inline-flex items-center justify-center rounded-md transition-colors duration-150 cursor-pointer whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#092A4A] dark:focus-visible:outline-[#7DD3FC] ${
                       isActive
-                        ? 'border-b-2 border-[#092A4A] dark:border-[#3B82F6] text-[#092A4A] dark:text-[#6EB5F7] font-bold bg-[#092A4A]/5 dark:bg-[#3B82F6]/10'
-                        : 'text-[#4B6173] dark:text-[#94A3B8] hover:text-[#092A4A] dark:hover:text-[#6EB5F7]'
+                        ? 'border-b-2 border-[#092A4A] dark:border-[#60A5FA] text-[#092A4A] dark:text-[#7DD3FC] font-bold bg-[#092A4A]/5 dark:bg-[#172942]'
+                        : 'text-[#4B6173] dark:text-[#CBD5E1] hover:text-[#092A4A] dark:hover:text-[#F8FAFC] dark:hover:bg-[#172942]/60'
                     }`}
                   >
                     {isActive ? `[ ${item.label} ]` : item.label}
@@ -174,18 +174,18 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
                 );
               })}
             </nav>
-            <span className="text-xs font-mono-tech text-[#092A4A]/40 dark:text-[#6EB5F7]/40 select-none" aria-hidden="true">{'}'}</span>
+            <span className="text-xs font-mono-tech text-[#092A4A]/40 dark:text-[#7DD3FC]/75 select-none" aria-hidden="true">{'}'}</span>
           </div>
 
           {/* Right: Technical Blueprint Tagline + Audio, Theme & Mobile Menu Toggle */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0" id="header-controls">
-            <div className="hidden xl:flex items-center gap-1 text-right font-mono-tech text-[10px] text-[#4B6173] dark:text-[#94A3B8] leading-tight select-none mr-1">
-              <span className="text-xs text-[#092A4A]/50 dark:text-[#6EB5F7]/50" aria-hidden="true">&lt;</span>
+            <div className="hidden xl:flex items-center gap-1 text-right font-mono-tech text-[10px] text-[#4B6173] dark:text-[#CBD5E1] leading-tight select-none mr-1">
+              <span className="text-xs text-[#092A4A]/50 dark:text-[#7DD3FC]/80" aria-hidden="true">&lt;</span>
               <div className="flex flex-col">
-                <span className="text-[#092A4A] dark:text-[#6EB5F7] font-bold tracking-widest">BUILDING SOLUTIONS</span>
-                <span className="tracking-wider text-[9.5px]">ONE LINE AT A TIME</span>
+                <span className="text-[#092A4A] dark:text-[#7DD3FC] font-bold tracking-widest">BUILDING SOLUTIONS</span>
+                <span className="tracking-wider text-[9.5px] dark:text-[#E2E8F0]">ONE LINE AT A TIME</span>
               </div>
-              <span className="text-xs text-[#092A4A]/50 dark:text-[#6EB5F7]/50" aria-hidden="true">&gt;</span>
+              <span className="text-xs text-[#092A4A]/50 dark:text-[#7DD3FC]/80" aria-hidden="true">&gt;</span>
             </div>
 
             {/* Audio Toggle (44x44px touch target) */}
@@ -195,16 +195,16 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
               onClick={handleToggleSound}
               aria-label={isMuted ? 'Unmute retro sound effects' : 'Mute retro sound effects'}
               title={isMuted ? 'Sound is MUTED (Click to unmute)' : 'Sound is ON (Click to mute)'}
-              className="flex items-center justify-center w-11 h-11 rounded-lg transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-[#092A4A] dark:focus-visible:outline-[#6EB5F7]"
+              className="flex items-center justify-center w-11 h-11 rounded-lg transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-[#092A4A] dark:focus-visible:outline-[#7DD3FC]"
             >
               <span
                 className={`flex items-center justify-center w-8 h-8 rounded-full border transition-all ${
                   isMuted
-                    ? 'bg-[#EADBC3] dark:bg-[#151520] text-[#4B6173] dark:text-[#94A3B8] border-[#C8B79D] dark:border-[#2B3040]'
-                    : 'bg-[#092A4A] dark:bg-[#3B82F6] text-[#F4E9D5] dark:text-[#0A0A0F] border-[#061B30] dark:border-[#1E3A8A] shadow-xs'
+                    ? 'bg-[#EADBC3] dark:bg-[#172942] text-[#4B6173] dark:text-[#CBD5E1] border-[#C8B79D] dark:border-[#2E4C75]'
+                    : 'bg-[#092A4A] dark:bg-[#2563EB] text-[#F4E9D5] dark:text-white border-[#061B30] dark:border-[#60A5FA] shadow-xs'
                 }`}
               >
-                {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} className="text-[#6FAF75] dark:text-[#0A0A0F]" />}
+                {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} className="text-[#6FAF75] dark:text-[#6EE7B7]" />}
               </span>
             </button>
 
@@ -215,7 +215,7 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
               onClick={handleToggleTheme}
               aria-label={isDark ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
               title={isDark ? 'Switch to Light Theme' : 'Switch to Dark Theme'}
-              className="w-11 h-11 flex items-center justify-center text-[#092A4A] dark:text-[#6EB5F7] hover:bg-[#092A4A]/10 dark:hover:bg-[#6EB5F7]/10 rounded-lg transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-[#092A4A] dark:focus-visible:outline-[#6EB5F7]"
+              className="w-11 h-11 flex items-center justify-center text-[#092A4A] dark:text-[#7DD3FC] hover:bg-[#092A4A]/10 dark:hover:bg-[#172942] rounded-lg transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-[#092A4A] dark:focus-visible:outline-[#7DD3FC]"
             >
               {isDark ? (
                 <svg className="w-5 h-5 pixelated" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
@@ -247,7 +247,7 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
               aria-expanded={mobileMenuOpen}
               aria-controls="mobile-nav-drawer"
               aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-              className="lg:hidden w-11 h-11 flex items-center justify-center rounded-lg border border-[#C8B79D] dark:border-[#2B3040] bg-[#EADBC3]/70 dark:bg-[#151520] text-[#092A4A] dark:text-[#6EB5F7] hover:bg-[#092A4A] hover:text-[#F4E9D5] dark:hover:bg-[#3B82F6] dark:hover:text-[#0A0A0F] transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-[#092A4A]"
+              className="lg:hidden w-11 h-11 flex items-center justify-center rounded-lg border border-[#C8B79D] dark:border-[#2E4C75] bg-[#EADBC3]/70 dark:bg-[#172942] text-[#092A4A] dark:text-[#F8FAFC] hover:bg-[#092A4A] hover:text-[#F4E9D5] dark:hover:bg-[#2563EB] dark:hover:text-white transition-colors cursor-pointer focus-visible:outline-2 focus-visible:outline-[#092A4A] dark:focus-visible:outline-[#7DD3FC]"
             >
               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
@@ -265,13 +265,13 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
             id="mobile-nav-drawer"
             aria-label="Mobile Navigation"
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-h-[calc(100dvh-64px)] overflow-y-auto bg-[#F4E9D5] dark:bg-[#0A0A0F] border-b-2 border-[#092A4A] dark:border-[#3B82F6] shadow-2xl px-4 py-4 space-y-2"
+            className="w-full max-h-[calc(100dvh-64px)] overflow-y-auto bg-[#F4E9D5] dark:bg-[#0E1829] border-b-2 border-[#092A4A] dark:border-[#3B82F6] shadow-2xl px-4 py-4 space-y-2"
           >
-            <div className="flex items-center justify-between px-1 pb-2 border-b border-[#C8B79D]/60 dark:border-[#2B3040]">
-              <span className="font-mono-tech text-[11px] font-bold tracking-widest uppercase text-[#4B6173] dark:text-[#94A3B8]">
+            <div className="flex items-center justify-between px-1 pb-2 border-b border-[#C8B79D]/60 dark:border-[#2E4C75]">
+              <span className="font-mono-tech text-[11px] font-bold tracking-widest uppercase text-[#4B6173] dark:text-[#CBD5E1]">
                 SYS://SELECT_DESTINATION
               </span>
-              <span className="font-mono-tech text-[10px] text-[#3DA66B] font-semibold">
+              <span className="font-mono-tech text-[10px] text-[#257336] dark:text-[#34D399] font-semibold">
                 5 CHANNELS READY
               </span>
             </div>
@@ -288,16 +288,16 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
                     aria-current={isActive ? 'page' : undefined}
                     className={`w-full min-h-[52px] px-3.5 py-2.5 rounded-xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${
                       isActive
-                        ? 'bg-[#092A4A] dark:bg-[#3B82F6] text-[#F4E9D5] dark:text-[#0A0A0F] border-[#061B30] dark:border-[#1E3A8A] shadow-sm'
-                        : 'bg-[#EADBC3]/60 dark:bg-[#151520] text-[#10283F] dark:text-[#E0E6ED] border-[#C8B79D] dark:border-[#2B3040] hover:border-[#092A4A] dark:hover:border-[#6EB5F7]'
+                        ? 'bg-[#092A4A] dark:bg-[#2563EB] text-[#F4E9D5] dark:text-white border-[#061B30] dark:border-[#60A5FA] shadow-sm'
+                        : 'bg-[#EADBC3]/60 dark:bg-[#172942] text-[#10283F] dark:text-[#F8FAFC] border-[#C8B79D] dark:border-[#2E4C75] hover:border-[#092A4A] dark:hover:border-[#60A5FA]'
                     }`}
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <span
                         className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
                           isActive
-                            ? 'bg-[#F4E9D5]/15 dark:bg-[#0A0A0F]/15 text-[#F4E9D5] dark:text-[#0A0A0F]'
-                            : 'bg-[#092A4A]/10 dark:bg-[#3B82F6]/15 text-[#092A4A] dark:text-[#6EB5F7]'
+                            ? 'bg-[#F4E9D5]/15 dark:bg-white/20 text-[#F4E9D5] dark:text-white'
+                            : 'bg-[#092A4A]/10 dark:bg-[#0B1320] text-[#092A4A] dark:text-[#7DD3FC]'
                         }`}
                       >
                         {item.icon}
@@ -310,8 +310,8 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
                           <span
                             className={`font-mono-tech text-[9.5px] px-1.5 py-0.5 rounded ${
                               isActive
-                                ? 'bg-[#F4E9D5]/20 dark:bg-[#0A0A0F]/20 text-[#F4E9D5] dark:text-[#0A0A0F]'
-                                : 'bg-[#092A4A]/10 dark:bg-[#3B82F6]/10 text-[#4B6173] dark:text-[#94A3B8]'
+                                ? 'bg-[#F4E9D5]/20 dark:bg-white/20 text-[#F4E9D5] dark:text-white'
+                                : 'bg-[#092A4A]/10 dark:bg-[#0B1320] text-[#4B6173] dark:text-[#CBD5E1]'
                             }`}
                           >
                             {item.level}
@@ -320,8 +320,8 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
                         <span
                           className={`font-mono-tech text-[11px] block truncate ${
                             isActive
-                              ? 'text-[#F4E9D5]/80 dark:text-[#0A0A0F]/80'
-                              : 'text-[#4B6173] dark:text-[#94A3B8]'
+                              ? 'text-[#F4E9D5]/80 dark:text-white/90'
+                              : 'text-[#4B6173] dark:text-[#CBD5E1]'
                           }`}
                         >
                           {item.desc}
@@ -338,8 +338,8 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
             </div>
 
             {/* Quick Socials & Direct Actions in Mobile Drawer */}
-            <div className="pt-3 mt-2 border-t border-[#C8B79D]/60 dark:border-[#2B3040] flex items-center justify-between gap-2">
-              <span className="font-mono-tech text-[11px] text-[#4B6173] dark:text-[#94A3B8]">
+            <div className="pt-3 mt-2 border-t border-[#C8B79D]/60 dark:border-[#2E4C75] flex items-center justify-between gap-2">
+              <span className="font-mono-tech text-[11px] text-[#4B6173] dark:text-[#CBD5E1]">
                 Direct Links:
               </span>
               <div className="flex items-center gap-2">
@@ -348,7 +348,7 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="GitHub Profile"
-                  className="w-11 h-11 rounded-lg bg-[#092A4A] dark:bg-[#3B82F6] text-[#F4E9D5] dark:text-[#0A0A0F] flex items-center justify-center"
+                  className="w-11 h-11 rounded-lg bg-[#092A4A] dark:bg-[#2563EB] text-[#F4E9D5] dark:text-white border border-[#061B30] dark:border-[#60A5FA]/60 flex items-center justify-center"
                 >
                   <Github size={17} />
                 </a>
@@ -357,7 +357,7 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="LinkedIn Profile"
-                  className="w-11 h-11 rounded-lg bg-[#092A4A] dark:bg-[#3B82F6] text-[#F4E9D5] dark:text-[#0A0A0F] flex items-center justify-center"
+                  className="w-11 h-11 rounded-lg bg-[#092A4A] dark:bg-[#2563EB] text-[#F4E9D5] dark:text-white border border-[#061B30] dark:border-[#60A5FA]/60 flex items-center justify-center"
                 >
                   <Linkedin size={17} />
                 </a>
@@ -366,7 +366,7 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="External Portfolio Website"
-                  className="w-11 h-11 rounded-lg bg-[#092A4A] dark:bg-[#3B82F6] text-[#F4E9D5] dark:text-[#0A0A0F] flex items-center justify-center"
+                  className="w-11 h-11 rounded-lg bg-[#092A4A] dark:bg-[#2563EB] text-[#F4E9D5] dark:text-white border border-[#061B30] dark:border-[#60A5FA]/60 flex items-center justify-center"
                 >
                   <Globe size={17} />
                 </a>

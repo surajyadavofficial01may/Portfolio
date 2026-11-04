@@ -31,7 +31,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen w-full max-w-[100vw] bg-tech-grid text-[#10283F] dark:text-[#E0E6ED] flex flex-col relative overflow-x-hidden selection:bg-[#092A4A] dark:selection:bg-[#3B82F6] selection:text-[#F4E9D5] dark:selection:text-[#0A0A0F] pb-24 lg:pb-4 pt-16 sm:pt-[76px]">
+    <div className="min-h-screen w-full max-w-[100vw] bg-tech-grid text-[#10283F] dark:text-[#F1F5F9] flex flex-col relative overflow-x-hidden selection:bg-[#092A4A] dark:selection:bg-[#2563EB] selection:text-[#F4E9D5] dark:selection:text-white pb-24 lg:pb-4 pt-16 sm:pt-[76px]">
       {/* Header Navigation */}
       <Header
         activeSection={activeSection}
@@ -95,14 +95,14 @@ export default function App() {
       />
 
       {/* Blueprint Bottom Footer Line: THE JOURNEY CONTINUES... */}
-      <footer className="w-full max-w-7xl mx-auto py-5 px-4 flex items-center justify-center gap-2 sm:gap-3 font-mono-tech text-[10px] sm:text-[11px] text-[#4B6173] dark:text-[#94A3B8] select-none">
-        <span className="text-xs text-[#092A4A]/40 dark:text-[#6EB5F7]/40 shrink-0" aria-hidden="true">+</span>
-        <div className="flex-1 max-w-[40px] sm:max-w-[160px] h-px bg-[#092A4A]/20 dark:bg-[#3B82F6]/25" />
-        <span className="tracking-widest font-semibold text-[#665440] dark:text-[#94A3B8] text-center truncate">
+      <footer className="w-full max-w-7xl mx-auto py-5 px-4 flex items-center justify-center gap-2 sm:gap-3 font-mono-tech text-[10px] sm:text-[11px] text-[#4B6173] dark:text-[#CBD5E1] select-none">
+        <span className="text-xs text-[#092A4A]/40 dark:text-[#7DD3FC]/70 shrink-0" aria-hidden="true">+</span>
+        <div className="flex-1 max-w-[40px] sm:max-w-[160px] h-px bg-[#092A4A]/20 dark:bg-[#3B82F6]/45" />
+        <span className="tracking-widest font-semibold text-[#665440] dark:text-[#E2E8F0] text-center truncate">
           THE JOURNEY CONTINUES...
         </span>
-        <div className="flex-1 max-w-[40px] sm:max-w-[160px] h-px bg-[#092A4A]/20 dark:bg-[#3B82F6]/25" />
-        <span className="text-xs text-[#092A4A]/40 dark:text-[#6EB5F7]/40 shrink-0" aria-hidden="true">+</span>
+        <div className="flex-1 max-w-[40px] sm:max-w-[160px] h-px bg-[#092A4A]/20 dark:bg-[#3B82F6]/45" />
+        <span className="text-xs text-[#092A4A]/40 dark:text-[#7DD3FC]/70 shrink-0" aria-hidden="true">+</span>
       </footer>
     </div>
   );

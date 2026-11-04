@@ -56,6 +56,8 @@ About Suraj Kumar Yadav:
   2. AI Quantitative Stock Intelligence System (2025): Institutional-grade predictive analytics platform aggregating 100+ technical indicators with an ML ensemble forecasting engine.
   3. MeDict AI (04/2024): Designed deep learning lung cancer detection system achieving 81% accuracy using VGG16 and Streamlit UI.
   4. ZipIgnore: Python-based CLI utility published on PyPI to simplify project packaging by automatically excluding non-essential files.
+  5. EVEE: Open-source, offline-first Voice PC Agent for Windows 11 using local faster-whisper speech-to-text, 55+ built-in voice commands with 1.6ms latency, a local policy engine, and optional Groq/Qwen fallback.
+  6. TalkingHead 3D: Open-source real-time 3D Avatar-as-a-Service for chatbots with realistic lip-sync, moods, gestures, free Microsoft Edge Neural TTS, and Groq Qwen 3 / OpenAI-compatible APIs.
 - Certifications:
   - AWS Academy Graduate — Introduction to Cloud Foundations
   - Cognite Game v4.5 — Certified
@@ -99,7 +101,7 @@ app.post("/api/chat", async (req, res) => {
     if (lower.includes("skill") || lower.includes("tech") || lower.includes("stack")) {
       reply = "Suraj's technical skills are extensive! They include **Python, TypeScript, React.js, FastAPI, Node.js**, and databases like **MongoDB, PostgreSQL, and Redis**. He specializes in AI/ML using **LangGraph, TensorFlow, PyTorch, and Vector databases (FAISS, Pinecone)**.";
     } else if (lower.includes("project") || lower.includes("work") || lower.includes("portfolio")) {
-      reply = "Suraj's highlighted projects include:\n• **Aiden**: An Emotionally Intelligent AI Companion with persistent memory.\n• **AI Quantitative Stock System**: A predictive analytics platform with 100+ technical indicators.\n• **ZipIgnore**: A Python CLI packaging utility published on PyPI.\n• **MeDict AI**: Deep learning lung cancer detection with 81% accuracy.";
+      reply = "Suraj's highlighted projects include:\n• **EVEE**: An open-source, offline-first Voice PC Agent using local faster-whisper and a strict policy engine.\n• **TalkingHead 3D**: A real-time 3D Avatar-as-a-Service with lip-sync, moods, Edge Neural TTS, and Groq Qwen 3 integration.\n• **Aiden**: An Emotionally Intelligent AI Companion with persistent memory.\n• **AI Quantitative Stock System**: A predictive analytics platform with 100+ technical indicators.\n• **ZipIgnore**: A Python CLI packaging utility published on PyPI.\n• **MeDict AI**: Deep learning lung cancer detection with 81% accuracy.";
     } else if (lower.includes("experience") || lower.includes("internship") || lower.includes("years") || lower.includes("background")) {
       reply = "Suraj is currently a **Software Engineer at Spotline, Inc.** where he leads Agentic-RAG systems and DB validation platforms. Previously, he was a Salesforce Development Intern at SmartInternz. He has led 3 end-to-end production systems within his first year!";
     } else if (lower.includes("hire") || lower.includes("available") || lower.includes("contact") || lower.includes("email")) {

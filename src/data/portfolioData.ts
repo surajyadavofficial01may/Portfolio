@@ -208,6 +208,43 @@ export const PROJECTS: Project[] = [
     badge: 'DevTools',
     level: 'LV 04',
   },
+  {
+    id: 'proj-5',
+    code: 'PROJECT 005',
+    title: 'EVEE',
+    subtitle: 'Offline-First Voice PC Agent',
+    description: 'An open-source, privacy-first voice control agent for Windows 11 where wake-word detection, faster-whisper CPU speech recognition, and 55+ command matching run 100% locally with a strict policy engine and optional Groq/Qwen fallback.',
+    techStack: ['Python', 'faster-whisper', 'Groq (Qwen)', 'Local AI', 'Windows'],
+    features: [
+      'Local CPU speech-to-text (faster-whisper int8) with 1.6ms (p95) command-to-keypress latency',
+      '55+ built-in voice commands with negation checks and a local policy engine (allow/confirm/deny)',
+      'Zero audio leaves the PC; optional Groq/Qwen fallback constrained to strict JSON intent registry',
+    ],
+    metrics: '1.6ms Latency • 100% Local Audio',
+    githubUrl: 'https://github.com/TheSuraj01/EVEE',
+    linkedinUrl: 'https://www.linkedin.com/posts/surajyadav01_opensource-python-voiceai-activity-7523256429517111296--jRp?utm_source=share&utm_medium=member_ios&rcm=ACoAADsfTMQB0vdxVx3OBcHUV7vy64PLBGE0B-o',
+    badge: 'Voice AI',
+    level: 'LV 05',
+  },
+  {
+    id: 'proj-6',
+    code: 'PROJECT 006',
+    title: 'TalkingHead 3D',
+    subtitle: 'Real-Time 3D Avatar-as-a-Service for Chatbots',
+    description: 'An open-source 3D talking avatar service that gives any AI assistant or chatbot a lifelike face with real-time lip-sync, 8 facial moods, hand gestures, free Microsoft Edge Neural TTS, and built-in Groq Qwen 3 LLM & OpenAI-compatible APIs.',
+    techStack: ['Three.js', 'Node.js', 'Edge Neural TTS', 'Groq (Qwen 3)', 'REST / SSE'],
+    features: [
+      'Real-time 3D viseme lip-sync, 8 emotional moods, 8 body gestures, and dynamic camera framing',
+      'Zero-cost Microsoft Edge Neural TTS and built-in Groq Qwen 3 / OpenAI-compatible proxy endpoints',
+      'Controllable via a single REST call, Server-Sent Events (SSE), or iframe postMessage',
+    ],
+    metrics: 'Open-Source 3D Avatar-as-a-Service',
+    githubUrl: 'https://github.com/TheSuraj01/TalkingHead-3D',
+    demoUrl: 'https://talking-head-3-d.vercel.app',
+    linkedinUrl: 'https://www.linkedin.com/posts/surajyadav01_opensource-ai-llm-activity-7519114145728765952-0cO_?utm_source=share&utm_medium=member_ios&rcm=ACoAADsfTMQB0vdxVx3OBcHUV7vy64PLBGE0B-o',
+    badge: '3D AI Avatar',
+    level: 'LV 06',
+  },
 ];
 
 export const EXPERIENCES = [

@@ -140,27 +140,29 @@
 }
 
 .dark body {
-  background-color: #0A0A0F;
-  color: #E0E6ED;
+  background-color: #0B1320;
+  color: #F1F5F9;
 }
 
-.dark .bg-tech-grid {
-  background-color: #0A0A0F;
+.dark .bg-tech-grid,
+.dark.bg-tech-grid {
+  background-color: #0B1320;
   background-image: 
-    linear-gradient(to right, rgba(110, 181, 247, 0.05) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(110, 181, 247, 0.05) 1px, transparent 1px);
+    linear-gradient(to right, rgba(96, 165, 250, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(96, 165, 250, 0.08) 1px, transparent 1px);
 }
 
-.dark .bg-blueprint-lines {
-  background-image: radial-gradient(rgba(110, 181, 247, 0.08) 1px, transparent 1px);
+.dark .bg-blueprint-lines,
+.dark.bg-blueprint-lines {
+  background-image: radial-gradient(rgba(96, 165, 250, 0.12) 1px, transparent 1px);
 }
 
 .dark ::-webkit-scrollbar-track {
-  background: #151520;
+  background: #111E32;
 }
 
 .dark ::-webkit-scrollbar-thumb {
-  background: #2B3040;
+  background: #2E4C75;
 }
 
 .dark ::-webkit-scrollbar-thumb:hover {
