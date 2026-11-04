@@ -450,13 +450,33 @@ export const DevOrbitPage: React.FC<DevOrbitPageProps> = ({ onNavigatePortfolio 
             })}
           </nav>
 
-          {/* Far Right: Join Discord CTA, GitHub Icon, Theme Toggle, Mobile Menu */}
-          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+          {/* Far Right: Back to Portfolio, Join Discord CTA, GitHub Icon, Theme Toggle, Mobile Menu */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0">
+            <a
+              href={DEVORBIT_LINKS.personalPortfolio}
+              onClick={(e) => {
+                if (onNavigatePortfolio) {
+                  e.preventDefault();
+                  onNavigatePortfolio('home');
+                }
+              }}
+              aria-label="Return to Suraj Yadav's Main Portfolio"
+              title="Return to Main Portfolio"
+              className={`inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-2 min-h-[40px] sm:min-h-[42px] rounded-full text-xs sm:text-sm font-semibold border transition-all whitespace-nowrap shrink-0 cursor-pointer ${
+                isDark
+                  ? 'bg-[#11264A]/85 hover:bg-[#193566] text-[#36C8FF] hover:text-[#F5F7FF] border-[#36C8FF]/45 shadow-[0_0_16px_rgba(54,200,255,0.2)]'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border-slate-300'
+              }`}
+            >
+              <ArrowLeft size={15} className="shrink-0" />
+              <span>Portfolio</span>
+            </a>
+
             <a
               href={DEVORBIT_LINKS.discordInvite}
               target="_blank"
               rel="noopener noreferrer"
-              className={`hidden sm:inline-flex items-center gap-2 px-4 py-2 min-h-[42px] rounded-full text-xs sm:text-sm font-semibold border transition-all whitespace-nowrap shrink-0 ${
+              className={`hidden md:inline-flex items-center gap-2 px-4 py-2 min-h-[42px] rounded-full text-xs sm:text-sm font-semibold border transition-all whitespace-nowrap shrink-0 ${
                 isDark
                   ? 'bg-[#0D1B38]/90 hover:bg-[#11264A] text-[#F5F7FF] border-[#4191FF]/50 shadow-[0_0_20px_rgba(53,120,255,0.28)] hover:border-[#36C8FF]'
                   : 'bg-[#0B1430] hover:bg-[#11264A] text-white border-[#3578FF]'
@@ -473,7 +493,7 @@ export const DevOrbitPage: React.FC<DevOrbitPageProps> = ({ onNavigatePortfolio 
               rel="noopener noreferrer"
               aria-label="Open DevOrbit GitHub"
               title="Explore on GitHub"
-              className={`w-10 h-10 sm:w-11 sm:h-11 rounded-full border flex items-center justify-center transition-all ${
+              className={`hidden sm:flex w-10 h-10 sm:w-11 sm:h-11 rounded-full border items-center justify-center transition-all ${
                 isDark
                   ? 'bg-[#0D1B38]/80 hover:bg-[#11264A] text-[#F5F7FF] border-[#4191FF]/35 hover:border-[#36C8FF]'
                   : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border-slate-300'
