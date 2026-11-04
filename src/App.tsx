@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavSection } from './types';
 import { Header } from './components/Header';
 import { LeftPanel } from './components/LeftPanel';
@@ -7,10 +7,50 @@ import { RightPanel } from './components/RightPanel';
 import { SectionModal } from './components/SectionModal';
 import { AIAssistantCompanion } from './components/AIAssistantCompanion';
 import { MobileBottomNav } from './components/MobileBottomNav';
+import { DevOrbitPage } from './components/devorbit/DevOrbitPage';
+
+function isDevOrbitRoute(): boolean {
+  if (typeof window === 'undefined') return false;
+  const path = window.location.pathname.toLowerCase().replace(/\/+$/, '');
+  const hash = window.location.hash.toLowerCase();
+  return path === '/devorbit' || hash.startsWith('#/devorbit');
+}
 
 export default function App() {
+  const [currentRoute, setCurrentRoute] = useState<'portfolio' | 'devorbit'>(() =>
+    isDevOrbitRoute() ? 'devorbit' : 'portfolio'
+  );
   const [activeSection, setActiveSection] = useState<NavSection>('home');
   const [modalSection, setModalSection] = useState<NavSection | null>(null);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setCurrentRoute(isDevOrbitRoute() ? 'devorbit' : 'portfolio');
+    };
+    window.addEventListener('popstate', handlePopState);
+    window.addEventListener('hashchange', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      window.removeEventListener('hashchange', handlePopState);
+    };
+  }, []);
+
+  const navigateToDevOrbit = () => {
+    window.history.pushState({}, '', '/devorbit');
+    setCurrentRoute('devorbit');
+  };
+
+  const navigateToPortfolio = (section: 'home' | 'contact' = 'home') => {
+    window.history.pushState({}, '', '/');
+    setCurrentRoute('portfolio');
+    if (section === 'contact') {
+      setActiveSection('contact');
+      setModalSection('contact');
+    } else {
+      setActiveSection('home');
+      setModalSection(null);
+    }
+  };
 
   const handleSelectSection = (section: NavSection) => {
     setActiveSection(section);
@@ -30,6 +70,10 @@ export default function App() {
     setActiveSection('home');
   };
 
+  if (currentRoute === 'devorbit') {
+    return <DevOrbitPage onNavigatePortfolio={navigateToPortfolio} />;
+  }
+
   return (
     <div className="min-h-screen w-full max-w-[100vw] bg-tech-grid text-[#10283F] dark:text-[#F1F5F9] flex flex-col relative overflow-x-hidden selection:bg-[#092A4A] dark:selection:bg-[#2563EB] selection:text-[#F4E9D5] dark:selection:text-white pb-24 lg:pb-4 pt-16 sm:pt-[76px]">
       {/* Header Navigation */}
@@ -43,6 +87,7 @@ export default function App() {
             handleOpenSectionDetail(sec);
           }
         }}
+        onOpenDevOrbit={navigateToDevOrbit}
       />
 
       {/* Main 3-Column Portfolio Stage */}
@@ -107,3 +152,4 @@ export default function App() {
     </div>
   );
 }
+

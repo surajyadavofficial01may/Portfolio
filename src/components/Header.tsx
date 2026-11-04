@@ -7,9 +7,10 @@ import { PERSONAL_INFO } from '../data/portfolioData';
 interface HeaderProps {
   activeSection: NavSection;
   onSelectSection: (section: NavSection) => void;
+  onOpenDevOrbit?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }) => {
+export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection, onOpenDevOrbit }) => {
   const [isMuted, setIsMuted] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -173,6 +174,19 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
                   </button>
                 );
               })}
+              <a
+                href="/devorbit"
+                onClick={(e) => {
+                  if (onOpenDevOrbit) {
+                    e.preventDefault();
+                    soundManager.playNavigate();
+                    onOpenDevOrbit();
+                  }
+                }}
+                className="font-mono-tech text-sm px-3.5 min-h-[44px] inline-flex items-center justify-center rounded-md text-[#092A4A] dark:text-[#36C8FF] font-semibold hover:bg-[#092A4A]/10 dark:hover:bg-[#172942] transition-colors whitespace-nowrap"
+              >
+                DevOrbit ↗
+              </a>
             </nav>
             <span className="text-xs font-mono-tech text-[#092A4A]/40 dark:text-[#7DD3FC]/75 select-none" aria-hidden="true">{'}'}</span>
           </div>
@@ -335,6 +349,36 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection }
                   </button>
                 );
               })}
+              <a
+                href="/devorbit"
+                onClick={(e) => {
+                  if (onOpenDevOrbit) {
+                    e.preventDefault();
+                    soundManager.playNavigate();
+                    setMobileMenuOpen(false);
+                    onOpenDevOrbit();
+                  }
+                }}
+                className="w-full min-h-[52px] px-3.5 py-2.5 rounded-xl border text-left flex items-center justify-between gap-3 transition-all cursor-pointer bg-[#EADBC3]/60 dark:bg-[#172942] text-[#10283F] dark:text-[#F8FAFC] border-[#C8B79D] dark:border-[#2E4C75] hover:border-[#092A4A] dark:hover:border-[#60A5FA]"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <span className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-[#092A4A]/10 dark:bg-[#0B1320] text-[#092A4A] dark:text-[#36C8FF]">
+                    <Globe size={16} />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-display font-bold text-sm truncate">DevOrbit</span>
+                      <span className="font-mono-tech text-[9.5px] px-1.5 py-0.5 rounded bg-[#092A4A]/10 dark:bg-[#0B1320] text-[#4B6173] dark:text-[#36C8FF]">
+                        COMMUNITY
+                      </span>
+                    </div>
+                    <span className="font-mono-tech text-[11px] block truncate text-[#4B6173] dark:text-[#CBD5E1]">
+                      Discover. Build. Collaborate. Grow.
+                    </span>
+                  </div>
+                </div>
+                <span className="font-mono-tech text-xs font-bold shrink-0">→</span>
+              </a>
             </div>
 
             {/* Quick Socials & Direct Actions in Mobile Drawer */}
