@@ -20,15 +20,18 @@ export default function App() {
     setActiveSection(section);
     if (section !== 'home') {
       setModalSection(section);
+    } else {
+      setModalSection(null);
     }
   };
 
   const handleCloseModal = () => {
     setModalSection(null);
+    setActiveSection('home');
   };
 
   return (
-    <div className="min-h-screen bg-tech-grid text-[#10283F] dark:text-[#E0E6ED] flex flex-col relative overflow-x-hidden selection:bg-[#092A4A] dark:bg-[#3B82F6] selection:text-[#F4E9D5] dark:text-[#0A0A0F] pb-24 lg:pb-0 pt-[76px] sm:pt-[88px]">
+    <div className="min-h-screen w-full max-w-[100vw] bg-tech-grid text-[#10283F] dark:text-[#E0E6ED] flex flex-col relative overflow-x-hidden selection:bg-[#092A4A] dark:selection:bg-[#3B82F6] selection:text-[#F4E9D5] dark:selection:text-[#0A0A0F] pb-24 lg:pb-4 pt-16 sm:pt-[76px]">
       {/* Header Navigation */}
       <Header
         activeSection={activeSection}
@@ -43,20 +46,18 @@ export default function App() {
       />
 
       {/* Main 3-Column Portfolio Stage */}
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 flex flex-col lg:flex-row items-center lg:items-start justify-center lg:justify-between gap-8 sm:gap-10">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-3 sm:px-6 lg:px-4 xl:px-6 py-4 sm:py-7 flex flex-col lg:flex-row items-center lg:items-start justify-center lg:justify-between gap-6 sm:gap-8 lg:gap-4 xl:gap-8">
         {/* Left Column: Developer Identity, Bio, Tech Stack & Socials */}
-        <div className="w-full lg:w-auto flex justify-center lg:justify-start order-2 lg:order-1">
+        <div className="w-full lg:w-[300px] xl:w-[370px] shrink-0 flex justify-center lg:justify-start order-1 lg:order-1">
           <LeftPanel
-            onSelectSkill={(skillId) => {
-              // Can trigger modal or question
-              handleOpenSectionDetail('about');
-            }}
+            onSelectSkill={() => handleOpenSectionDetail('about')}
+            onOpenProjects={() => handleOpenSectionDetail('projects')}
             onOpenContact={() => handleOpenSectionDetail('contact')}
           />
         </div>
 
         {/* Center Hero: 3D Retro Gaming Console */}
-        <div className="w-full lg:flex-1 flex justify-center order-1 lg:order-2">
+        <div className="w-full lg:flex-1 min-w-0 flex justify-center order-2 lg:order-2">
           <RetroConsole
             activeSection={activeSection}
             onSelectSection={handleSelectSection}
@@ -65,10 +66,11 @@ export default function App() {
         </div>
 
         {/* Right Column: Journey Metrics, Specialties, Currently Building & Highlights */}
-        <div className="w-full lg:w-auto flex justify-center lg:justify-end order-3">
+        <div className="w-full lg:w-[300px] xl:w-[370px] shrink-0 flex justify-center lg:justify-end order-3">
           <RightPanel
-            onOpenProject={(projId) => handleOpenSectionDetail('projects')}
-            onExploreSpecialty={(spec) => handleOpenSectionDetail('about')}
+            onOpenProject={() => handleOpenSectionDetail('projects')}
+            onExploreSpecialty={() => handleOpenSectionDetail('about')}
+            onOpenBlog={() => handleOpenSectionDetail('blog')}
           />
         </div>
       </main>
@@ -76,10 +78,10 @@ export default function App() {
       {/* Full Dossier Section Modal for About, Projects, Blog, Contact */}
       <SectionModal section={modalSection} onClose={handleCloseModal} />
 
-      {/* Sticky Companion AI Assistant (bottom-right matching photo) */}
+      {/* Sticky Companion AI Assistant */}
       <AIAssistantCompanion />
 
-      {/* Blueprint Bottom Line: THE JOURNEY CONTINUES... (matching photo) */}
+      {/* Mobile Bottom Navigation */}
       <MobileBottomNav
         activeSection={activeSection}
         onSelectSection={(sec) => {
@@ -92,13 +94,16 @@ export default function App() {
         }}
       />
 
-      <div className="w-full max-w-7xl mx-auto py-6 px-4 flex items-center justify-center gap-3 font-mono-tech text-[11px] text-[#4B6173] dark:text-[#94A3B8] select-none">
-        <span className="text-xs text-[#092A4A]/40 dark:text-[#6EB5F7]/40">+</span>
-        <div className="w-24 sm:w-48 h-px bg-[#092A4A]/20 dark:bg-[#3B82F6]/20" />
-        <span className="tracking-widest font-semibold text-[#665440]">THE JOURNEY CONTINUES...</span>
-        <div className="w-24 sm:w-48 h-px bg-[#092A4A]/20 dark:bg-[#3B82F6]/20" />
-        <span className="text-xs text-[#092A4A]/40 dark:text-[#6EB5F7]/40">+</span>
-      </div>
+      {/* Blueprint Bottom Footer Line: THE JOURNEY CONTINUES... */}
+      <footer className="w-full max-w-7xl mx-auto py-5 px-4 flex items-center justify-center gap-2 sm:gap-3 font-mono-tech text-[10px] sm:text-[11px] text-[#4B6173] dark:text-[#94A3B8] select-none">
+        <span className="text-xs text-[#092A4A]/40 dark:text-[#6EB5F7]/40 shrink-0" aria-hidden="true">+</span>
+        <div className="flex-1 max-w-[40px] sm:max-w-[160px] h-px bg-[#092A4A]/20 dark:bg-[#3B82F6]/25" />
+        <span className="tracking-widest font-semibold text-[#665440] dark:text-[#94A3B8] text-center truncate">
+          THE JOURNEY CONTINUES...
+        </span>
+        <div className="flex-1 max-w-[40px] sm:max-w-[160px] h-px bg-[#092A4A]/20 dark:bg-[#3B82F6]/25" />
+        <span className="text-xs text-[#092A4A]/40 dark:text-[#6EB5F7]/40 shrink-0" aria-hidden="true">+</span>
+      </footer>
     </div>
   );
 }
