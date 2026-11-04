@@ -1,12 +1,17 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { NavSection } from '../types';
+import {
+  ArcadeModule,
+  ArcadeGameId,
+  ArcadeControlAction,
+} from './ArcadeGames';
 
 interface GameScreenProps {
   activeSection: NavSection;
   selectedMenuIndex: number;
   onSelectIndex: (index: number) => void;
   onConfirmMenu: () => void;
-  mode: 'menu' | 'quest';
+  mode: 'menu' | 'quest' | 'arcade';
   characterX: number;
   characterY: number;
   facing: 'left' | 'right';
@@ -14,6 +19,13 @@ interface GameScreenProps {
   score: number;
   hearts: number;
   collectedGems: number[];
+  activeArcadeGame: ArcadeGameId | null;
+  selectedArcadeIndex: number;
+  onSelectArcadeIndex: (index: number) => void;
+  onLaunchArcadeGame: (gameId: ArcadeGameId) => void;
+  onExitArcadeToLauncher: () => void;
+  onExitArcadeToMenu: () => void;
+  arcadeControlSignal: { action: ArcadeControlAction; seq: number } | null;
 }
 
 export const GameScreen: React.FC<GameScreenProps> = ({
@@ -28,17 +40,25 @@ export const GameScreen: React.FC<GameScreenProps> = ({
   score,
   hearts,
   collectedGems,
+  activeArcadeGame,
+  selectedArcadeIndex,
+  onSelectArcadeIndex,
+  onLaunchArcadeGame,
+  onExitArcadeToLauncher,
+  onExitArcadeToMenu,
+  arcadeControlSignal,
 }) => {
   const [breathTick, setBreathTick] = useState(0);
   const [walkTick, setWalkTick] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
   const screenRef = useRef<HTMLDivElement>(null);
 
-  const menuItems: { id: NavSection; label: string }[] = [
+  const menuItems: { id: NavSection | 'arcade'; label: string }[] = [
     { id: 'about', label: 'ABOUT' },
     { id: 'projects', label: 'PROJECTS' },
     { id: 'blog', label: 'BLOG' },
     { id: 'contact', label: 'CONTACT' },
+    { id: 'arcade', label: 'ARCADE' },
   ];
 
   // Pause off-screen rendering loops using IntersectionObserver
@@ -86,7 +106,19 @@ export const GameScreen: React.FC<GameScreenProps> = ({
       }}
       className="select-none crt-screen"
     >
-      {/* Sky gradient */}
+      {mode === 'arcade' ? (
+        <ArcadeModule
+          activeGame={activeArcadeGame}
+          selectedGameIndex={selectedArcadeIndex}
+          onSelectGameIndex={onSelectArcadeIndex}
+          onLaunchGame={onLaunchArcadeGame}
+          onExitToLauncher={onExitArcadeToLauncher}
+          onExitToPortfolioMenu={onExitArcadeToMenu}
+          controlSignal={arcadeControlSignal}
+        />
+      ) : (
+        <>
+          {/* Sky gradient */}
       <div
         style={{
           position: 'absolute',
@@ -328,20 +360,21 @@ export const GameScreen: React.FC<GameScreenProps> = ({
           <div
             style={{
               position: 'absolute',
-              top: 16,
+              top: 8,
               right: 8,
               zIndex: 30,
               minWidth: 118,
               background: 'rgba(7,25,44,0.95)',
               border: '2px solid #48A060',
               borderRadius: 6,
-              padding: 5,
+              padding: 4,
               boxShadow: '0 6px 16px rgba(0,0,0,0.6)',
             }}
           >
-            <div style={{ border: '1px solid rgba(72,160,96,0.3)', borderRadius: 4, padding: 3 }}>
+            <div style={{ border: '1px solid rgba(72,160,96,0.3)', borderRadius: 4, padding: 2 }}>
               {menuItems.map((item, idx) => {
                 const isSel = selectedMenuIndex === idx;
+                const isArcade = item.id === 'arcade';
                 return (
                   <button
                     key={item.id}
@@ -356,15 +389,15 @@ export const GameScreen: React.FC<GameScreenProps> = ({
                       width: '100%',
                       alignItems: 'center',
                       gap: 5,
-                      padding: '6px 7px',
-                      minHeight: 28,
+                      padding: '4px 6px',
+                      minHeight: 24,
                       borderRadius: 4,
                       cursor: 'pointer',
                       border: isSel ? '2px solid #5FD182' : '2px solid transparent',
                       background: isSel ? '#123955' : 'transparent',
-                      color: isSel ? '#F8E5D0' : '#CAD9E8',
-                      fontWeight: isSel ? 'bold' : 'normal',
-                      fontSize: 8.5,
+                      color: isSel ? '#F8E5D0' : isArcade ? '#5FD182' : '#CAD9E8',
+                      fontWeight: isSel || isArcade ? 'bold' : 'normal',
+                      fontSize: 8,
                       letterSpacing: '0.08em',
                       fontFamily: "'Press Start 2P', monospace",
                       textAlign: 'left',
@@ -398,7 +431,7 @@ export const GameScreen: React.FC<GameScreenProps> = ({
             fontFamily: "'Press Start 2P', monospace",
           }}
         >
-          <span className="truncate">{mode === 'menu' ? 'Choose your path...' : 'Explore mode active...'}</span>
+          <span className="truncate">{mode === 'menu' ? 'Choose path or ARCADE...' : 'Explore mode active...'}</span>
           <span
             style={{
               width: 6,
@@ -411,6 +444,8 @@ export const GameScreen: React.FC<GameScreenProps> = ({
           />
         </div>
       </div>
+        </>
+      )}
       <style>{`
         @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }

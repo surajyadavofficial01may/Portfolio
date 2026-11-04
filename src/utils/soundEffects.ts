@@ -172,4 +172,70 @@ export const soundManager = {
       });
     } catch {}
   },
+
+  // Laser pew for Space Invaders
+  playLaser: () => {
+    if (isMuted) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    try {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(880, now);
+      osc.frequency.exponentialRampToValueAtTime(140, now + 0.11);
+      gain.gain.setValueAtTime(0.04, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.11);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.12);
+    } catch {}
+  },
+
+  // Paddle/Wall bounce for Brick Breaker
+  playBounce: () => {
+    if (isMuted) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    try {
+      const now = ctx.currentTime;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(330, now);
+      osc.frequency.setValueAtTime(490, now + 0.03);
+      gain.gain.setValueAtTime(0.035, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.08);
+    } catch {}
+  },
+
+  // Game Over descending retro tone
+  playGameOver: () => {
+    if (isMuted) return;
+    const ctx = getAudioContext();
+    if (!ctx) return;
+    try {
+      const notes = [392.0, 349.23, 329.63, 261.63];
+      notes.forEach((freq, idx) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const start = ctx.currentTime + idx * 0.11;
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, start);
+        gain.gain.setValueAtTime(0.045, start);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.22);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(start);
+        osc.stop(start + 0.23);
+      });
+    } catch {}
+  },
 };
+

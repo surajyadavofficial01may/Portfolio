@@ -3,6 +3,11 @@ import { NavSection } from '../types';
 import { soundManager } from '../utils/soundEffects';
 import confetti from 'canvas-confetti';
 import { GameScreen } from './GameScreen';
+import {
+  ARCADE_GAMES,
+  ArcadeGameId,
+  ArcadeControlAction,
+} from './ArcadeGames';
 
 interface RetroConsoleProps {
   activeSection: NavSection;
@@ -15,16 +20,23 @@ export const RetroConsole: React.FC<RetroConsoleProps> = ({
   onSelectSection,
   onOpenSectionDetail,
 }) => {
-  const menuOptions: { id: NavSection; label: string; level: string }[] = [
+  const menuOptions: { id: NavSection | 'arcade'; label: string; level: string }[] = [
     { id: 'about', label: 'ABOUT', level: 'LV 01' },
     { id: 'projects', label: 'PROJECTS', level: 'LV 02' },
     { id: 'blog', label: 'BLOG', level: 'LV 03' },
     { id: 'contact', label: 'CONTACT', level: 'LV 04' },
+    { id: 'arcade', label: 'ARCADE', level: 'LV 05' },
   ];
 
   const [selectedMenuIndex, setSelectedMenuIndex] = useState(0);
   const [activeButton, setActiveButton] = useState<string | null>(null);
-  const [mode, setMode] = useState<'menu' | 'quest'>('menu');
+  const [mode, setMode] = useState<'menu' | 'quest' | 'arcade'>('menu');
+  const [activeArcadeGame, setActiveArcadeGame] = useState<ArcadeGameId | null>(null);
+  const [selectedArcadeIndex, setSelectedArcadeIndex] = useState(0);
+  const [arcadeControlSignal, setArcadeControlSignal] = useState<{
+    action: ArcadeControlAction;
+    seq: number;
+  } | null>(null);
   const [score, setScore] = useState(350);
   const [hearts] = useState(3);
   const [characterX, setCharacterX] = useState(44);
@@ -34,6 +46,10 @@ export const RetroConsole: React.FC<RetroConsoleProps> = ({
   const [collectedGems, setCollectedGems] = useState<number[]>([1]);
   const [mouseTilt, setMouseTilt] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
 
+  const emitArcadeSignal = (action: ArcadeControlAction) => {
+    setArcadeControlSignal((prev) => ({ action, seq: (prev?.seq ?? 0) + 1 }));
+  };
+
   // Sync selected menu index when activeSection changes externally
   useEffect(() => {
     const idx = menuOptions.findIndex((m) => m.id === activeSection);
@@ -42,7 +58,15 @@ export const RetroConsole: React.FC<RetroConsoleProps> = ({
     }
   }, [activeSection]);
 
+  // Reset console tilt whenever arcade mode is active so the console stays completely steady
+  useEffect(() => {
+    if (mode === 'arcade') {
+      setMouseTilt({ x: 0, y: 0 });
+    }
+  }, [mode]);
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (mode === 'arcade') return;
     if (typeof window !== 'undefined' && window.innerWidth < 1024) return;
     const rect = e.currentTarget.getBoundingClientRect();
     const x = (e.clientX - rect.left) / rect.width - 0.5;
@@ -92,10 +116,29 @@ export const RetroConsole: React.FC<RetroConsoleProps> = ({
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [mode, selectedMenuIndex, characterX, isJumping]);
+  }, [mode, selectedMenuIndex, selectedArcadeIndex, activeArcadeGame, characterX, isJumping]);
 
   const pressDpad = (dir: 'up' | 'down' | 'left' | 'right') => {
     setActiveButton(`dpad-${dir}`);
+
+    if (mode === 'arcade') {
+      if (!activeArcadeGame) {
+        soundManager.playNavigate();
+        // 2-column grid of 6 games
+        setSelectedArcadeIndex((prev) => {
+          if (dir === 'right') return (prev + 1) % ARCADE_GAMES.length;
+          if (dir === 'left') return (prev - 1 + ARCADE_GAMES.length) % ARCADE_GAMES.length;
+          if (dir === 'down') return (prev + 2) % ARCADE_GAMES.length;
+          if (dir === 'up') return (prev - 2 + ARCADE_GAMES.length) % ARCADE_GAMES.length;
+          return prev;
+        });
+      } else {
+        emitArcadeSignal(dir);
+      }
+      setTimeout(() => setActiveButton(null), 150);
+      return;
+    }
+
     soundManager.playNavigate();
 
     if (mode === 'menu') {
@@ -152,12 +195,29 @@ export const RetroConsole: React.FC<RetroConsoleProps> = ({
 
   const pressA = () => {
     setActiveButton('btn-a');
+
+    if (mode === 'arcade') {
+      if (!activeArcadeGame) {
+        soundManager.playSelect();
+        setActiveArcadeGame(ARCADE_GAMES[selectedArcadeIndex].id);
+      } else {
+        emitArcadeSignal('a');
+      }
+      setTimeout(() => setActiveButton(null), 150);
+      return;
+    }
+
     soundManager.playSelect();
 
     if (mode === 'menu') {
       const selected = menuOptions[selectedMenuIndex];
-      onSelectSection(selected.id);
-      onOpenSectionDetail(selected.id);
+      if (selected.id === 'arcade') {
+        setMode('arcade');
+        setActiveArcadeGame(null);
+      } else {
+        onSelectSection(selected.id);
+        onOpenSectionDetail(selected.id);
+      }
     } else if (mode === 'quest') {
       jumpCharacter();
     }
@@ -167,6 +227,18 @@ export const RetroConsole: React.FC<RetroConsoleProps> = ({
 
   const pressB = () => {
     setActiveButton('btn-b');
+
+    if (mode === 'arcade') {
+      soundManager.playBack();
+      if (activeArcadeGame) {
+        setActiveArcadeGame(null);
+      } else {
+        setMode('menu');
+      }
+      setTimeout(() => setActiveButton(null), 150);
+      return;
+    }
+
     soundManager.playBack();
 
     if (mode === 'quest') {
@@ -180,17 +252,50 @@ export const RetroConsole: React.FC<RetroConsoleProps> = ({
 
   const pressStart = () => {
     setActiveButton('btn-start');
+    if (mode === 'arcade') {
+      if (activeArcadeGame) {
+        emitArcadeSignal('start');
+      } else {
+        soundManager.playSelect();
+        setActiveArcadeGame(ARCADE_GAMES[selectedArcadeIndex].id);
+      }
+      setTimeout(() => setActiveButton(null), 150);
+      return;
+    }
     soundManager.playSelect();
-    setMode((prev) => (prev === 'menu' ? 'quest' : 'menu'));
+    setMode('arcade');
+    setActiveArcadeGame(null);
     setTimeout(() => setActiveButton(null), 150);
   };
 
   const pressSelect = () => {
     setActiveButton('btn-select');
-    soundManager.playNavigate();
-    const selected = menuOptions[selectedMenuIndex];
-    onSelectSection(selected.id);
-    onOpenSectionDetail(selected.id);
+    if (mode === 'arcade') {
+      soundManager.playSelect();
+      if (!activeArcadeGame) {
+        // Select & launch the currently highlighted game in the Arcade menu
+        setActiveArcadeGame(ARCADE_GAMES[selectedArcadeIndex].id);
+      } else {
+        // If already playing a game, return to the Arcade game selector
+        setActiveArcadeGame(null);
+      }
+      setTimeout(() => setActiveButton(null), 150);
+      return;
+    }
+
+    soundManager.playSelect();
+    if (mode === 'menu') {
+      const selected = menuOptions[selectedMenuIndex];
+      if (selected.id === 'arcade') {
+        setMode('arcade');
+        setActiveArcadeGame(null);
+      } else {
+        onSelectSection(selected.id);
+        onOpenSectionDetail(selected.id);
+      }
+    } else {
+      setMode('menu');
+    }
     setTimeout(() => setActiveButton(null), 150);
   };
 
@@ -223,9 +328,9 @@ export const RetroConsole: React.FC<RetroConsoleProps> = ({
         onMouseLeave={handleMouseLeave}
         style={{
           transform:
-            mouseTilt.x !== 0 || mouseTilt.y !== 0
+            mode !== 'arcade' && (mouseTilt.x !== 0 || mouseTilt.y !== 0)
               ? `perspective(1200px) rotateX(${mouseTilt.y * -6}deg) rotateY(${mouseTilt.x * 8}deg)`
-              : undefined,
+              : 'none',
         }}
         className="w-full flex flex-col items-center transition-transform duration-200 ease-out"
       >
@@ -306,11 +411,20 @@ export const RetroConsole: React.FC<RetroConsoleProps> = ({
                 selectedMenuIndex={selectedMenuIndex}
                 onSelectIndex={(idx) => {
                   setSelectedMenuIndex(idx);
-                  onSelectSection(menuOptions[idx].id);
+                  const opt = menuOptions[idx];
+                  if (opt && opt.id !== 'arcade') {
+                    onSelectSection(opt.id);
+                  }
                 }}
                 onConfirmMenu={() => {
                   const item = menuOptions[selectedMenuIndex];
-                  onOpenSectionDetail(item.id);
+                  if (item.id === 'arcade') {
+                    soundManager.playSelect();
+                    setMode('arcade');
+                    setActiveArcadeGame(null);
+                  } else {
+                    onOpenSectionDetail(item.id);
+                  }
                 }}
                 mode={mode}
                 characterX={characterX}
@@ -320,6 +434,21 @@ export const RetroConsole: React.FC<RetroConsoleProps> = ({
                 score={score}
                 hearts={hearts}
                 collectedGems={collectedGems}
+                activeArcadeGame={activeArcadeGame}
+                selectedArcadeIndex={selectedArcadeIndex}
+                onSelectArcadeIndex={setSelectedArcadeIndex}
+                onLaunchArcadeGame={(gameId) => {
+                  const gIdx = ARCADE_GAMES.findIndex((g) => g.id === gameId);
+                  if (gIdx !== -1) setSelectedArcadeIndex(gIdx);
+                  setMode('arcade');
+                  setActiveArcadeGame(gameId);
+                }}
+                onExitArcadeToLauncher={() => setActiveArcadeGame(null)}
+                onExitArcadeToMenu={() => {
+                  setActiveArcadeGame(null);
+                  setMode('menu');
+                }}
+                arcadeControlSignal={arcadeControlSignal}
               />
             </div>
 
@@ -628,17 +757,71 @@ export const RetroConsole: React.FC<RetroConsoleProps> = ({
         </div>
       </div>
 
-      {/* HELPER CONTROLS GUIDE & QUEST MODE TOGGLE */}
-      <div className="mt-4 w-full flex flex-col sm:flex-row items-center justify-center gap-2 font-mono-tech text-xs text-[#4B6173] dark:text-[#CBD5E1] text-center px-2">
-        <button
-          type="button"
-          onClick={pressStart}
-          className="min-h-[44px] inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#EADBC3] dark:bg-[#172942] hover:bg-[#D7C3A6] dark:hover:bg-[#2563EB] text-[#092A4A] dark:text-[#F8FAFC] dark:hover:text-white border border-[#C8B79D] dark:border-[#3B82F6]/60 transition-colors font-bold shadow-xs cursor-pointer"
+      {/* HELPER CONTROLS GUIDE & ARCADE CARTRIDGE DECK */}
+      <div className="mt-4 w-full flex flex-col items-center justify-center gap-2.5 font-mono-tech text-xs text-[#4B6173] dark:text-[#CBD5E1] text-center px-2">
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              soundManager.playSelect();
+              if (mode === 'arcade') {
+                setActiveArcadeGame(null);
+                setMode('menu');
+              } else {
+                setMode('arcade');
+                setActiveArcadeGame(null);
+              }
+            }}
+            className="min-h-[40px] inline-flex items-center justify-center gap-2 px-3.5 py-1.5 rounded-lg bg-[#092A4A] dark:bg-[#2563EB] hover:bg-[#123E6B] dark:hover:bg-[#1D4ED8] text-[#F4E9D5] dark:text-white border border-[#092A4A] dark:border-[#60A5FA]/50 transition-colors font-bold shadow-xs cursor-pointer whitespace-nowrap shrink-0"
+          >
+            <span>{mode === 'arcade' ? 'Return to RPG Menu' : 'Open Arcade (6 Games)'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              soundManager.playSelect();
+              setActiveArcadeGame(null);
+              setMode((prev) => (prev === 'quest' ? 'menu' : 'quest'));
+            }}
+            className="min-h-[40px] inline-flex items-center justify-center gap-2 px-3.5 py-1.5 rounded-lg bg-[#EADBC3] dark:bg-[#172942] hover:bg-[#D7C3A6] dark:hover:bg-[#1E3A5F] text-[#092A4A] dark:text-[#F8FAFC] border border-[#C8B79D] dark:border-[#3B82F6]/60 transition-colors font-bold shadow-xs cursor-pointer whitespace-nowrap shrink-0"
+          >
+            <span>{mode === 'quest' ? 'Exit Quest' : 'Quest Mode'}</span>
+          </button>
+        </div>
+
+        {/* Direct 6-Game Cartridge Selector */}
+        <div
+          className="w-full max-w-[340px] grid grid-cols-3 gap-1.5 pt-1"
+          role="group"
+          aria-label="Arcade Game Cartridges"
         >
-          <span>{mode === 'menu' ? 'Launch Quest Mode' : 'Return to RPG Menu'}</span>
-        </button>
-        <span className="text-[11px] text-[#5C4A38] dark:text-[#CBD5E1] leading-snug max-w-[300px] sm:max-w-none">
-          D-Pad / Arrows to move • [A] to open • [B] for back
+          {ARCADE_GAMES.map((g, idx) => {
+            const isPlayingThis = mode === 'arcade' && activeArcadeGame === g.id;
+            return (
+              <button
+                key={g.id}
+                type="button"
+                onClick={() => {
+                  soundManager.playSelect();
+                  setSelectedArcadeIndex(idx);
+                  setMode('arcade');
+                  setActiveArcadeGame(g.id);
+                }}
+                className={`min-h-[34px] px-2 py-1 rounded-md text-[10px] font-bold tracking-wider transition-colors cursor-pointer whitespace-nowrap truncate border ${
+                  isPlayingThis
+                    ? 'bg-[#092A4A] text-[#5FD182] border-[#5FD182] dark:bg-[#1E3A5F] dark:text-[#5FD182]'
+                    : 'bg-[#F3E9D7]/90 dark:bg-[#0F2137] text-[#10283F] dark:text-[#E2E8F0] border-[#C8B79D] dark:border-[#334155] hover:border-[#092A4A] dark:hover:border-[#60A5FA]'
+                }`}
+              >
+                {g.shortTitle}
+              </button>
+            );
+          })}
+        </div>
+
+        <span className="text-[11px] text-[#5C4A38] dark:text-[#CBD5E1] leading-snug max-w-[320px] sm:max-w-none">
+          D-Pad / Arrows to move · [A] Action / Start · [B] Back
         </span>
       </div>
     </section>
