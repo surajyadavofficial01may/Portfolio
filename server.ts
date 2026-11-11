@@ -58,6 +58,7 @@ About Suraj Kumar Yadav:
   4. ZipIgnore: Python-based CLI utility published on PyPI to simplify project packaging by automatically excluding non-essential files.
   5. EVEE: Open-source, offline-first Voice PC Agent for Windows 11 using local faster-whisper speech-to-text, 55+ built-in voice commands with 1.6ms latency, a local policy engine, and optional Groq/Qwen fallback.
   6. TalkingHead 3D: Open-source real-time 3D Avatar-as-a-Service for chatbots with realistic lip-sync, moods, gestures, free Microsoft Edge Neural TTS, and Groq Qwen 3 / OpenAI-compatible APIs.
+  7. Jira Fixer (Jira-Ticket-Fixer): Open-source plugin for Claude Code and GitHub Copilot in VS Code (Node.js 18+, zero dependencies, MIT license). Investigates Jira tickets via Atlassian MCP, proposes a minimal "At a glance" plan, and uses a deterministic hook to physically block file edits until human approval.
 - Certifications:
   - AWS Academy Graduate — Introduction to Cloud Foundations
   - Cognite Game v4.5 — Certified
@@ -103,7 +104,10 @@ app.post("/api/chat", async (req, res) => {
     const lower = message.toLowerCase();
     let reply = "";
 
-    if (lower.includes("evee")) {
+    if (lower.includes("jira") || lower.includes("fixer") || lower.includes("claude code") || lower.includes("copilot")) {
+      reply =
+        "**Jira Fixer (PRJ008)** (`github.com/TheSuraj01/Jira-Ticket-Fixer`) is an open-source plugin for **Claude Code** and **GitHub Copilot in VS Code** built by Suraj. It investigates Jira tickets, proposes a minimal **'At a glance'** plan, and uses a zero-dependency Node.js 18+ hook to **physically block file edits** until you click Approve—limiting edits strictly to approved files and writing a failing regression test first.";
+    } else if (lower.includes("evee")) {
       reply =
         "**EVEE (PRJ001)** is an open-source, offline-first voice-controlled PC agent for Windows 11 built by Suraj. It uses int8-quantized **faster-whisper** on CPU for 100% local speech recognition, matches 55+ commands with **1.6ms (p95) latency** (including negation checks), and enforces a local policy engine (allow/confirm/deny) with optional **Groq/Qwen** fallback.";
     } else if (lower.includes("vassure") || lower.includes("scriptgen") || lower.includes("veeva")) {
@@ -117,13 +121,13 @@ app.post("/api/chat", async (req, res) => {
         "Suraj has integrated **Groq LLMs (Llama 8B/70B, Qwen 3)**, **LangGraph** multi-agent workflows, **faster-whisper** (local int8 CPU speech-to-text), **FAISS & MongoDB Atlas Vector Search** (achieving sub-45ms cache-hit latency), **Microsoft Edge Neural TTS**, and deep learning ensembles (**VGG16, ResNet50, InceptionV3, EfficientNet**).";
     } else if (lower.includes("auth") || lower.includes("security") || lower.includes("oauth")) {
       reply =
-        "For authentication and security, Suraj implements **OAuth 2.0, JWT bearer tokens, Role-Based Access Control (RBAC), token encryption, and SSO**, alongside deterministic local policy engines (allow/confirm/deny) in autonomous agents.";
+        "For authentication and security, Suraj implements **OAuth 2.0, JWT bearer tokens, Role-Based Access Control (RBAC), token encryption, and SSO**, alongside deterministic local policy engines and physical edit-blocking hooks in autonomous agents (**EVEE**, **Jira Fixer**).";
     } else if (lower.includes("skill") || lower.includes("tech") || lower.includes("stack")) {
       reply =
         "Suraj's technical skills (from **Tech_Knowledge**) include **Python, TypeScript, React.js, FastAPI, Node.js**, databases (**PostgreSQL, MongoDB Atlas, Redis, FAISS**), and AI orchestration with **LangGraph, LiteLLM, Groq, TensorFlow, and PyTorch**.";
     } else if (lower.includes("project") || lower.includes("work") || lower.includes("portfolio")) {
       reply =
-        "Suraj's projects in **Portfolio_Knowledge_Base** include:\n• **EVEE (PRJ001)**: Offline-first Voice PC Agent (1.6ms latency, faster-whisper).\n• **Travel Together (PRJ002)**: Collaborative community trip planner.\n• **VAssureAI (PRJ003)**: AI test script generator at Spotline, Inc.\n• **Aiden (PRJ004)**: Emotionally Intelligent AI Companion with tree-leaf FAISS memory.\n• **TalkingHead 3D (PRJ005)**: Real-time 3D Avatar-as-a-Service.\n• **ZipIgnore (PRJ006)**: Python CLI packaging tool on PyPI.\n• **MeDict AI (PRJ007)**: VGG16 lung cancer detection (81% accuracy).";
+        "Suraj's projects include:\n• **Jira Fixer (PRJ008)**: Deterministic approval gate plugin for Claude Code & GitHub Copilot.\n• **EVEE (PRJ001)**: Offline-first Voice PC Agent (1.6ms latency, faster-whisper).\n• **TalkingHead 3D (PRJ005)**: Real-time 3D Avatar-as-a-Service.\n• **VAssureAI (PRJ003)**: AI test script generator at Spotline, Inc.\n• **Aiden (PRJ004)**: Emotionally Intelligent AI Companion with tree-leaf FAISS memory.\n• **Travel Together (PRJ002)**: Collaborative community trip planner.\n• **ZipIgnore (PRJ006)**: Python CLI packaging tool on PyPI.\n• **MeDict AI (PRJ007)**: VGG16 lung cancer detection (81% accuracy).";
     } else if (lower.includes("experience") || lower.includes("internship") || lower.includes("spotline")) {
       reply =
         "Suraj is a **Software Engineer at Spotline, Inc.** (May 2025 – Present), where he led 3 end-to-end production systems (VAssureAI, DB-Compare, and an Agentic-RAG system). Previously, he was a **Salesforce Development Intern at SmartInternz**, reducing manual workflows by 30%.";

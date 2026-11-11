@@ -23,7 +23,7 @@ export const AIAssistantCompanion: React.FC = () => {
     {
       id: 'msg-0',
       sender: 'bot',
-      text: "Hi! I'm Suraj's AI assistant. Ask me about EVEE, VAssureAI, AI models integrated, or his skills!",
+      text: "Hi! I'm Suraj's AI assistant. Ask me about Jira Fixer, EVEE, VAssureAI, or his skills!",
       timestamp: 'NOW',
     },
   ]);
@@ -105,6 +105,7 @@ export const AIAssistantCompanion: React.FC = () => {
   };
 
   const samplePrompts = [
+    'What is Jira Fixer?',
     'What is EVEE?',
     'VAssureAI role?',
     'AI models used?',

@@ -575,6 +575,37 @@ export const DEFAULT_PORTFOLIO_KNOWLEDGE_BASE: PortfolioKnowledgeBaseData = {
       content_visibility: 'public',
       last_updated: TODAY,
     },
+    {
+      project_id: 'PRJ008',
+      project_name: 'Jira Fixer',
+      project_type: 'Open Source',
+      short_description:
+        'Deterministic safety gate plugin for Claude Code and GitHub Copilot in VS Code that investigates Jira tickets and blocks unapproved file edits.',
+      detailed_description:
+        'Jira Fixer (Jira-Ticket-Fixer) is an open-source, MIT-licensed plugin for Claude Code and GitHub Copilot in VS Code built with Node.js 18+ and zero dependencies. It acts like a careful teammate: it investigates a Jira ticket via Atlassian MCP, proposes a minimal plan with an "At a glance" summary, and uses a deterministic Node.js hook to physically block file edits until the developer clicks Approve.',
+      problem_statement:
+        'AI coding agents are great at fixing bugs, but when pointed at a Jira ticket they often confidently edit 14 unrelated files without waiting for review, leaving a sprawling diff with a mind of its own.',
+      solution:
+        'Engineered a zero-dependency Node.js 18+ approval gate hook and plugin for Claude Code and VS Code GitHub Copilot that physically blocks file modifications until the user explicitly approves the proposed plan and file list.',
+      architecture:
+        'Atlassian MCP Ticket Reader -> Codebase Investigator -> "At a Glance" Plan Generator (Problem, Cause, Fix, Files, Risk) -> Deterministic Node.js Approval Hook Gate -> Scoped File Editor + Failing Regression Test First -> Acceptance Criteria Verifier & PR/Commit Draft Generator.',
+      frontend_technologies: 'Claude Code Plugin CLI & VS Code GitHub Copilot Chat Interface',
+      backend_technologies: 'Node.js 18+ (Zero Dependencies, No Telemetry)',
+      ai_technologies: 'Claude Code, GitHub Copilot, Atlassian MCP, Deterministic Agent Hooks',
+      database: 'Local Session Gate State',
+      deployment: 'Open-Source Plugin Marketplace (TheSuraj01/Jira-Ticket-Fixer, MIT License)',
+      key_features:
+        'Physical hook blocking unapproved file edits; "At a glance" summary (problem, cause, fix, files, risk); edits strictly limited to approved files; writes a failing regression test first; drafts Jira comment, commit message, and PR description.',
+      challenges:
+        'Ensuring the AI agent cannot bypass the review step, self-approve its own plan, or touch files outside the approved allowlist.',
+      achievements:
+        'Published as an open-source two-command installable plugin for Claude Code and VS Code Copilot with zero dependencies and zero telemetry.',
+      github_url: 'https://github.com/TheSuraj01/Jira-Ticket-Fixer',
+      live_url: 'https://lnkd.in/p/dwywzxc5',
+      related_skills: 'SK002, SK005',
+      content_visibility: 'public',
+      last_updated: '2026-11-11',
+    },
   ],
 
   Articles: [
@@ -637,6 +668,25 @@ export const DEFAULT_PORTFOLIO_KNOWLEDGE_BASE: PortfolioKnowledgeBaseData = {
       content_visibility: 'public',
       last_updated: TODAY,
     },
+    {
+      article_id: 'ART004',
+      article_title:
+        'Introducing Jira Fixer: Deterministic Approval Gate for Claude Code & GitHub Copilot',
+      category: 'Technical',
+      short_summary:
+        'How I built Jira Fixer, an open-source plugin that physically blocks AI coding agents from editing files until you approve their minimal plan.',
+      detailed_summary:
+        'Explains why prompt instructions alone fail to stop AI coding agents from editing 14 unrequested files when fixing Jira tickets, and how Jira Fixer uses a deterministic Node.js hook to enforce human approval, scoped file edits, and regression-test-first workflows.',
+      key_topics: 'Open Source, AI Agents, Claude Code, GitHub Copilot, DevEx, Jira Fixer',
+      technologies: 'Node.js 18+, Claude Code Plugins, GitHub Copilot Hooks, Atlassian MCP',
+      published_date: '2026-11',
+      platform: 'LinkedIn',
+      article_url: 'https://lnkd.in/p/dwywzxc5',
+      content_text:
+        'AI coding agents are great at fixing bugs. They are also great at confidently editing 14 files you never asked them to touch. So I built Jira Fixer, an open-source plugin for Claude Code and GitHub Copilot in VS Code. It works like a careful teammate: investigate first, propose a minimal plan, then wait for your approval before touching any code. A hook physically blocks file edits until you click Approve. The agent cannot skip the review or approve its own plan. What you get: an "At a glance" summary (problem, cause, fix, files, risk), edits limited only to approved files, a failing regression test first, and drafts of the Jira comment, commit message, and PR description.',
+      content_visibility: 'public',
+      last_updated: '2026-11-11',
+    },
   ],
 
   Social_Media: [
@@ -645,7 +695,7 @@ export const DEFAULT_PORTFOLIO_KNOWLEDGE_BASE: PortfolioKnowledgeBaseData = {
       platform: 'GitHub',
       profile_name: 'Thesuraj01',
       profile_url: 'https://github.com/Thesuraj01',
-      purpose: 'Open-source repositories, EVEE, TalkingHead 3D, MeDict AI, and code contributions',
+      purpose: 'Open-source repositories, Jira Fixer, EVEE, TalkingHead 3D, MeDict AI, and code contributions',
       description: 'Primary GitHub profile for Suraj Kumar Yadav and DevOrbit open-source projects.',
       content_visibility: 'public',
       last_updated: TODAY,
@@ -789,14 +839,29 @@ export const DEFAULT_PORTFOLIO_KNOWLEDGE_BASE: PortfolioKnowledgeBaseData = {
       subcategory: 'Community & Open Source',
       title: 'DevOrbit Community & Travel Together',
       content:
-        'DevOrbit (Discover. Build. Collaborate. Grow.) is an open developer community founded by Suraj Yadav where developers explore open-source projects like EVEE, TalkingHead 3D, ZipIgnore, and Travel Together (a collaborative community trip planning platform).',
-      keywords: 'devorbit, community, travel together, open source, zipignore',
-      related_ids: 'PRJ001, PRJ002, PRJ006, SOC004',
+        'DevOrbit (Discover. Build. Collaborate. Grow.) is an open developer community founded by Suraj Yadav where developers explore open-source projects like Jira Fixer, EVEE, TalkingHead 3D, ZipIgnore, and Travel Together (a collaborative community trip planning platform).',
+      keywords: 'devorbit, community, travel together, open source, zipignore, jira fixer',
+      related_ids: 'PRJ001, PRJ002, PRJ006, PRJ008, SOC004',
       source_sheet: 'Projects',
       source_id: 'PRJ002',
       content_visibility: 'public',
       priority: 'Medium',
       last_updated: TODAY,
+    },
+    {
+      knowledge_id: 'KB008',
+      category: 'Projects',
+      subcategory: 'AI Agent Safety & Developer Tools',
+      title: 'Jira Fixer — Deterministic Safety Gate for Claude Code & GitHub Copilot',
+      content:
+        'Jira Fixer (github.com/TheSuraj01/Jira-Ticket-Fixer) is an open-source plugin for Claude Code and GitHub Copilot in VS Code built by Suraj Kumar Yadav. Instead of relying on prompts to stop AI agents from editing unrequested files, Jira Fixer uses a zero-dependency Node.js 18+ hook that physically blocks file edits until the developer clicks Approve on a minimal "At a glance" plan (problem, cause, fix, files, risk). Once approved, edits are locked to the approved file list, a failing regression test is written first, every acceptance criterion is verified, and Jira comments, commit messages, and PR descriptions are drafted.',
+      keywords: 'jira fixer, jira-ticket-fixer, claude code, github copilot, vs code plugin, ai agents, safety gate, hooks, atlassian mcp',
+      related_ids: 'PRJ008, ART004, SK002, SK005',
+      source_sheet: 'Projects',
+      source_id: 'PRJ008',
+      content_visibility: 'public',
+      priority: 'High',
+      last_updated: '2026-11-11',
     },
   ],
 
@@ -849,10 +914,10 @@ export const DEFAULT_PORTFOLIO_KNOWLEDGE_BASE: PortfolioKnowledgeBaseData = {
       faq_id: 'FAQ005',
       question: 'How did you implement authentication and security?',
       answer:
-        'Across his backend systems and Google Workspace integrations, Suraj implements OAuth 2.0, JWT bearer authentication, Role-Based Access Control (RBAC), token encryption, and Single Sign-On (SSO), plus deterministic local policy engines (allow/confirm/deny) in autonomous agents like EVEE.',
+        'Across his backend systems and Google Workspace integrations, Suraj implements OAuth 2.0, JWT bearer authentication, Role-Based Access Control (RBAC), token encryption, and Single Sign-On (SSO), plus deterministic local policy engines and physical edit-blocking hooks in autonomous agents like EVEE and Jira Fixer.',
       category: 'Skills',
       keywords: 'authentication, security, oauth, jwt, rbac',
-      related_ids: 'KB006, PRJ001',
+      related_ids: 'KB006, PRJ001, PRJ008',
       content_visibility: 'public',
       last_updated: TODAY,
     },
@@ -866,6 +931,17 @@ export const DEFAULT_PORTFOLIO_KNOWLEDGE_BASE: PortfolioKnowledgeBaseData = {
       related_ids: 'PER001, SOC002',
       content_visibility: 'public',
       last_updated: TODAY,
+    },
+    {
+      faq_id: 'FAQ007',
+      question: 'What is Jira Fixer?',
+      answer:
+        'Jira Fixer (github.com/TheSuraj01/Jira-Ticket-Fixer) is an open-source plugin for Claude Code and GitHub Copilot in VS Code built by Suraj. It investigates Jira tickets, proposes a minimal "At a glance" plan, and uses a zero-dependency Node.js hook to physically block file edits until you click Approve—ensuring edits are strictly limited to approved files with a failing regression test written first.',
+      category: 'Projects',
+      keywords: 'what is jira fixer, jira-ticket-fixer, claude code plugin, github copilot plugin',
+      related_ids: 'PRJ008, KB008, ART004',
+      content_visibility: 'public',
+      last_updated: '2026-11-11',
     },
   ],
 };

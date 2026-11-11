@@ -245,6 +245,24 @@ export const PROJECTS: Project[] = [
     badge: '3D AI Avatar',
     level: 'LV 06',
   },
+  {
+    id: 'proj-7',
+    code: 'PROJECT 007',
+    title: 'Jira Fixer',
+    subtitle: 'Deterministic Safety Gate for AI Coding Agents',
+    description: 'An open-source plugin for Claude Code and GitHub Copilot in VS Code that investigates Jira tickets, proposes a minimal plan with an "At a glance" summary, and uses a deterministic hook to physically block file edits until human approval.',
+    techStack: ['Node.js 18+', 'Claude Code', 'GitHub Copilot', 'Atlassian MCP', 'Zero Dependencies'],
+    features: [
+      'Physical approval gate hook that blocks unapproved file edits so the agent cannot skip review or self-approve',
+      '"At a glance" plan summary (problem, cause, fix, files, risk) with edits strictly locked to approved files',
+      'Writes a failing regression test first, verifies every acceptance criterion, and drafts Jira comments, commits & PR descriptions',
+    ],
+    metrics: 'Zero Dependencies • Deterministic Edit Gate',
+    githubUrl: 'https://github.com/TheSuraj01/Jira-Ticket-Fixer',
+    linkedinUrl: 'https://lnkd.in/p/dwywzxc5',
+    badge: 'AI Agent Safety',
+    level: 'LV 07',
+  },
 ];
 
 export const EXPERIENCES = [
