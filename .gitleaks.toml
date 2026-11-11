@@ -1,0 +1,42 @@
+title = "Portfolio Security Gitleaks Configuration"
+
+[extend]
+useDefault = true
+
+[[rules]]
+id = "supabase-secret-key"
+description = "Supabase Secret / Service Key (sb_secret_*)"
+regex = '''sb_secret_[A-Za-z0-9_-]{16,}'''
+tags = ["key", "supabase", "secret"]
+
+[[rules]]
+id = "supabase-publishable-key-hardcoded"
+description = "Hardcoded Supabase Publishable Key (sb_publishable_*)"
+regex = '''sb_publishable_[A-Za-z0-9_-]{16,}'''
+tags = ["key", "supabase"]
+
+[[rules]]
+id = "hardcoded-admin-passcode"
+description = "Hardcoded Admin Password Assignment"
+regex = '''(?i)(ADMIN_PASSCODE|ADMIN_PASSWORD)\s*[:=]\s*['"][^'"\s$]{4,}['"]'''
+tags = ["password", "admin"]
+    [rules.allowlists]
+    paths = [
+      '''^\.env\.example$'''
+    ]
+
+[[rules]]
+id = "ai-provider-api-keys"
+description = "Hardcoded OpenAI / Anthropic / Groq / Gemini API Key"
+regex = '''(sk-[A-Za-z0-9]{20,}|gsk_[A-Za-z0-9]{20,}|AIza[0-9A-Za-z\-_]{35})'''
+tags = ["api-key", "ai"]
+
+[allowlist]
+description = "Allowlist strictly for lockfiles, build output, and local .env"
+paths = [
+  '''^node_modules/''',
+  '''^dist/''',
+  '''^bun\.lock$''',
+  '''^package-lock\.json$''',
+  '''^\.env$'''
+]

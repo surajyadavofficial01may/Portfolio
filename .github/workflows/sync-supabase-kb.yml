@@ -1,0 +1,43 @@
+name: Auto-Sync Portfolio Knowledge Base to Supabase
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+concurrency:
+  group: supabase-kb-sync-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  sync-supabase-kb:
+    name: Sync 7-Tab Knowledge Base to Supabase
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Portfolio Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          else
+            npm install --no-audit --no-fund
+          fi
+
+      - name: Sync 7-Tab Portfolio Knowledge Base to Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          SUPABASE_JWKS_URL: ${{ secrets.SUPABASE_JWKS_URL }}
+          SUPABASE_KB_BUCKET: ${{ secrets.SUPABASE_KB_BUCKET || 'portfolio-knowledge-base' }}
+          SUPABASE_KB_TABLE: ${{ secrets.SUPABASE_KB_TABLE || 'portfolio_knowledge_base' }}
+        run: npm run sync:supabase

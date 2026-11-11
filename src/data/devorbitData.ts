@@ -42,6 +42,19 @@ export interface DevOrbitProject {
  */
 export const DEVORBIT_PROJECTS: DevOrbitProject[] = [
   {
+    id: 'jira-fixer',
+    name: 'Jira Fixer',
+    shortDescription:
+      'Open-source plugin for Claude Code & GitHub Copilot that investigates Jira tickets, proposes a minimal plan, and physically blocks file edits until approved.',
+    techStack: ['Node.js 18+', 'Claude Code', 'GitHub Copilot', 'Atlassian MCP'],
+    categories: ['AI & ML', 'Developer Tools', 'Automation', 'Open Source'],
+    availability: 'Public Repository',
+    ownershipNote: 'Open Source Project · Suraj Kumar Yadav (MIT License)',
+    githubRepo: 'TheSuraj01/Jira-Ticket-Fixer',
+    githubUrl: 'https://github.com/TheSuraj01/Jira-Ticket-Fixer',
+    iconType: 'vassure',
+  },
+  {
     id: 'evee',
     name: 'EVEE',
     shortDescription: 'My personal development workspace and productivity hub.',
@@ -72,19 +85,6 @@ export const DEVORBIT_PROJECTS: DevOrbitProject[] = [
     availability: 'Coming Soon',
     ownershipNote: 'Personal Portfolio Project · Suraj Kumar Yadav',
     iconType: 'travel',
-  },
-  {
-    id: 'jira-fixer',
-    name: 'Jira Fixer',
-    shortDescription:
-      'Open-source plugin for Claude Code & GitHub Copilot that investigates Jira tickets, proposes a minimal plan, and physically blocks file edits until approved.',
-    techStack: ['Node.js 18+', 'Claude Code', 'GitHub Copilot', 'Atlassian MCP'],
-    categories: ['AI & ML', 'Developer Tools', 'Automation', 'Open Source'],
-    availability: 'Public Repository',
-    ownershipNote: 'Open Source Project · Suraj Kumar Yadav (MIT License)',
-    githubRepo: 'TheSuraj01/Jira-Ticket-Fixer',
-    githubUrl: 'https://github.com/TheSuraj01/Jira-Ticket-Fixer',
-    iconType: 'vassure',
   },
 ];
 

@@ -1,8 +1,30 @@
+# Dependencies & Build Artifacts
 node_modules/
 build/
 dist/
 coverage/
+server.js
+
+# OS & Editor Files
 .DS_Store
 *.log
-.env*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment Variables & Secrets (NEVER COMMIT)
+.env
+.env.*
 !.env.example
+
+# Cryptographic Keys, Certificates & Credentials
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+service-account*.json
+credentials*.json
+*secret*.json
+firebase-applet-config.json
+.gitleaks-report.json

@@ -95,9 +95,9 @@ export const SectionModal: React.FC<SectionModalProps> = ({ section, onClose }) 
 
   const filteredProjects = PROJECTS.filter((proj) => {
     if (projectFilter === 'all') return true;
-    if (projectFilter === 'ai') return ['proj-1', 'proj-2', 'proj-3', 'proj-5', 'proj-6'].includes(proj.id);
-    if (projectFilter === 'systems') return ['proj-1', 'proj-2', 'proj-5', 'proj-6'].includes(proj.id);
-    if (projectFilter === 'devtools') return ['proj-4', 'proj-5'].includes(proj.id);
+    if (projectFilter === 'ai') return ['proj-7', 'proj-5', 'proj-6', 'proj-1', 'proj-2', 'proj-3'].includes(proj.id);
+    if (projectFilter === 'systems') return ['proj-7', 'proj-5', 'proj-6', 'proj-1', 'proj-2'].includes(proj.id);
+    if (projectFilter === 'devtools') return ['proj-7', 'proj-5', 'proj-4'].includes(proj.id);
     return true;
   });
 

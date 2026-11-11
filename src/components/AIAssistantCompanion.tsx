@@ -3,7 +3,7 @@ import { Send, X, Minimize2, Maximize2, MessageSquare } from 'lucide-react';
 import { ChatMessage } from '../types';
 import { soundManager } from '../utils/soundEffects';
 import { retrieveKnowledgeForQuery } from '../data/knowledgeBaseSchema';
-import { getActiveKnowledgeBase } from '../services/portfolioSheetsService';
+import { getActiveKnowledgeBase } from '../services/supabaseKnowledgeBaseService';
 
 export const AIAssistantCompanion: React.FC = () => {
   // Default to compact floating launcher on mobile/tablets (<1280px) so it never covers hero/console CTAs

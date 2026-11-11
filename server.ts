@@ -1,22 +1,89 @@
 import express from "express";
 import path from "path";
+import crypto from "crypto";
 import { createServer as createViteServer } from "vite";
-import dotenv from "dotenv";
 import { GoogleGenAI } from "@google/genai";
+import {
+  DEFAULT_PORTFOLIO_KNOWLEDGE_BASE,
+  MASTER_SPREADSHEET_TITLE,
+  PORTFOLIO_SHEETS_SCHEMA,
+  SheetTabName,
+  retrieveKnowledgeForQuery,
+} from "./src/data/knowledgeBaseSchema";
+import { syncKnowledgeBaseToSupabase } from "./scripts/sync-knowledge-base-to-supabase";
+import {
+  getServerConfig,
+  validateStartupConfig,
+  validateAdminAuthConfig,
+  timingSafeCompare,
+} from "./src/config/env";
 
-dotenv.config();
-
+const config = getServerConfig();
 const app = express();
-const PORT = 3000;
+const PORT = config.port;
 
 app.use(express.json());
 
-// Lazy-initialized Gemini Client
+// Ephemeral in-memory signing secret per server process for short-lived admin tokens
+const ADMIN_SESSION_SIGNING_KEY = crypto.randomBytes(32).toString("hex");
+const ADMIN_TOKEN_TTL_MS = 2 * 60 * 60 * 1000; // 2 hours
+
+function issueAdminSessionToken(): string {
+  const expiresAt = Date.now() + ADMIN_TOKEN_TTL_MS;
+  const payload = `admin:${expiresAt}`;
+  const sig = crypto
+    .createHmac("sha256", ADMIN_SESSION_SIGNING_KEY)
+    .update(payload)
+    .digest("hex");
+  return Buffer.from(`${payload}:${sig}`, "utf8").toString("base64url");
+}
+
+function verifyAdminSessionToken(token: string | undefined): boolean {
+  if (!token) return false;
+  try {
+    const decoded = Buffer.from(token, "base64url").toString("utf8");
+    const parts = decoded.split(":");
+    if (parts.length !== 3 || parts[0] !== "admin") return false;
+    const expiresAt = Number(parts[1]);
+    const providedSig = parts[2];
+    if (!Number.isFinite(expiresAt) || Date.now() > expiresAt) return false;
+
+    const payload = `admin:${expiresAt}`;
+    const expectedSig = crypto
+      .createHmac("sha256", ADMIN_SESSION_SIGNING_KEY)
+      .update(payload)
+      .digest("hex");
+    return timingSafeCompare(providedSig, expectedSig);
+  } catch {
+    return false;
+  }
+}
+
+let supabaseSyncStatus: {
+  supabaseUrl: string;
+  bucketName: string;
+  tableName: string;
+  publicMasterJsonUrl: string;
+  tableSynced: boolean;
+  lastSyncedAt: string;
+} = {
+  supabaseUrl: config.supabase.url,
+  bucketName: config.supabase.kbBucket,
+  tableName: config.supabase.kbTable,
+  publicMasterJsonUrl: config.supabase.url
+    ? `${config.supabase.url}/storage/v1/object/public/${config.supabase.kbBucket}/Portfolio_Knowledge_Base.json`
+    : "/api/knowledge-base",
+  tableSynced: false,
+  lastSyncedAt: new Date().toISOString(),
+};
+
+// Lazy-initialized Gemini Client via centralized config
 let aiClient: GoogleGenAI | null = null;
 function getGeminiClient(): GoogleGenAI | null {
-  if (!aiClient && process.env.GEMINI_API_KEY) {
+  const latestConfig = getServerConfig();
+  if (!aiClient && latestConfig.geminiApiKey) {
     aiClient = new GoogleGenAI({
-      apiKey: process.env.GEMINI_API_KEY,
+      apiKey: latestConfig.geminiApiKey,
       httpOptions: {
         headers: {
           "User-Agent": "aistudio-build",
@@ -45,20 +112,20 @@ About Suraj Kumar Yadav:
   - Frontend: React.js, Vue.js 3, Next.js, Vite, TailwindCSS, HTML5, CSS3, Three.js, Zustand
   - Backend: Node.js, Express.js, FastAPI, RESTful APIs, WebSockets, Server-Sent Events (SSE)
   - AI / ML: LangGraph, LiteLLM, RAG (BM25/TF-IDF/Vector), TensorFlow, PyTorch, Scikit-Learn, FAISS, Pydantic
-  - Databases: MongoDB, PostgreSQL, Redis, MongoDB Atlas (Vector Search), Pinecone, TimescaleDB
+  - Databases: Supabase (PostgreSQL), MongoDB, Redis, MongoDB Atlas (Vector Search), Pinecone, TimescaleDB
   - Cloud & DevOps: Docker, Docker Compose, GKE, AWS (Bedrock, EKS), CI/CD, Kafka, Celery
   - Security: OAuth 2.0, JWT, RBAC, Token Encryption, SSO
 - Experience & Internships:
   1. Spotline, Inc. (May 2025 – Present): Software Engineer — Architected V-Assure ScriptGen Extension, engineered DB-Compare, led a production-grade Agentic-RAG system, and contributed to a MS Teams AI Knowledge Bot.
   2. SmartInternz (May 2024 – Jun 2024): Salesforce Development Intern — Developed Apex triggers and automated workflows reducing manual intervention by 30%.
 - Key Projects:
-  1. Aiden (2025): Emotionally Intelligent AI Companion featuring tree-leaf persistent memory, 11-dimension emotion detection, and FAISS-based semantic memory retrieval.
-  2. AI Quantitative Stock Intelligence System (2025): Institutional-grade predictive analytics platform aggregating 100+ technical indicators with an ML ensemble forecasting engine.
-  3. MeDict AI (04/2024): Designed deep learning lung cancer detection system achieving 81% accuracy using VGG16 and Streamlit UI.
-  4. ZipIgnore: Python-based CLI utility published on PyPI to simplify project packaging by automatically excluding non-essential files.
-  5. EVEE: Open-source, offline-first Voice PC Agent for Windows 11 using local faster-whisper speech-to-text, 55+ built-in voice commands with 1.6ms latency, a local policy engine, and optional Groq/Qwen fallback.
-  6. TalkingHead 3D: Open-source real-time 3D Avatar-as-a-Service for chatbots with realistic lip-sync, moods, gestures, free Microsoft Edge Neural TTS, and Groq Qwen 3 / OpenAI-compatible APIs.
-  7. Jira Fixer (Jira-Ticket-Fixer): Open-source plugin for Claude Code and GitHub Copilot in VS Code (Node.js 18+, zero dependencies, MIT license). Investigates Jira tickets via Atlassian MCP, proposes a minimal "At a glance" plan, and uses a deterministic hook to physically block file edits until human approval.
+  1. Jira Fixer (Jira-Ticket-Fixer): Open-source plugin for Claude Code and GitHub Copilot in VS Code (Node.js 18+, zero dependencies, MIT license). Investigates Jira tickets via Atlassian MCP, proposes a minimal "At a glance" plan, and uses a deterministic hook to physically block file edits until human approval.
+  2. EVEE: Open-source, offline-first Voice PC Agent for Windows 11 using local faster-whisper speech-to-text, 55+ built-in voice commands with 1.6ms latency, a local policy engine, and optional Groq/Qwen fallback.
+  3. TalkingHead 3D: Open-source real-time 3D Avatar-as-a-Service for chatbots with realistic lip-sync, moods, gestures, free Microsoft Edge Neural TTS, and Groq Qwen 3 / OpenAI-compatible APIs.
+  4. Aiden (2025): Emotionally Intelligent AI Companion featuring tree-leaf persistent memory, 11-dimension emotion detection, and FAISS-based semantic memory retrieval.
+  5. AI Quantitative Stock Intelligence System (2025): Institutional-grade predictive analytics platform aggregating 100+ technical indicators with an ML ensemble forecasting engine.
+  6. ZipIgnore: Python-based CLI utility published on PyPI to simplify project packaging by automatically excluding non-essential files.
+  7. MeDict AI (04/2024): Designed deep learning lung cancer detection system achieving 81% accuracy using VGG16 and Streamlit UI.
 - Certifications:
   - AWS Academy Graduate — Introduction to Cloud Foundations
   - Cognite Game v4.5 — Certified
@@ -68,12 +135,189 @@ About Suraj Kumar Yadav:
 - Personality: Friendly, technical, concise, and enthusiastic about software craftsmanship. Keep responses crisp and informative.
 `;
 
-// Health check route
+// Health check route (never exposes secrets or private configuration)
 app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString() });
+  res.json({
+    status: "ok",
+    supabaseConfigured: Boolean(config.supabase.url && config.supabase.secretKey),
+    timestamp: new Date().toISOString(),
+  });
 });
 
-// AI Chatbot endpoint powered by Portfolio_Knowledge_Base RAG
+// Server-side Admin Authentication Endpoint (replaces client-side hardcoded password)
+app.post("/api/admin/verify", (req, res) => {
+  try {
+    const latestConfig = getServerConfig();
+    validateAdminAuthConfig(latestConfig);
+
+    const candidatePassword =
+      typeof req.body?.password === "string" ? req.body.password : "";
+
+    if (!timingSafeCompare(candidatePassword, latestConfig.security.adminPassword)) {
+      return res.status(401).json({
+        authenticated: false,
+        error: "Invalid administrator password.",
+      });
+    }
+
+    const token = issueAdminSessionToken();
+    return res.json({
+      authenticated: true,
+      token,
+      expiresInSeconds: ADMIN_TOKEN_TTL_MS / 1000,
+    });
+  } catch (err: unknown) {
+    const msg =
+      err instanceof Error
+        ? err.message
+        : "Admin authentication is not configured on the server.";
+    return res.status(503).json({
+      authenticated: false,
+      error: msg,
+    });
+  }
+});
+
+// Trigger on-demand sync to Supabase (requires valid Admin Session Token)
+app.post("/api/knowledge-base/sync-supabase", async (req, res) => {
+  const authHeader = req.headers.authorization || "";
+  const token = authHeader.startsWith("Bearer ")
+    ? authHeader.slice("Bearer ".length).trim()
+    : "";
+
+  if (!verifyAdminSessionToken(token)) {
+    return res.status(401).json({
+      success: false,
+      error: "Unauthorized: Valid administrator session token is required.",
+    });
+  }
+
+  try {
+    const syncResult = await syncKnowledgeBaseToSupabase(DEFAULT_PORTFOLIO_KNOWLEDGE_BASE);
+    supabaseSyncStatus = {
+      supabaseUrl: syncResult.supabaseUrl,
+      bucketName: syncResult.bucketName,
+      tableName: syncResult.tableName,
+      publicMasterJsonUrl: syncResult.publicMasterJsonUrl,
+      tableSynced: syncResult.tableSynced,
+      lastSyncedAt: syncResult.lastSyncedAt,
+    };
+    res.json({
+      success: true,
+      ...syncResult,
+      supabase: supabaseSyncStatus,
+    });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Supabase sync failed";
+    res.status(500).json({ success: false, error: msg });
+  }
+});
+
+// Automated GitHub Push/Merge Webhook -> Syncs directly to Supabase
+app.post("/api/knowledge-base/webhook/github", async (_req, res) => {
+  try {
+    const syncResult = await syncKnowledgeBaseToSupabase(DEFAULT_PORTFOLIO_KNOWLEDGE_BASE);
+    supabaseSyncStatus = {
+      supabaseUrl: syncResult.supabaseUrl,
+      bucketName: syncResult.bucketName,
+      tableName: syncResult.tableName,
+      publicMasterJsonUrl: syncResult.publicMasterJsonUrl,
+      tableSynced: syncResult.tableSynced,
+      lastSyncedAt: syncResult.lastSyncedAt,
+    };
+    res.json({
+      success: true,
+      ...syncResult,
+      supabase: supabaseSyncStatus,
+    });
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Automated Supabase sync failed";
+    res.status(500).json({ success: false, error: msg });
+  }
+});
+
+// RAG Retrieval API for external codebases/services: GET /api/knowledge-base/rag?q=What+is+Jira+Fixer
+app.get("/api/knowledge-base/rag", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  const query = typeof req.query.q === "string" ? req.query.q : "";
+  const topK = Number(req.query.topK) || 6;
+  const context = retrieveKnowledgeForQuery(query, DEFAULT_PORTFOLIO_KNOWLEDGE_BASE, topK);
+  res.json({
+    query,
+    topK,
+    supabase: supabaseSyncStatus,
+    context,
+  });
+});
+
+// Read-only Knowledge Base JSON API so external codebases can fetch all 7 categories or discover public URLs
+app.get("/api/knowledge-base", (_req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  const baseUrl = supabaseSyncStatus.supabaseUrl;
+  const bucket = supabaseSyncStatus.bucketName;
+  res.json({
+    title: MASTER_SPREADSHEET_TITLE,
+    storageProvider: "Supabase",
+    supabase: supabaseSyncStatus,
+    tabs: PORTFOLIO_SHEETS_SCHEMA.map((s) => ({
+      number: s.number,
+      name: s.name,
+      columns: s.columns.map((c) => c.key),
+      rowCount: (DEFAULT_PORTFOLIO_KNOWLEDGE_BASE[s.name] || []).length,
+      supabaseJsonUrl: baseUrl
+        ? `${baseUrl}/storage/v1/object/public/${bucket}/${s.name}.json`
+        : `/api/knowledge-base/${s.name}`,
+      supabaseCsvUrl: baseUrl
+        ? `${baseUrl}/storage/v1/object/public/${bucket}/${s.name}.csv`
+        : `/api/knowledge-base/${s.name}/csv`,
+    })),
+    data: DEFAULT_PORTFOLIO_KNOWLEDGE_BASE,
+  });
+});
+
+// Live CSV endpoint for any of the 7 categories
+app.get("/api/knowledge-base/:tab/csv", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  const requested = req.params.tab.toLowerCase();
+  const matchedSchema = PORTFOLIO_SHEETS_SCHEMA.find(
+    (s) => s.name.toLowerCase() === requested
+  );
+  if (!matchedSchema) {
+    return res.status(404).send(`Unknown category "${req.params.tab}"`);
+  }
+  const tabName = matchedSchema.name as SheetTabName;
+  const rows = DEFAULT_PORTFOLIO_KNOWLEDGE_BASE[tabName] || [];
+  const headers = matchedSchema.columns.map((c) => c.key);
+  const escapeCell = (val: string) => `"${String(val ?? "").replace(/"/g, '""')}"`;
+  const csvLines = [
+    headers.map(escapeCell).join(","),
+    ...rows.map((row) => headers.map((h) => escapeCell(row[h] ?? "")).join(",")),
+  ];
+  res.setHeader("Content-Type", "text/csv; charset=utf-8");
+  res.send(csvLines.join("\n"));
+});
+
+app.get("/api/knowledge-base/:tab", (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  const requested = req.params.tab.toLowerCase();
+  const matchedSchema = PORTFOLIO_SHEETS_SCHEMA.find(
+    (s) => s.name.toLowerCase() === requested
+  );
+  if (!matchedSchema) {
+    return res.status(404).json({
+      error: `Unknown category "${req.params.tab}". Valid categories: ${PORTFOLIO_SHEETS_SCHEMA.map((s) => s.name).join(", ")}`,
+    });
+  }
+  const tabName = matchedSchema.name as SheetTabName;
+  res.json({
+    tab: tabName,
+    supabase: supabaseSyncStatus,
+    columns: matchedSchema.columns,
+    rows: DEFAULT_PORTFOLIO_KNOWLEDGE_BASE[tabName] || [],
+  });
+});
+
+// AI Chatbot endpoint powered by Portfolio_Knowledge_Base RAG (Supabase)
 app.post("/api/chat", async (req, res) => {
   try {
     const { message, ragContext } = req.body;
@@ -84,7 +328,7 @@ app.post("/api/chat", async (req, res) => {
     const ai = getGeminiClient();
     const knowledgeSection =
       typeof ragContext === "string" && ragContext.trim()
-        ? `\n\nRetrieved Records from Portfolio_Knowledge_Base (Google Sheets Master Source):\n${ragContext}`
+        ? `\n\nRetrieved Records from Portfolio_Knowledge_Base (Supabase Master Source):\n${ragContext}`
         : "";
 
     if (ai) {
@@ -124,10 +368,10 @@ app.post("/api/chat", async (req, res) => {
         "For authentication and security, Suraj implements **OAuth 2.0, JWT bearer tokens, Role-Based Access Control (RBAC), token encryption, and SSO**, alongside deterministic local policy engines and physical edit-blocking hooks in autonomous agents (**EVEE**, **Jira Fixer**).";
     } else if (lower.includes("skill") || lower.includes("tech") || lower.includes("stack")) {
       reply =
-        "Suraj's technical skills (from **Tech_Knowledge**) include **Python, TypeScript, React.js, FastAPI, Node.js**, databases (**PostgreSQL, MongoDB Atlas, Redis, FAISS**), and AI orchestration with **LangGraph, LiteLLM, Groq, TensorFlow, and PyTorch**.";
+        "Suraj's technical skills (from **Technical_Skills**) include **Python, TypeScript, React.js, FastAPI, Node.js**, databases (**Supabase/PostgreSQL, MongoDB Atlas, Redis, FAISS**), and AI orchestration with **LangGraph, LiteLLM, Groq, TensorFlow, and PyTorch**.";
     } else if (lower.includes("project") || lower.includes("work") || lower.includes("portfolio")) {
       reply =
-        "Suraj's projects include:\n• **Jira Fixer (PRJ008)**: Deterministic approval gate plugin for Claude Code & GitHub Copilot.\n• **EVEE (PRJ001)**: Offline-first Voice PC Agent (1.6ms latency, faster-whisper).\n• **TalkingHead 3D (PRJ005)**: Real-time 3D Avatar-as-a-Service.\n• **VAssureAI (PRJ003)**: AI test script generator at Spotline, Inc.\n• **Aiden (PRJ004)**: Emotionally Intelligent AI Companion with tree-leaf FAISS memory.\n• **Travel Together (PRJ002)**: Collaborative community trip planner.\n• **ZipIgnore (PRJ006)**: Python CLI packaging tool on PyPI.\n• **MeDict AI (PRJ007)**: VGG16 lung cancer detection (81% accuracy).";
+        "Suraj's projects (newest first) include:\n• **Jira Fixer (PRJ008)**: Deterministic approval gate plugin for Claude Code & GitHub Copilot.\n• **EVEE (PRJ001)**: Offline-first Voice PC Agent (1.6ms latency, faster-whisper).\n• **TalkingHead 3D (PRJ005)**: Real-time 3D Avatar-as-a-Service.\n• **VAssureAI (PRJ003)**: AI test script generator at Spotline, Inc.\n• **Aiden (PRJ004)**: Emotionally Intelligent AI Companion with tree-leaf FAISS memory.\n• **Travel Together (PRJ002)**: Collaborative community trip planner.\n• **ZipIgnore (PRJ006)**: Python CLI packaging tool on PyPI.\n• **MeDict AI (PRJ007)**: VGG16 lung cancer detection (81% accuracy).";
     } else if (lower.includes("experience") || lower.includes("internship") || lower.includes("spotline")) {
       reply =
         "Suraj is a **Software Engineer at Spotline, Inc.** (May 2025 – Present), where he led 3 end-to-end production systems (VAssureAI, DB-Compare, and an Agentic-RAG system). Previously, he was a **Salesforce Development Intern at SmartInternz**, reducing manual workflows by 30%.";
@@ -138,9 +382,9 @@ app.post("/api/chat", async (req, res) => {
       const firstChunk = ragContext.split("\n\n")[0] || "";
       reply = firstChunk
         ? `From **Portfolio_Knowledge_Base**:\n${firstChunk}`
-        : `Hello! Ask me about Suraj's projects (**EVEE, VAssureAI, Travel Together, Aiden, TalkingHead 3D**), **Tech_Knowledge**, or **Work_Experience**!`;
+        : `Hello! Ask me about Suraj's projects (**Jira Fixer, EVEE, VAssureAI, Travel Together, Aiden, TalkingHead 3D**), **Technical_Skills**, or **Work_Experience**!`;
     } else {
-      reply = `Hello! Suraj Kumar Yadav is a Software Engineer specializing in scalable full-stack systems and Agentic AI (FastAPI, React, LangGraph). Ask me about **EVEE**, **VAssureAI**, **AI models integrated**, or open the **Google Sheets Knowledge Base**!`;
+      reply = `Hello! Suraj Kumar Yadav is a Software Engineer specializing in scalable full-stack systems and Agentic AI (FastAPI, React, LangGraph). Ask me about **Jira Fixer**, **EVEE**, **VAssureAI**, or **AI models integrated**!`;
     }
 
     return res.json({ reply });
@@ -170,8 +414,34 @@ app.post("/api/contact", (req, res) => {
 });
 
 async function startServer() {
+  // Validate startup configuration
+  const startupCheck = validateStartupConfig({ strict: config.nodeEnv === "production" });
+  if (!startupCheck.valid) {
+    console.warn(
+      `[Config Validation] Missing environment variables: ${startupCheck.missing.join(", ")}. Configure them in .env.`
+    );
+  } else {
+    // Automatically sync all 7 categories of Portfolio_Knowledge_Base to Supabase on startup when credentials are valid
+    syncKnowledgeBaseToSupabase(DEFAULT_PORTFOLIO_KNOWLEDGE_BASE)
+      .then((res) => {
+        supabaseSyncStatus = {
+          supabaseUrl: res.supabaseUrl,
+          bucketName: res.bucketName,
+          tableName: res.tableName,
+          publicMasterJsonUrl: res.publicMasterJsonUrl,
+          tableSynced: res.tableSynced,
+          lastSyncedAt: res.lastSyncedAt,
+        };
+        console.log(`[Supabase Auto-Sync] ${res.message}`);
+      })
+      .catch((err: unknown) => {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.warn(`[Supabase Auto-Sync Warning] ${msg}`);
+      });
+  }
+
   // Vite middleware for development
-  if (process.env.NODE_ENV !== "production") {
+  if (config.nodeEnv !== "production") {
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",
