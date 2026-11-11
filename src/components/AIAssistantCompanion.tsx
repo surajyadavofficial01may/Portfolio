@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Send, X, Minimize2, Maximize2, MessageSquare } from 'lucide-react';
 import { ChatMessage } from '../types';
 import { soundManager } from '../utils/soundEffects';
+import { retrieveKnowledgeForQuery } from '../data/knowledgeBaseSchema';
+import { getActiveKnowledgeBase } from '../services/portfolioSheetsService';
 
 export const AIAssistantCompanion: React.FC = () => {
   // Default to compact floating launcher on mobile/tablets (<1280px) so it never covers hero/console CTAs
@@ -21,7 +23,7 @@ export const AIAssistantCompanion: React.FC = () => {
     {
       id: 'msg-0',
       sender: 'bot',
-      text: "Hi! I'm Suraj's AI assistant. Ask me anything about his work, projects, skills, or availability!",
+      text: "Hi! I'm Suraj's AI assistant. Ask me about EVEE, VAssureAI, AI models integrated, or his skills!",
       timestamp: 'NOW',
     },
   ]);
@@ -69,10 +71,13 @@ export const AIAssistantCompanion: React.FC = () => {
     setMouthMood('talking');
 
     try {
+      const { data: activeKB } = getActiveKnowledgeBase();
+      const ragContext = retrieveKnowledgeForQuery(text, activeKB, 6);
+
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ message: text, ragContext }),
       });
       const data = await res.json();
       soundManager.playNavigate();
@@ -100,10 +105,10 @@ export const AIAssistantCompanion: React.FC = () => {
   };
 
   const samplePrompts = [
-    'Strongest skills?',
-    'Key projects?',
+    'What is EVEE?',
+    'VAssureAI role?',
+    'AI models used?',
     'Open for hire?',
-    'Tech stack?',
   ];
 
   // Compact Floating Launcher (when closed/minimized)

@@ -10,7 +10,11 @@ interface HeaderProps {
   onOpenDevOrbit?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection, onOpenDevOrbit }) => {
+export const Header: React.FC<HeaderProps> = ({
+  activeSection,
+  onSelectSection,
+  onOpenDevOrbit,
+}) => {
   const [isMuted, setIsMuted] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -151,7 +155,7 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection, 
           <div className="hidden lg:flex items-center gap-2" id="header-nav-container">
             <span className="text-xs font-mono-tech text-[#092A4A]/40 dark:text-[#7DD3FC]/75 select-none" aria-hidden="true">{'{'}</span>
             <nav
-              className="flex items-center gap-1.5 px-1 py-1 select-none"
+              className="flex items-center gap-1 px-1 py-1 select-none"
               id="header-nav"
               aria-label="Primary Navigation"
             >
@@ -164,7 +168,7 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection, 
                     id={`nav-btn-${item.id}`}
                     onClick={() => handleNavigate(item.id)}
                     aria-current={isActive ? 'page' : undefined}
-                    className={`font-mono-tech text-sm px-3.5 min-h-[44px] inline-flex items-center justify-center rounded-md transition-colors duration-150 cursor-pointer whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#092A4A] dark:focus-visible:outline-[#7DD3FC] ${
+                    className={`font-mono-tech text-sm px-3 min-h-[44px] inline-flex items-center justify-center rounded-md transition-colors duration-150 cursor-pointer whitespace-nowrap focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#092A4A] dark:focus-visible:outline-[#7DD3FC] ${
                       isActive
                         ? 'border-b-2 border-[#092A4A] dark:border-[#60A5FA] text-[#092A4A] dark:text-[#7DD3FC] font-bold bg-[#092A4A]/5 dark:bg-[#172942]'
                         : 'text-[#4B6173] dark:text-[#CBD5E1] hover:text-[#092A4A] dark:hover:text-[#F8FAFC] dark:hover:bg-[#172942]/60'
@@ -183,7 +187,7 @@ export const Header: React.FC<HeaderProps> = ({ activeSection, onSelectSection, 
                     onOpenDevOrbit();
                   }
                 }}
-                className="font-mono-tech text-sm px-3.5 min-h-[44px] inline-flex items-center justify-center rounded-md text-[#092A4A] dark:text-[#36C8FF] font-semibold hover:bg-[#092A4A]/10 dark:hover:bg-[#172942] transition-colors whitespace-nowrap"
+                className="font-mono-tech text-sm px-3 min-h-[44px] inline-flex items-center justify-center rounded-md text-[#092A4A] dark:text-[#36C8FF] font-semibold hover:bg-[#092A4A]/10 dark:hover:bg-[#172942] transition-colors whitespace-nowrap"
               >
                 DevOrbit ↗
               </a>

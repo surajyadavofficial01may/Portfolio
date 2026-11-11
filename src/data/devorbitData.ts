@@ -3,13 +3,14 @@ import { PERSONAL_INFO } from './portfolioData';
 export const DEVORBIT_LINKS = {
   domain: 'https://knowsuraj.ai.studio',
   canonicalPath: '/devorbit',
-  githubOrg: 'https://github.com/Thesuraj01',
-  discordInvite: 'https://discord.com/invite/devorbit',
-  linkedinPersonal: PERSONAL_INFO.socials.linkedin,
-  linkedinCommunity: 'https://linkedin.com/in/surajyadav01',
+  // Verified links from the portfolio owner
+  githubProfile: PERSONAL_INFO.socials.github, // https://github.com/Thesuraj01
+  linkedinPersonal: PERSONAL_INFO.socials.linkedin, // https://linkedin.com/in/surajyadav01
   personalPortfolio: '/',
   externalPortfolio: 'https://knowsuraj.ai.studio/',
-  email: PERSONAL_INFO.socials.email,
+  // Community links not yet publicly launched are null (never fake URLs)
+  discordInvite: null as string | null,
+  linkedinCommunity: null as string | null,
 };
 
 export type DevOrbitProjectCategory =
@@ -25,114 +26,52 @@ export interface DevOrbitProject {
   id: string;
   name: string;
   shortDescription: string;
-  fullDescription: string;
-  techStack: string[];
+  techStack: string[]; // Empty if not yet publicly specified
   categories: DevOrbitProjectCategory[];
-  status: 'Public Open Source' | 'Internal / Production' | 'In Development';
+  availability: 'Public Repository' | 'Private Project' | 'Coming Soon';
   ownershipNote: string;
-  githubRepo?: string; // format: "owner/repo" for live GitHub API lookup
-  githubUrl?: string;
+  githubRepo?: string; // Exact "owner/repo" on GitHub when a public repo exists
+  githubUrl?: string; // Only provided when a real public URL exists
   demoUrl?: string;
-  iconType: 'evee' | 'vassure' | 'travel' | 'talkinghead' | 'zipignore' | 'medict';
-  accentColor: 'purple' | 'cyan' | 'blue' | 'green' | 'gold';
-  featuredOrder: number;
+  iconType: 'evee' | 'vassure' | 'travel';
 }
 
+/**
+ * Only the exact 3 initial projects requested in the specification,
+ * with zero fabricated stars, dates, tech stacks, or fake URLs.
+ */
 export const DEVORBIT_PROJECTS: DevOrbitProject[] = [
   {
     id: 'evee',
     name: 'EVEE',
     shortDescription: 'My personal development workspace and productivity hub.',
-    fullDescription:
-      'An open-source, offline-first voice control and developer workspace agent where wake-word detection, faster-whisper CPU speech recognition, and 55+ command workflows run locally with a strict policy engine.',
-    techStack: ['Python', 'faster-whisper', 'Groq (Qwen)', 'Local AI', 'Windows'],
+    techStack: ['Python'],
     categories: ['AI & ML', 'Developer Tools', 'Automation', 'Open Source'],
-    status: 'Public Open Source',
-    ownershipNote: 'Personal Engineering Project by Suraj Yadav',
+    availability: 'Public Repository',
+    ownershipNote: 'Personal Portfolio Project · Suraj Kumar Yadav',
     githubRepo: 'TheSuraj01/EVEE',
     githubUrl: 'https://github.com/TheSuraj01/EVEE',
     iconType: 'evee',
-    accentColor: 'purple',
-    featuredOrder: 1,
   },
   {
     id: 'vassureai',
     name: 'VAssureAI',
     shortDescription: 'AI-powered script generation and automation tools.',
-    fullDescription:
-      'Automated validation and script generation extension powered by FastAPI and high-speed LLM inference, streamlining enterprise compliance and test script workflows.',
-    techStack: ['FastAPI', 'Python', 'Groq LLM', 'Chrome Extension MV3', 'Automation'],
-    categories: ['AI & ML', 'Automation', 'Backend', 'Developer Tools'],
-    status: 'Internal / Production',
-    ownershipNote: 'Personal Engineering Architecture by Suraj Yadav',
-    githubUrl: 'https://github.com/Thesuraj01',
+    techStack: [],
+    categories: ['AI & ML', 'Automation', 'Developer Tools'],
+    availability: 'Private Project',
+    ownershipNote: 'Personal Engineering Work · Suraj Kumar Yadav',
     iconType: 'vassure',
-    accentColor: 'cyan',
-    featuredOrder: 2,
   },
   {
     id: 'travel-together',
     name: 'Travel Together',
     shortDescription: 'Plan and travel together with your community.',
-    fullDescription:
-      'Collaborative trip planning and itinerary coordination platform designed for developer meetups, hackathons, and community group adventures.',
-    techStack: ['React', 'TypeScript', 'Node.js', 'Tailwind CSS', 'WebSockets'],
-    categories: ['Web Development', 'Backend'],
-    status: 'In Development',
-    ownershipNote: 'Personal Engineering Project by Suraj Yadav',
-    githubUrl: 'https://github.com/Thesuraj01',
+    techStack: [],
+    categories: ['Web Development'],
+    availability: 'Coming Soon',
+    ownershipNote: 'Personal Portfolio Project · Suraj Kumar Yadav',
     iconType: 'travel',
-    accentColor: 'blue',
-    featuredOrder: 3,
-  },
-  {
-    id: 'talkinghead-3d',
-    name: 'TalkingHead 3D',
-    shortDescription: 'Real-time 3D Avatar-as-a-Service for AI chatbots and assistants.',
-    fullDescription:
-      'Open-source 3D talking avatar service featuring real-time viseme lip-sync, 8 emotional moods, hand gestures, Microsoft Edge Neural TTS, and OpenAI-compatible SSE endpoints.',
-    techStack: ['Three.js', 'Node.js', 'Edge Neural TTS', 'Groq Qwen 3', 'SSE'],
-    categories: ['AI & ML', 'Web Development', 'Open Source'],
-    status: 'Public Open Source',
-    ownershipNote: 'Personal Open-Source Project by Suraj Yadav',
-    githubRepo: 'TheSuraj01/TalkingHead-3D',
-    githubUrl: 'https://github.com/TheSuraj01/TalkingHead-3D',
-    demoUrl: 'https://talking-head-3-d.vercel.app',
-    iconType: 'talkinghead',
-    accentColor: 'green',
-    featuredOrder: 4,
-  },
-  {
-    id: 'zipignore',
-    name: 'ZipIgnore',
-    shortDescription: 'Automated Python project packaging CLI utility published on PyPI.',
-    fullDescription:
-      'A command-line packaging tool that creates clean distribution ZIP archives while automatically excluding virtual environments, cache directories, and build artifacts.',
-    techStack: ['Python', 'CLI', 'PyPI', 'Packaging'],
-    categories: ['Developer Tools', 'Automation', 'Open Source'],
-    status: 'Public Open Source',
-    ownershipNote: 'Published Open-Source Utility by Suraj Yadav',
-    githubUrl: 'https://pypi.org/project/ZipIgnore/',
-    demoUrl: 'https://pypi.org/project/ZipIgnore/',
-    iconType: 'zipignore',
-    accentColor: 'gold',
-    featuredOrder: 5,
-  },
-  {
-    id: 'medict-ai',
-    name: 'MeDict AI',
-    shortDescription: 'Deep learning diagnostic system for lung CT scan analysis.',
-    fullDescription:
-      'Deep learning medical imaging pipeline using fine-tuned VGG16 and multi-model ensemble verification (ResNet50, InceptionV3, EfficientNet) with a Streamlit diagnostic interface.',
-    techStack: ['Python', 'TensorFlow', 'VGG16', 'Streamlit'],
-    categories: ['AI & ML', 'Open Source'],
-    status: 'Public Open Source',
-    ownershipNote: 'Personal Research Project by Suraj Yadav',
-    githubRepo: 'TheSuraj01/MeDict',
-    githubUrl: 'https://github.com/TheSuraj01/MeDict',
-    iconType: 'medict',
-    accentColor: 'cyan',
-    featuredOrder: 6,
   },
 ];
 
@@ -148,7 +87,11 @@ export const PROJECT_CATEGORIES: DevOrbitProjectCategory[] = [
 
 export interface DevOrbitResource {
   id: string;
-  category: 'Getting Started' | 'Development' | 'AI & Machine Learning' | 'Engineering & Infrastructure';
+  category:
+    | 'Getting Started'
+    | 'Development'
+    | 'AI & Machine Learning'
+    | 'Engineering & Infrastructure';
   title: string;
   description: string;
   skillLevel: 'Beginner' | 'Intermediate' | 'Advanced';
@@ -156,130 +99,152 @@ export interface DevOrbitResource {
   sourceLabel: string;
 }
 
+/**
+ * Exact resource topics specified in Section 9 of the prompt,
+ * pointing strictly to official documentation (no fake DevOrbit tutorials).
+ */
 export const DEVORBIT_RESOURCES: DevOrbitResource[] = [
   // 1. Getting Started
   {
-    id: 'res-git-basics',
+    id: 'git-github-basics',
     category: 'Getting Started',
-    title: 'Git & GitHub Foundations',
-    description: 'Official documentation covering repositories, branching workflows, commits, and pull requests.',
+    title: 'Git and GitHub basics',
+    description: 'Official Git and GitHub documentation for version control, repositories, and pull requests.',
     skillLevel: 'Beginner',
     url: 'https://docs.github.com/en/get-started',
-    sourceLabel: 'GitHub Docs',
+    sourceLabel: 'docs.github.com',
   },
   {
-    id: 'res-oss-guide',
+    id: 'oss-contribution-guides',
     category: 'Getting Started',
-    title: 'How to Contribute to Open Source',
-    description: 'Practical guide on finding beginner-friendly issues, submitting pull requests, and collaborating respectfully.',
+    title: 'Open-source contribution guides',
+    description: 'Official Open Source Guides on how to find projects, submit issues, and contribute code.',
     skillLevel: 'Beginner',
     url: 'https://opensource.guide/how-to-contribute/',
-    sourceLabel: 'OpenSource.guide',
+    sourceLabel: 'opensource.guide',
   },
   {
-    id: 'res-dev-env',
+    id: 'dev-env-setup',
     category: 'Getting Started',
-    title: 'Developer Environment Setup',
-    description: 'Configure VS Code, terminal shells, SSH keys, and workspace extensions for modern software development.',
+    title: 'Developer environment setup',
+    description: 'Official Visual Studio Code setup documentation for configuring your local development workspace.',
     skillLevel: 'Beginner',
     url: 'https://code.visualstudio.com/docs/setup/setup-overview',
-    sourceLabel: 'VS Code Docs',
+    sourceLabel: 'code.visualstudio.com',
   },
 
   // 2. Development
   {
-    id: 'res-frontend-react',
+    id: 'frontend-dev',
     category: 'Development',
-    title: 'Modern Frontend Architecture with React & TypeScript',
-    description: 'Component design, hooks, state management, and accessible UI engineering from the official React documentation.',
-    skillLevel: 'Intermediate',
+    title: 'Frontend development',
+    description: 'Official React and MDN Web Docs covering modern UI components, HTML, CSS, and JavaScript.',
+    skillLevel: 'Beginner',
     url: 'https://react.dev/learn',
-    sourceLabel: 'React.dev',
+    sourceLabel: 'react.dev',
   },
   {
-    id: 'res-backend-fastapi',
+    id: 'backend-eng',
     category: 'Development',
-    title: 'High-Performance Backend Engineering with FastAPI',
-    description: 'Build asynchronous REST APIs, Pydantic data validation schemas, and OpenAPI services in Python.',
+    title: 'Backend engineering',
+    description: 'Official FastAPI documentation for building backend web services and RESTful APIs.',
     skillLevel: 'Intermediate',
-    url: 'https://fastapi.tiangolo.com/tutorial/',
-    sourceLabel: 'FastAPI Docs',
+    url: 'https://fastapi.tiangolo.com/',
+    sourceLabel: 'fastapi.tiangolo.com',
   },
   {
-    id: 'res-python-core',
+    id: 'python-prog',
     category: 'Development',
-    title: 'Python Programming & Standard Library Reference',
-    description: 'Master data structures, async concurrency, packaging, and idiomatic Python patterns.',
+    title: 'Python and programming',
+    description: 'Official Python language tutorial and standard library reference.',
     skillLevel: 'Beginner',
     url: 'https://docs.python.org/3/tutorial/',
-    sourceLabel: 'Python.org',
+    sourceLabel: 'docs.python.org',
   },
   {
-    id: 'res-web-apis',
+    id: 'apis-system-design',
     category: 'Development',
-    title: 'HTTP, REST APIs & Web Architecture',
-    description: 'Comprehensive reference on HTTP semantics, WebSockets, Server-Sent Events, and web security.',
+    title: 'APIs and system design',
+    description: 'Official MDN reference on HTTP architecture, web APIs, and client-server communication.',
     skillLevel: 'Intermediate',
     url: 'https://developer.mozilla.org/en-US/docs/Web/HTTP',
-    sourceLabel: 'MDN Web Docs',
+    sourceLabel: 'developer.mozilla.org',
   },
 
   // 3. AI & Machine Learning
   {
-    id: 'res-llm-apps',
+    id: 'llm-applications',
     category: 'AI & Machine Learning',
-    title: 'Building LLM Applications & Structured Outputs',
-    description: 'Patterns for prompt engineering, tool calling, streaming responses, and multi-modal AI workflows.',
+    title: 'LLM applications',
+    description: 'Official Google Gemini API documentation for building large language model applications.',
     skillLevel: 'Intermediate',
     url: 'https://ai.google.dev/gemini-api/docs',
-    sourceLabel: 'Google AI Docs',
+    sourceLabel: 'ai.google.dev',
   },
   {
-    id: 'res-agentic-ai',
+    id: 'agentic-ai',
     category: 'AI & Machine Learning',
-    title: 'Agentic AI & Stateful Multi-Agent Workflows',
-    description: 'Architect autonomous reasoning loops, persistent memory graphs, and human-in-the-loop agents with LangGraph.',
+    title: 'Agentic AI',
+    description: 'Official LangGraph documentation for building stateful, multi-actor AI agent workflows.',
     skillLevel: 'Advanced',
     url: 'https://langchain-ai.github.io/langgraph/',
-    sourceLabel: 'LangGraph Docs',
+    sourceLabel: 'langchain-ai.github.io',
   },
   {
-    id: 'res-rag-vector',
+    id: 'rag-vector-search',
     category: 'AI & Machine Learning',
-    title: 'RAG & High-Dimensional Vector Similarity Search',
-    description: 'Implement dense embedding indexing, hybrid retrieval, and low-latency similarity search using FAISS.',
+    title: 'RAG and vector search',
+    description: 'Official FAISS documentation for efficient similarity search and dense vector clustering.',
     skillLevel: 'Advanced',
     url: 'https://faiss.ai/',
-    sourceLabel: 'FAISS Documentation',
+    sourceLabel: 'faiss.ai',
+  },
+  {
+    id: 'ai-dev-tools',
+    category: 'AI & Machine Learning',
+    title: 'AI development tools',
+    description: 'Official PyTorch documentation and tutorials for deep learning and AI model development.',
+    skillLevel: 'Intermediate',
+    url: 'https://pytorch.org/docs/stable/index.html',
+    sourceLabel: 'pytorch.org',
   },
 
   // 4. Engineering & Infrastructure
   {
-    id: 'res-docker-containers',
+    id: 'cloud-computing',
     category: 'Engineering & Infrastructure',
-    title: 'Docker & Containerized Microservices',
-    description: 'Package reproducible application environments using multi-stage Dockerfiles and Docker Compose.',
+    title: 'Cloud computing',
+    description: 'Official Google Cloud documentation for cloud architecture, compute, and deployment.',
+    skillLevel: 'Intermediate',
+    url: 'https://cloud.google.com/docs',
+    sourceLabel: 'cloud.google.com',
+  },
+  {
+    id: 'docker-containers',
+    category: 'Engineering & Infrastructure',
+    title: 'Docker and containers',
+    description: 'Official Docker documentation for containerizing applications and multi-container environments.',
     skillLevel: 'Intermediate',
     url: 'https://docs.docker.com/get-started/',
-    sourceLabel: 'Docker Docs',
+    sourceLabel: 'docs.docker.com',
   },
   {
-    id: 'res-cicd-actions',
+    id: 'cicd-practices',
     category: 'Engineering & Infrastructure',
-    title: 'CI/CD Pipelines with GitHub Actions',
-    description: 'Automate testing, linting, container builds, and deployment workflows on every pull request.',
+    title: 'CI/CD',
+    description: 'Official GitHub Actions documentation for automating build, test, and deployment pipelines.',
     skillLevel: 'Intermediate',
     url: 'https://docs.github.com/en/actions',
-    sourceLabel: 'GitHub Actions',
+    sourceLabel: 'docs.github.com',
   },
   {
-    id: 'res-cloud-k8s',
+    id: 'devops-practices',
     category: 'Engineering & Infrastructure',
-    title: 'Cloud Native Orchestration & Kubernetes',
-    description: 'Understand cluster architecture, pods, service discovery, and scalable workload deployments.',
+    title: 'DevOps practices',
+    description: 'Official Kubernetes documentation for container orchestration and production operations.',
     skillLevel: 'Advanced',
-    url: 'https://kubernetes.io/docs/concepts/',
-    sourceLabel: 'Kubernetes.io',
+    url: 'https://kubernetes.io/docs/home/',
+    sourceLabel: 'kubernetes.io',
   },
 ];
 
@@ -314,22 +279,22 @@ export const CONTRIBUTOR_CATEGORIES = [
   {
     id: 'core',
     title: 'Core Maintainers',
-    description: 'Architecting repositories, reviewing pull requests, and guiding technical direction.',
+    description: 'Maintainers guiding repositories and reviewing pull requests.',
   },
   {
     id: 'active',
     title: 'Active Contributors',
-    description: 'Developers shipping code, features, bug fixes, and technical improvements.',
+    description: 'Developers contributing code, bug fixes, and technical improvements.',
   },
   {
     id: 'first-time',
     title: 'First-Time Contributors',
-    description: 'Builders making their very first open-source pull request in the DevOrbit ecosystem.',
+    description: 'Builders making their first open-source pull request in the ecosystem.',
   },
   {
     id: 'helpers',
     title: 'Community Helpers',
-    description: 'Members answering questions, improving docs, and welcoming new developers.',
+    description: 'Members helping with discussions, documentation, and peer support.',
   },
 ];
 
@@ -337,20 +302,20 @@ export const COMMUNITY_GUIDELINES_TEXT = {
   title: 'DevOrbit Community & Contribution Guidelines',
   sections: [
     {
-      heading: '1. Our Open Community Philosophy',
-      body: 'DevOrbit welcomes beginners, experienced engineers, students, and AI enthusiasts alike. We prioritize constructive feedback, curiosity, and respectful technical collaboration.',
+      heading: '1. Open & Welcoming Collaboration',
+      body: 'DevOrbit is an open developer community where beginners, experienced developers, software engineers, AI enthusiasts, and open-source contributors can discover projects, share knowledge, collaborate, and build meaningful software.',
     },
     {
-      heading: '2. How to Propose Changes or Pick an Issue',
-      body: 'Browse our public GitHub repositories, check open issues or create a discussion thread before starting major architectural changes. Small bug fixes, test coverage, and documentation improvements are always welcome.',
+      heading: '2. Exploring & Understanding Projects',
+      body: 'Start by reading the repository README, documentation, and open issues on GitHub before submitting changes.',
     },
     {
-      heading: '3. Pull Request Standards',
-      body: 'Keep pull requests focused on a single concern. Include a clear summary of what changed, how you verified it locally, and avoid committing secrets, API keys, or build artifacts.',
+      heading: '3. Submitting Contributions',
+      body: 'You can contribute by submitting ideas, reporting bugs, improving documentation, or creating focused pull requests.',
     },
     {
-      heading: '4. Respect & Attribution',
-      body: 'Every meaningful contribution—whether code, bug reports, documentation, or helping another developer debug—is valued and recognized with transparent public attribution.',
+      heading: '4. Honest Attribution',
+      body: 'Contributor profiles are displayed only when actual participation and public attribution exist.',
     },
   ],
 };

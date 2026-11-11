@@ -72,53 +72,79 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// AI Chatbot endpoint
+// AI Chatbot endpoint powered by Portfolio_Knowledge_Base RAG
 app.post("/api/chat", async (req, res) => {
   try {
-    const { message, history } = req.body;
+    const { message, ragContext } = req.body;
     if (!message || typeof message !== "string") {
       return res.status(400).json({ error: "Message is required" });
     }
 
     const ai = getGeminiClient();
+    const knowledgeSection =
+      typeof ragContext === "string" && ragContext.trim()
+        ? `\n\nRetrieved Records from Portfolio_Knowledge_Base (Google Sheets Master Source):\n${ragContext}`
+        : "";
 
     if (ai) {
-      // Build conversation context
-      const prompt = `System Context:\n${SURAJ_CONTEXT}\n\nUser Question: ${message}`;
+      const prompt = `System Context:\n${SURAJ_CONTEXT}${knowledgeSection}\n\nInstruction: Answer the visitor's question naturally, accurately, and concisely using the retrieved Portfolio_Knowledge_Base records and system context.\n\nUser Question: ${message}`;
       const response = await ai.models.generateContent({
         model: "gemini-3.8-flash",
         contents: prompt,
       });
 
-      const reply = response.text || "Hello! I'm here to help you learn all about Suraj Yadav's work and skills.";
+      const reply =
+        response.text ||
+        "Hello! I'm here to help you learn all about Suraj Yadav's work, projects, and skills.";
       return res.json({ reply });
     }
 
-    // Fallback response generator if GEMINI_API_KEY is not configured
+    // Fallback response generator using RAG context + keyword matching if GEMINI_API_KEY is not configured
     const lower = message.toLowerCase();
     let reply = "";
 
-    if (lower.includes("skill") || lower.includes("tech") || lower.includes("stack")) {
-      reply = "Suraj's technical skills are extensive! They include **Python, TypeScript, React.js, FastAPI, Node.js**, and databases like **MongoDB, PostgreSQL, and Redis**. He specializes in AI/ML using **LangGraph, TensorFlow, PyTorch, and Vector databases (FAISS, Pinecone)**.";
+    if (lower.includes("evee")) {
+      reply =
+        "**EVEE (PRJ001)** is an open-source, offline-first voice-controlled PC agent for Windows 11 built by Suraj. It uses int8-quantized **faster-whisper** on CPU for 100% local speech recognition, matches 55+ commands with **1.6ms (p95) latency** (including negation checks), and enforces a local policy engine (allow/confirm/deny) with optional **Groq/Qwen** fallback.";
+    } else if (lower.includes("vassure") || lower.includes("scriptgen") || lower.includes("veeva")) {
+      reply =
+        "**VAssureAI (PRJ003)**: At **Spotline, Inc.**, Suraj architected the V-Assure ScriptGen Chrome Extension (MV3) and its asynchronous **FastAPI + Groq LLM** backend to automatically extract requirement context and generate compliant validation test scripts for Veeva Vault.";
+    } else if (lower.includes("travel together")) {
+      reply =
+        "**Travel Together (PRJ002)** is a collaborative community trip planning platform built with **React, TypeScript, Node.js, and WebSockets**, enabling developer communities and friends to coordinate shared itineraries, voting, and expenses in real time.";
+    } else if (lower.includes("model") || lower.includes("ai") || lower.includes("rag") || lower.includes("llm")) {
+      reply =
+        "Suraj has integrated **Groq LLMs (Llama 8B/70B, Qwen 3)**, **LangGraph** multi-agent workflows, **faster-whisper** (local int8 CPU speech-to-text), **FAISS & MongoDB Atlas Vector Search** (achieving sub-45ms cache-hit latency), **Microsoft Edge Neural TTS**, and deep learning ensembles (**VGG16, ResNet50, InceptionV3, EfficientNet**).";
+    } else if (lower.includes("auth") || lower.includes("security") || lower.includes("oauth")) {
+      reply =
+        "For authentication and security, Suraj implements **OAuth 2.0, JWT bearer tokens, Role-Based Access Control (RBAC), token encryption, and SSO**, alongside deterministic local policy engines (allow/confirm/deny) in autonomous agents.";
+    } else if (lower.includes("skill") || lower.includes("tech") || lower.includes("stack")) {
+      reply =
+        "Suraj's technical skills (from **Tech_Knowledge**) include **Python, TypeScript, React.js, FastAPI, Node.js**, databases (**PostgreSQL, MongoDB Atlas, Redis, FAISS**), and AI orchestration with **LangGraph, LiteLLM, Groq, TensorFlow, and PyTorch**.";
     } else if (lower.includes("project") || lower.includes("work") || lower.includes("portfolio")) {
-      reply = "Suraj's highlighted projects include:\n• **EVEE**: An open-source, offline-first Voice PC Agent using local faster-whisper and a strict policy engine.\n• **TalkingHead 3D**: A real-time 3D Avatar-as-a-Service with lip-sync, moods, Edge Neural TTS, and Groq Qwen 3 integration.\n• **Aiden**: An Emotionally Intelligent AI Companion with persistent memory.\n• **AI Quantitative Stock System**: A predictive analytics platform with 100+ technical indicators.\n• **ZipIgnore**: A Python CLI packaging utility published on PyPI.\n• **MeDict AI**: Deep learning lung cancer detection with 81% accuracy.";
-    } else if (lower.includes("experience") || lower.includes("internship") || lower.includes("years") || lower.includes("background")) {
-      reply = "Suraj is currently a **Software Engineer at Spotline, Inc.** where he leads Agentic-RAG systems and DB validation platforms. Previously, he was a Salesforce Development Intern at SmartInternz. He has led 3 end-to-end production systems within his first year!";
+      reply =
+        "Suraj's projects in **Portfolio_Knowledge_Base** include:\n• **EVEE (PRJ001)**: Offline-first Voice PC Agent (1.6ms latency, faster-whisper).\n• **Travel Together (PRJ002)**: Collaborative community trip planner.\n• **VAssureAI (PRJ003)**: AI test script generator at Spotline, Inc.\n• **Aiden (PRJ004)**: Emotionally Intelligent AI Companion with tree-leaf FAISS memory.\n• **TalkingHead 3D (PRJ005)**: Real-time 3D Avatar-as-a-Service.\n• **ZipIgnore (PRJ006)**: Python CLI packaging tool on PyPI.\n• **MeDict AI (PRJ007)**: VGG16 lung cancer detection (81% accuracy).";
+    } else if (lower.includes("experience") || lower.includes("internship") || lower.includes("spotline")) {
+      reply =
+        "Suraj is a **Software Engineer at Spotline, Inc.** (May 2025 – Present), where he led 3 end-to-end production systems (VAssureAI, DB-Compare, and an Agentic-RAG system). Previously, he was a **Salesforce Development Intern at SmartInternz**, reducing manual workflows by 30%.";
     } else if (lower.includes("hire") || lower.includes("available") || lower.includes("contact") || lower.includes("email")) {
-      reply = "Suraj is currently **seeking opportunities at Google Payments**! You can email him at **thesuraj396@gmail.com**, or connect via **LinkedIn (linkedin.com/in/surajyadav01)** and **GitHub (github.com/Thesuraj01)**.";
-    } else if (lower.includes("education") || lower.includes("college") || lower.includes("university")) {
-      reply = "Suraj holds a **Bachelor of Technology in Computer Science and Engineering** (CGPA: 8.35/10.0) from **KIIT Deemed University**. He is also an **AWS Academy Graduate** and certified by Cognite.";
-    } else if (lower.includes("location") || lower.includes("where")) {
-      reply = "Suraj is based in **Bhubaneswar, Odisha, India**.";
+      reply =
+        "Suraj is open to Software Engineer opportunities (including **Google Payments**)! Reach him at **thesuraj396@gmail.com** or **linkedin.com/in/surajyadav01**.";
+    } else if (typeof ragContext === "string" && ragContext.trim()) {
+      const firstChunk = ragContext.split("\n\n")[0] || "";
+      reply = firstChunk
+        ? `From **Portfolio_Knowledge_Base**:\n${firstChunk}`
+        : `Hello! Ask me about Suraj's projects (**EVEE, VAssureAI, Travel Together, Aiden, TalkingHead 3D**), **Tech_Knowledge**, or **Work_Experience**!`;
     } else {
-      reply = `Hello! Suraj Kumar Yadav is a Software Engineer specializing in scalable full-stack systems and AI-powered applications (FastAPI, React, LangGraph). Feel free to ask about his **projects** (Aiden, ZipIgnore, MeDict AI), **skills**, **education**, or **experience** at Spotline Inc.!`;
+      reply = `Hello! Suraj Kumar Yadav is a Software Engineer specializing in scalable full-stack systems and Agentic AI (FastAPI, React, LangGraph). Ask me about **EVEE**, **VAssureAI**, **AI models integrated**, or open the **Google Sheets Knowledge Base**!`;
     }
 
     return res.json({ reply });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Chat error:", error);
     res.status(500).json({
-      reply: "Suraj is a software engineer passionate about scalable web apps, React, Python, and Node.js. Feel free to explore the console or ask another question!",
+      reply:
+        "Suraj is a software engineer passionate about scalable web apps, React, Python, and Agentic AI. Feel free to explore the console or ask another question!",
     });
   }
 });

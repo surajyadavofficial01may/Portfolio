@@ -8,24 +8,31 @@ import { SectionModal } from './components/SectionModal';
 import { AIAssistantCompanion } from './components/AIAssistantCompanion';
 import { MobileBottomNav } from './components/MobileBottomNav';
 import { DevOrbitPage } from './components/devorbit/DevOrbitPage';
+import { KnowledgeBaseStudioModal } from './components/KnowledgeBaseStudioModal';
 
-function isDevOrbitRoute(): boolean {
-  if (typeof window === 'undefined') return false;
+type AppRoute = 'portfolio' | 'devorbit' | 'admin';
+
+function resolveCurrentRoute(): AppRoute {
+  if (typeof window === 'undefined') return 'portfolio';
   const path = window.location.pathname.toLowerCase().replace(/\/+$/, '');
   const hash = window.location.hash.toLowerCase();
-  return path === '/devorbit' || hash.startsWith('#/devorbit');
+  if (path === '/admin' || hash.startsWith('#/admin')) {
+    return 'admin';
+  }
+  if (path === '/devorbit' || hash.startsWith('#/devorbit')) {
+    return 'devorbit';
+  }
+  return 'portfolio';
 }
 
 export default function App() {
-  const [currentRoute, setCurrentRoute] = useState<'portfolio' | 'devorbit'>(() =>
-    isDevOrbitRoute() ? 'devorbit' : 'portfolio'
-  );
+  const [currentRoute, setCurrentRoute] = useState<AppRoute>(() => resolveCurrentRoute());
   const [activeSection, setActiveSection] = useState<NavSection>('home');
   const [modalSection, setModalSection] = useState<NavSection | null>(null);
 
   useEffect(() => {
     const handlePopState = () => {
-      setCurrentRoute(isDevOrbitRoute() ? 'devorbit' : 'portfolio');
+      setCurrentRoute(resolveCurrentRoute());
     };
     window.addEventListener('popstate', handlePopState);
     window.addEventListener('hashchange', handlePopState);
@@ -69,6 +76,15 @@ export default function App() {
     setModalSection(null);
     setActiveSection('home');
   };
+
+  if (currentRoute === 'admin') {
+    return (
+      <KnowledgeBaseStudioModal
+        isOpen={true}
+        onClose={() => navigateToPortfolio('home')}
+      />
+    );
+  }
 
   if (currentRoute === 'devorbit') {
     return <DevOrbitPage onNavigatePortfolio={navigateToPortfolio} />;

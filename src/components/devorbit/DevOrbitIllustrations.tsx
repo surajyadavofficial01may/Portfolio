@@ -844,3 +844,54 @@ export const PixelHeartIcon: React.FC<{ className?: string }> = ({ className = '
     <rect x="2" y="3" width="2" height="2" fill="#FFE4E6" />
   </svg>
 );
+
+/**
+ * Designed Orbital Illustration for the Community Section
+ * (Used instead of fabricated contributor avatars when the community is new)
+ */
+export const CommunityOrbitIllustration: React.FC<{ className?: string }> = ({
+  className = 'w-full h-24',
+}) => (
+  <svg
+    viewBox="0 0 360 96"
+    className={`${className} select-none`}
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+  >
+    {/* Connecting orbital arc */}
+    <path
+      d="M 28 68 Q 180 12 332 68"
+      stroke="#36C8FF"
+      strokeWidth="2"
+      strokeDasharray="6 6"
+      opacity="0.55"
+    />
+    <path
+      d="M 56 48 Q 180 86 304 48"
+      stroke="#9657FF"
+      strokeWidth="1.5"
+      opacity="0.45"
+    />
+    {/* Central glowing planet node */}
+    <circle cx="180" cy="48" r="22" fill="#36C8FF" opacity="0.16" />
+    <circle cx="180" cy="48" r="14" fill="#1D4ED8" stroke="#36C8FF" strokeWidth="2" />
+    <ellipse
+      cx="180"
+      cy="48"
+      rx="24"
+      ry="6"
+      transform="rotate(-18 180 48)"
+      stroke="#FFBF47"
+      strokeWidth="2"
+    />
+    {/* Satellite nodes representing open collaboration */}
+    <circle cx="78" cy="48" r="9" fill="#0D1B38" stroke="#38E69B" strokeWidth="2" />
+    <circle cx="78" cy="48" r="3" fill="#38E69B" />
+    <circle cx="282" cy="48" r="9" fill="#0D1B38" stroke="#C084FC" strokeWidth="2" />
+    <circle cx="282" cy="48" r="3" fill="#C084FC" />
+    <circle cx="34" cy="64" r="5" fill="#FFBF47" opacity="0.85" />
+    <circle cx="326" cy="64" r="5" fill="#36C8FF" opacity="0.85" />
+  </svg>
+);
+
