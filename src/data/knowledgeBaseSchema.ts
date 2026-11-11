@@ -418,9 +418,67 @@ export const DEFAULT_PORTFOLIO_KNOWLEDGE_BASE: PortfolioKnowledgeBaseData = {
   ],
 };
 
+interface IndexedChunk {
+  id: string;
+  tab: SheetTabName;
+  title: string;
+  content: string;
+  url: string;
+  normalizedSearchable: string;
+  baseBoost: number;
+}
+
+const TAB_BOOST: Record<SheetTabName, number> = {
+  FAQs: 3.0,
+  Projects: 2.5,
+  Work_Experience: 2.0,
+  Technical_Skills: 2.0,
+  Personal_Details: 2.0,
+  Articles: 1.5,
+  Social_Links: 1.2,
+};
+
+const indexedKnowledgeCache = new WeakMap<PortfolioKnowledgeBaseData, IndexedChunk[]>();
+
+function isRowActive(row: SheetRecord): boolean {
+  const activeVal = String(row.active ?? 'TRUE').trim().toUpperCase();
+  return activeVal !== 'FALSE' && activeVal !== '0' && activeVal !== 'NO';
+}
+
+function getIndexedChunks(kbData: PortfolioKnowledgeBaseData): IndexedChunk[] {
+  const cached = indexedKnowledgeCache.get(kbData);
+  if (cached) return cached;
+
+  const indexed: IndexedChunk[] = [];
+  for (const schemaTab of PORTFOLIO_SHEETS_SCHEMA) {
+    const tabName = schemaTab.name;
+    const rows = kbData[tabName] || [];
+    const baseBoost = TAB_BOOST[tabName] || 1;
+
+    rows.filter(isRowActive).forEach((row) => {
+      const id = row.id || tabName;
+      const title = row.title || '';
+      const content = row.content || '';
+      const url = row.url || '';
+      indexed.push({
+        id,
+        tab: tabName,
+        title,
+        content,
+        url,
+        normalizedSearchable: `${id} ${title} ${content} ${url}`.toLowerCase(),
+        baseBoost,
+      });
+    });
+  }
+
+  indexedKnowledgeCache.set(kbData, indexed);
+  return indexed;
+}
+
 /**
- * Retrieve top-K active rows across the 7 Google Sheet tabs (`Personal_Details`, `Work_Experience`,
- * `Technical_Skills`, `Projects`, `Articles`, `Social_Links`, `FAQs`).
+ * Retrieve top-K active rows across the 7 knowledge base categories (`Personal_Details`,
+ * `Work_Experience`, `Technical_Skills`, `Projects`, `Articles`, `Social_Links`, `FAQs`).
  * Rows with `active === 'FALSE'` are retired and automatically excluded.
  * Returns each matched row's `content` verbatim along with its `[tab | id | title | url]` citation.
  */
@@ -435,71 +493,31 @@ export function retrieveKnowledgeForQuery(
     .split(/\s+/)
     .filter((w) => w.length > 1);
 
-  interface ScoredChunk {
-    id: string;
-    tab: SheetTabName;
-    title: string;
-    content: string;
-    url: string;
-    score: number;
-  }
+  const indexedChunks = getIndexedChunks(kbData);
 
-  const chunks: ScoredChunk[] = [];
+  const scored = indexedChunks.map((chunk) => ({
+    chunk,
+    score: scoreNormalizedText(chunk.normalizedSearchable, tokens) + chunk.baseBoost,
+  }));
 
-  const isRowActive = (row: SheetRecord) => {
-    const activeVal = String(row.active ?? 'TRUE').trim().toUpperCase();
-    return activeVal !== 'FALSE' && activeVal !== '0' && activeVal !== 'NO';
-  };
-
-  const tabBoost: Record<SheetTabName, number> = {
-    FAQs: 3.0,
-    Projects: 2.5,
-    Work_Experience: 2.0,
-    Technical_Skills: 2.0,
-    Personal_Details: 2.0,
-    Articles: 1.5,
-    Social_Links: 1.2,
-  };
-
-  for (const schemaTab of PORTFOLIO_SHEETS_SCHEMA) {
-    const tabName = schemaTab.name;
-    const rows = kbData[tabName] || [];
-    rows.filter(isRowActive).forEach((row) => {
-      const id = row.id || tabName;
-      const title = row.title || '';
-      const content = row.content || '';
-      const url = row.url || '';
-      const searchable = `${id} ${title} ${content} ${url}`;
-      const score = scoreText(searchable, tokens) + (tabBoost[tabName] || 1);
-
-      chunks.push({
-        id,
-        tab: tabName,
-        title,
-        content,
-        url,
-        score,
-      });
-    });
-  }
-
-  chunks.sort((a, b) => b.score - a.score);
-  const selected = chunks.slice(0, topK);
+  scored.sort((a, b) => b.score - a.score);
+  const selected = scored.slice(0, Math.max(1, topK));
 
   return selected
-    .map((c) => {
-      const citationParts = [c.tab, c.id, c.title, c.url].filter(Boolean).join(' | ');
-      return `[${citationParts}]\n${c.content}`;
+    .map(({ chunk }) => {
+      const citationParts = [chunk.tab, chunk.id, chunk.title, chunk.url]
+        .filter(Boolean)
+        .join(' | ');
+      return `[${citationParts}]\n${chunk.content}`;
     })
     .join('\n\n');
 }
 
-function scoreText(haystack: string, queryTokens: string[]): number {
+function scoreNormalizedText(normalizedHaystack: string, queryTokens: string[]): number {
   if (queryTokens.length === 0) return 1;
-  const lower = haystack.toLowerCase();
   let score = 0;
   for (const token of queryTokens) {
-    if (lower.includes(token)) {
+    if (normalizedHaystack.includes(token)) {
       score += token.length >= 4 ? 3 : 1.5;
     }
   }
