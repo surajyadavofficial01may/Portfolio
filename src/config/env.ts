@@ -5,7 +5,7 @@ import crypto from 'crypto';
 dotenv.config();
 
 export class ConfigurationError extends Error {
-  public readonly missingVariables: string[];
+  missingVariables: string[];
 
   constructor(missingVariables: string[], context: string) {
     super(
@@ -102,7 +102,7 @@ export function validateAdminAuthConfig(config: ServerConfig = getServerConfig()
 
 /**
  * Performs startup validation of core server environment variables.
- * In production mode (or when strict validation is enabled), throws immediately on missing secrets.
+ * When `strict: true` is passed explicitly, throws ConfigurationError on missing variables.
  */
 export function validateStartupConfig(options?: { strict?: boolean }): {
   valid: boolean;
@@ -116,7 +116,7 @@ export function validateStartupConfig(options?: { strict?: boolean }): {
   if (!config.supabase.secretKey) missing.push('SUPABASE_SECRET_KEY');
   if (!config.security.adminPassword) missing.push('ADMIN_PASSWORD');
 
-  const isStrict = options?.strict ?? config.nodeEnv === 'production';
+  const isStrict = options?.strict ?? false;
   if (missing.length > 0 && isStrict) {
     throw new ConfigurationError(missing, 'Application Startup');
   }

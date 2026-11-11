@@ -1,13 +1,5 @@
 /**
  * Structured Application Logger with Automatic Secret Redaction
- *
- * Captures:
- * - ISO-8601 timestamp
- * - Log level (DEBUG, INFO, WARNING, ERROR, CRITICAL)
- * - Service/module name
- * - Request correlation ID (when available)
- * - Execution duration (ms)
- * - Sanitized diagnostic metadata (never logs passwords, tokens, secret keys, or API keys)
  */
 
 export type LogLevel = 'DEBUG' | 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
@@ -66,13 +58,13 @@ export function redactSensitiveMetadata(value: unknown, depth = 0): unknown {
 }
 
 export class StructuredLogger {
-  private readonly moduleName: string;
+  moduleName: string;
 
   constructor(moduleName: string) {
     this.moduleName = moduleName;
   }
 
-  private emit(level: LogLevel, message: string, meta?: LogMetadata): void {
+  emit(level: LogLevel, message: string, meta?: LogMetadata): void {
     const sanitizedMeta = meta
       ? (redactSensitiveMetadata(meta) as Record<string, unknown>)
       : undefined;
@@ -100,25 +92,25 @@ export class StructuredLogger {
     }
   }
 
-  public debug(message: string, meta?: LogMetadata): void {
+  debug(message: string, meta?: LogMetadata): void {
     if (process.env.NODE_ENV === 'development') {
       this.emit('DEBUG', message, meta);
     }
   }
 
-  public info(message: string, meta?: LogMetadata): void {
+  info(message: string, meta?: LogMetadata): void {
     this.emit('INFO', message, meta);
   }
 
-  public warn(message: string, meta?: LogMetadata): void {
+  warn(message: string, meta?: LogMetadata): void {
     this.emit('WARNING', message, meta);
   }
 
-  public error(message: string, meta?: LogMetadata): void {
+  error(message: string, meta?: LogMetadata): void {
     this.emit('ERROR', message, meta);
   }
 
-  public critical(message: string, meta?: LogMetadata): void {
+  critical(message: string, meta?: LogMetadata): void {
     this.emit('CRITICAL', message, meta);
   }
 }

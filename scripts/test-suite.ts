@@ -20,19 +20,19 @@ import {
   PORTFOLIO_SHEETS_SCHEMA,
   PortfolioKnowledgeBaseData,
   retrieveKnowledgeForQuery,
-} from '../src/data/knowledgeBaseSchema';
-import { flattenKnowledgeBaseForSupabase } from './sync-knowledge-base-to-supabase';
-import { redactSensitiveMetadata } from '../src/server/logger';
+} from '../src/data/knowledgeBaseSchema.ts';
+import { flattenKnowledgeBaseForSupabase } from './sync-knowledge-base-to-supabase.ts';
+import { redactSensitiveMetadata } from '../src/server/logger.ts';
 import {
   issueAdminSessionToken,
   verifyAdminSessionToken,
-} from '../src/server/services/adminAuthService';
+} from '../src/server/services/adminAuthService.ts';
 import {
   validateChatInput,
   validateContactInput,
-} from '../src/server/middleware/security';
-import { ValidationError } from '../src/server/errors';
-import { createApp } from '../server';
+} from '../src/server/middleware/security.ts';
+import { ValidationError } from '../src/server/errors.ts';
+import { createApp } from '../server.ts';
 
 let passedTests = 0;
 

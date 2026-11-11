@@ -1,17 +1,13 @@
 /**
  * Server-Side Administrator Authentication & Session Token Service
- *
- * Uses constant-time password comparison (`timingSafeCompare`) against `process.env.ADMIN_PASSWORD`
- * and issues short-lived HMAC-SHA256 stateless tokens for protected `/admin` operations.
  */
 import crypto from 'crypto';
 import {
   getServerConfig,
   validateAdminAuthConfig,
   timingSafeCompare,
-} from '../../config/env';
+} from '../../config/env.ts';
 
-// Ephemeral per-process signing key for short-lived admin session tokens
 const ADMIN_SESSION_SIGNING_KEY = crypto.randomBytes(32).toString('hex');
 export const ADMIN_TOKEN_TTL_MS = 2 * 60 * 60 * 1000; // 2 hours
 

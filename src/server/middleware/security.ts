@@ -3,8 +3,8 @@
  */
 import crypto from 'crypto';
 import type { Request, Response, NextFunction, RequestHandler } from 'express';
-import { RateLimitError, ValidationError } from '../errors';
-import { createLogger } from '../logger';
+import { RateLimitError, ValidationError } from '../errors.ts';
+import { createLogger } from '../logger.ts';
 
 const httpLogger = createLogger('HTTP');
 

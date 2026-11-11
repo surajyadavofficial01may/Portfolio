@@ -1,26 +1,22 @@
 /**
  * Portfolio Full-Stack Application Server Entrypoint
  *
- * Mounts:
- * - Structured request tracing & security headers (`securityAndTracingMiddleware`)
- * - Request payload size limits (`express.json({ limit: '64kb' })`)
- * - Modular REST API router (`/api/*`)
- * - Centralized error-handling middleware (`errorHandlerMiddleware`)
- * - Vite dev middleware (development) or static SPA serving (production)
+ * Compatible with both `node server.ts` (Node 22 native TypeScript execution in production)
+ * and `tsx server.ts` (development).
  */
 import express from 'express';
 import path from 'path';
-import { createServer as createViteServer } from 'vite';
-import { DEFAULT_PORTFOLIO_KNOWLEDGE_BASE } from './src/data/knowledgeBaseSchema';
-import { syncKnowledgeBaseToSupabase } from './scripts/sync-knowledge-base-to-supabase';
-import { getServerConfig, validateStartupConfig } from './src/config/env';
-import { securityAndTracingMiddleware } from './src/server/middleware/security';
-import { errorHandlerMiddleware } from './src/server/errors';
+import fs from 'fs';
+import { DEFAULT_PORTFOLIO_KNOWLEDGE_BASE } from './src/data/knowledgeBaseSchema.ts';
+import { syncKnowledgeBaseToSupabase } from './scripts/sync-knowledge-base-to-supabase.ts';
+import { getServerConfig, validateStartupConfig } from './src/config/env.ts';
+import { securityAndTracingMiddleware } from './src/server/middleware/security.ts';
+import { errorHandlerMiddleware } from './src/server/errors.ts';
 import {
   createApiRouter,
   updateSupabaseRuntimeSyncState,
-} from './src/server/routes/apiRouter';
-import { createLogger } from './src/server/logger';
+} from './src/server/routes/apiRouter.ts';
+import { createLogger } from './src/server/logger.ts';
 
 const logger = createLogger('Server');
 const config = getServerConfig();
@@ -46,18 +42,15 @@ export const app = createApp();
 async function startServer(): Promise<void> {
   const PORT = config.port;
 
-  // Validate startup configuration
-  const startupCheck = validateStartupConfig({
-    strict: config.nodeEnv === 'production',
-  });
+  // Validate startup configuration (non-fatal on Cloud Run so the container always binds to PORT)
+  const startupCheck = validateStartupConfig({ strict: false });
   if (!startupCheck.valid) {
     logger.warn(
-      `Missing environment variables: ${startupCheck.missing.join(
+      `Optional/external environment variables not set in runtime environment: ${startupCheck.missing.join(
         ', '
-      )}. Configure them in .env.`
+      )}. Using bundled 7-tab knowledge base.`
     );
   } else {
-    // Automatically sync all 7 categories of Portfolio_Knowledge_Base to Supabase on startup
     syncKnowledgeBaseToSupabase(DEFAULT_PORTFOLIO_KNOWLEDGE_BASE)
       .then((res) => {
         updateSupabaseRuntimeSyncState({
@@ -76,19 +69,22 @@ async function startServer(): Promise<void> {
       });
   }
 
-  // Vite middleware for development or static dist serving for production
-  if (config.nodeEnv !== 'production') {
+  const distPath = path.join(process.cwd(), 'dist');
+  const hasBuiltDist = fs.existsSync(path.join(distPath, 'index.html'));
+
+  // Serve built static assets in production (or when dist/ exists and NODE_ENV=production), otherwise mount Vite dev middleware
+  if (config.nodeEnv === 'production' || (hasBuiltDist && process.env.K_SERVICE)) {
+    app.use(express.static(distPath));
+    app.get('*', (_req, res) => {
+      res.sendFile(path.join(distPath, 'index.html'));
+    });
+  } else {
+    const { createServer: createViteServer } = await import('vite');
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: 'spa',
     });
     app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), 'dist');
-    app.use(express.static(distPath));
-    app.get('*', (_req, res) => {
-      res.sendFile(path.join(distPath, 'index.html'));
-    });
   }
 
   app.listen(PORT, '0.0.0.0', () => {
@@ -98,11 +94,6 @@ async function startServer(): Promise<void> {
   });
 }
 
-const isMainServerEntry =
-  typeof process !== 'undefined' &&
-  process.argv[1] &&
-  (process.argv[1].endsWith('server.ts') || process.argv[1].endsWith('server.cjs'));
-
-if (isMainServerEntry) {
+if (process.env.SKIP_SERVER_AUTOSTART !== 'true') {
   startServer();
 }

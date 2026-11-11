@@ -11,7 +11,7 @@
  * - InternalServerError (500)
  */
 import type { Request, Response, NextFunction } from 'express';
-import { createLogger } from './logger';
+import { createLogger } from './logger.ts';
 
 const logger = createLogger('ErrorHandler');
 
@@ -26,9 +26,9 @@ export type ErrorCategory =
   | 'INTERNAL_SERVER_ERROR';
 
 export class AppError extends Error {
-  public readonly statusCode: number;
-  public readonly category: ErrorCategory;
-  public readonly details?: unknown;
+  statusCode: number;
+  category: ErrorCategory;
+  details?: unknown;
 
   constructor(
     message: string,
@@ -69,9 +69,12 @@ export class NotFoundError extends AppError {
 }
 
 export class RateLimitError extends AppError {
-  public readonly retryAfterSeconds: number;
+  retryAfterSeconds: number;
 
-  constructor(message = 'Too many requests. Please try again shortly.', retryAfterSeconds = 60) {
+  constructor(
+    message = 'Too many requests. Please try again shortly.',
+    retryAfterSeconds = 60
+  ) {
     super(message, 429, 'RATE_LIMIT_ERROR', { retryAfterSeconds });
     this.retryAfterSeconds = retryAfterSeconds;
   }

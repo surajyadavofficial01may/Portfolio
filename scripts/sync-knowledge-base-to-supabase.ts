@@ -1,30 +1,14 @@
 /**
  * Automated Build & CI/CD Sync Script for Portfolio_Knowledge_Base -> Supabase
- *
- * Exclusively stores and syncs all 7 Knowledge Base categories:
- * - Personal_Details
- * - Work_Experience
- * - Technical_Skills
- * - Projects (latest projects on top: Jira Fixer PRJ008, EVEE PRJ001, etc.)
- * - Articles
- * - Social_Links
- * - FAQs
- *
- * Columns per row: id | title | content | url | active
- *
- * Security Note:
- * All Supabase credentials (`SUPABASE_URL`, `SUPABASE_SECRET_KEY`, `SUPABASE_JWKS_URL`)
- * are loaded exclusively from environment variables via `src/config/env.ts`.
- * No credentials or fallback keys are hardcoded in source code.
  */
 import {
   DEFAULT_PORTFOLIO_KNOWLEDGE_BASE,
   MASTER_SPREADSHEET_TITLE,
   PORTFOLIO_SHEETS_SCHEMA,
-  PortfolioKnowledgeBaseData,
-  SheetTabName,
-} from '../src/data/knowledgeBaseSchema';
-import { getServerConfig, validateSupabaseSyncConfig } from '../src/config/env';
+  type PortfolioKnowledgeBaseData,
+  type SheetTabName,
+} from '../src/data/knowledgeBaseSchema.ts';
+import { getServerConfig, validateSupabaseSyncConfig } from '../src/config/env.ts';
 
 export interface SupabaseSyncResult {
   synced: boolean;
@@ -204,7 +188,6 @@ export async function syncKnowledgeBaseToSupabase(
 
   await ensureSupabaseBucketExists(supabaseUrl, secretKey, kbBucket);
 
-  // 1. Upload master Portfolio_Knowledge_Base.json to Supabase Storage
   const masterPayload = {
     title: MASTER_SPREADSHEET_TITLE,
     storageProvider: 'Supabase',
@@ -232,7 +215,6 @@ export async function syncKnowledgeBaseToSupabase(
     'application/json; charset=utf-8'
   );
 
-  // 2. Upload each of the 7 tabs as individual JSON and CSV objects in Supabase Storage
   for (const tab of PORTFOLIO_SHEETS_SCHEMA) {
     const tabRows = kbData[tab.name] || [];
     const tabJson = JSON.stringify(
@@ -271,7 +253,6 @@ export async function syncKnowledgeBaseToSupabase(
     tabsSynced.push(tab.name);
   }
 
-  // 3. Upsert into PostgreSQL table `public.portfolio_knowledge_base` if table exists
   const tableSynced = await tryUpsertPostgresTable(
     supabaseUrl,
     secretKey,
@@ -281,7 +262,6 @@ export async function syncKnowledgeBaseToSupabase(
 
   const publicMasterJsonUrl = `${supabaseUrl}/storage/v1/object/public/${kbBucket}/Portfolio_Knowledge_Base.json`;
 
-  // 4. Verify live read-back from Supabase Storage so CI/CD fails fast if public read is broken
   const verifyRes = await fetch(`${publicMasterJsonUrl}?t=${Date.now()}`);
   if (!verifyRes.ok) {
     throw new Error(
@@ -305,20 +285,36 @@ export async function syncKnowledgeBaseToSupabase(
   };
 }
 
-// Run directly when invoked from CLI (`npm run sync:supabase`)
 const isMainModule =
   typeof process !== 'undefined' &&
   process.argv[1] &&
   process.argv[1].includes('sync-knowledge-base-to-supabase');
 
 if (isMainModule) {
+  const isStrictCli = process.argv.includes('--strict');
+  const cfg = getServerConfig();
+
+  // During Cloud Build (`npm run build`), `.env` is gitignored and may not be present in the container build phase.
+  // Skip build-time remote sync gracefully unless `--strict` is passed (e.g. in GitHub Actions).
+  if (!isStrictCli && (!cfg.supabase.url || !cfg.supabase.secretKey)) {
+    console.log(
+      '[Supabase KB Sync] Skipping build-time remote sync (SUPABASE_URL / SUPABASE_SECRET_KEY not present in container build environment; using bundled 7-tab schema).'
+    );
+    process.exit(0);
+  }
+
   syncKnowledgeBaseToSupabase()
     .then((result) => {
       console.log(`[Supabase KB Sync] ${result.message}`);
     })
     .catch((err: unknown) => {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error(`[Supabase KB Sync Error] ${msg}`);
-      process.exit(1);
+      if (isStrictCli) {
+        console.error(`[Supabase KB Sync Error] ${msg}`);
+        process.exit(1);
+      } else {
+        console.warn(`[Supabase KB Sync Warning] ${msg}`);
+        process.exit(0);
+      }
     });
 }

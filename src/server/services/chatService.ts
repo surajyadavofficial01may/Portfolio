@@ -1,13 +1,9 @@
 /**
  * Portfolio AI Assistant Chat & RAG Service
- *
- * - Uses `@google/genai` server-side when `GEMINI_API_KEY` is configured.
- * - Provides a deterministic, zero-latency RAG fallback responder when `GEMINI_API_KEY` is absent
- *   or if an upstream API error occurs.
  */
 import { GoogleGenAI } from '@google/genai';
-import { getServerConfig } from '../../config/env';
-import { createLogger } from '../logger';
+import { getServerConfig } from '../../config/env.ts';
+import { createLogger } from '../logger.ts';
 
 const logger = createLogger('ChatService');
 
@@ -157,7 +153,7 @@ export async function generateAssistantChatReply(params: {
       if (response.text) {
         return response.text;
       }
-    } catch (err: unknown) {
+    } catch {
       logger.warn('Gemini API call failed; using deterministic RAG fallback responder.', {
         errorCategory: 'EXTERNAL_SERVICE_ERROR',
       });

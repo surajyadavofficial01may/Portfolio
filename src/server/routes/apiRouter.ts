@@ -1,35 +1,32 @@
 /**
  * Modular Express API Router (`/api/*`)
- *
- * Separates HTTP routing, request validation, authentication, and response formatting
- * from core business services.
  */
 import { Router } from 'express';
 import {
   DEFAULT_PORTFOLIO_KNOWLEDGE_BASE,
   MASTER_SPREADSHEET_TITLE,
   PORTFOLIO_SHEETS_SCHEMA,
-  SheetTabName,
+  type SheetTabName,
   retrieveKnowledgeForQuery,
-} from '../../data/knowledgeBaseSchema';
-import { syncKnowledgeBaseToSupabase } from '../../../scripts/sync-knowledge-base-to-supabase';
-import { getServerConfig } from '../../config/env';
+} from '../../data/knowledgeBaseSchema.ts';
+import { syncKnowledgeBaseToSupabase } from '../../../scripts/sync-knowledge-base-to-supabase.ts';
+import { getServerConfig } from '../../config/env.ts';
 import {
   authenticateAdminPassword,
   verifyAdminSessionToken,
-} from '../services/adminAuthService';
-import { generateAssistantChatReply } from '../services/chatService';
+} from '../services/adminAuthService.ts';
+import { generateAssistantChatReply } from '../services/chatService.ts';
 import {
   createRateLimiter,
   validateChatInput,
   validateContactInput,
-} from '../middleware/security';
+} from '../middleware/security.ts';
 import {
   AuthenticationError,
   NotFoundError,
   ExternalServiceError,
-} from '../errors';
-import { createLogger } from '../logger';
+} from '../errors.ts';
+import { createLogger } from '../logger.ts';
 
 const logger = createLogger('ApiRouter');
 
