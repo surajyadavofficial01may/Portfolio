@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, X, Minimize2, Maximize2, MessageSquare, ExternalLink } from 'lucide-react';
+import { Send, X, Minimize2, Maximize2, MessageSquare } from 'lucide-react';
 import { ChatMessage, ChatHistoryTurn, ChatSourceCitation } from '../types';
 import { soundManager } from '../utils/soundEffects';
 
@@ -106,44 +106,15 @@ function buildErrorText(
 }
 
 /**
- * Renders inline Markdown bold (`**text**`) and `[n]` source citations mapped to `sources[n - 1]`.
+ * Renders inline Markdown bold (`**text**`) and strips `[n]` citation markers for clean display.
  */
 function renderFormattedSegment(
   text: string,
-  sources: ChatSourceCitation[] | undefined,
   keyPrefix: string
 ): React.ReactNode[] {
-  // Split by [n] citations and **bold** markers
-  const tokens = text.split(/(\[\d+\]|\*\*[^*]+\*\*)/g);
+  const cleanedText = text.replace(/[\s\u202f\u00a0]*\[\d+\]/g, '');
+  const tokens = cleanedText.split(/(\*\*[^*]+\*\*)/g);
   return tokens.map((token, idx) => {
-    const citeMatch = /^\[(\d+)\]$/.exec(token);
-    if (citeMatch && sources) {
-      const sourceIdx = Number(citeMatch[1]) - 1;
-      const citedSource = sources[sourceIdx];
-      if (citedSource) {
-        return citedSource.url ? (
-          <a
-            key={`${keyPrefix}-cite-${idx}`}
-            href={citedSource.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            title={`${citedSource.category}: ${citedSource.title}`}
-            className="inline-flex items-center px-1 mx-0.5 rounded bg-[#123F68] text-[#5FD182] hover:underline font-bold text-[10px]"
-          >
-            {token}
-          </a>
-        ) : (
-          <span
-            key={`${keyPrefix}-cite-${idx}`}
-            title={`${citedSource.category}: ${citedSource.title}`}
-            className="inline-flex items-center px-1 mx-0.5 rounded bg-[#123F68] text-[#5FD182] font-bold text-[10px]"
-          >
-            {token}
-          </span>
-        );
-      }
-    }
-
     const boldMatch = /^\*\*([^*]+)\*\*$/.exec(token);
     if (boldMatch) {
       return (
@@ -585,45 +556,8 @@ export const AIAssistantCompanion: React.FC = () => {
                       }`}
                     >
                       <p className="whitespace-pre-line">
-                        {renderFormattedSegment(m.text, m.sources, m.id)}
+                        {renderFormattedSegment(m.text, m.id)}
                       </p>
-
-                      {/* Cited Knowledge Base Sources ([n] -> sources[n-1]) */}
-                      {m.sender === 'bot' && m.sources && m.sources.length > 0 && (
-                        <div className="mt-2 pt-1.5 border-t border-[#16385B] space-y-1">
-                          <div className="text-[9.5px] text-[#6EB5F7] font-bold uppercase tracking-wider">
-                            Cited Sources ({m.sources.length})
-                          </div>
-                          {m.sources.map((src, idx) => (
-                            <div
-                              key={`${src.category}-${src.title}-${idx}`}
-                              className="text-[10px] text-[#94A3B8] flex items-start gap-1 leading-snug"
-                            >
-                              <span className="text-[#5FD182] font-bold shrink-0">
-                                [{idx + 1}]
-                              </span>
-                              <div className="min-w-0 flex-1">
-                                <span className="text-[#CBD5E1] font-semibold">
-                                  {src.category}:
-                                </span>{' '}
-                                {src.url ? (
-                                  <a
-                                    href={src.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-[#6EB5F7] hover:underline inline-flex items-center gap-0.5 break-all"
-                                  >
-                                    <span>{src.title || src.url}</span>
-                                    <ExternalLink size={9} className="shrink-0" />
-                                  </a>
-                                ) : (
-                                  <span>{src.title}</span>
-                                )}
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      )}
                     </div>
                   </div>
                 ))}
