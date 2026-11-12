@@ -21,6 +21,90 @@ interface ChatAskErrorPayload {
   details?: ChatAskErrorDetail[];
 }
 
+type ChatAskPayload = ChatAskSuccessPayload | ChatAskErrorPayload;
+
+/* ------------------------------------------------------------------ */
+/* Constants & helpers                                                 */
+/* ------------------------------------------------------------------ */
+
+const CHAT_ENDPOINT = '/api/v1/chat/ask';
+const WELCOME_TEXT =
+  "Hi! I'm Suraj's AI assistant. Ask me about Jira Fixer, EVEE, VAssureAI, or his skills!";
+const KB_UNAVAILABLE_TEXT = 'That information is not available in the portfolio knowledge base.';
+
+const MAX_QUESTION_CHARS = 1000;
+const MAX_HISTORY_CONTENT_CHARS = 2000;
+/** Matches the server-side cap so we never send turns that would be dropped anyway. */
+const MAX_HISTORY_TURNS = 10;
+/** Server retries for up to ~75 s (Render cold start); give it a little extra. */
+const REQUEST_TIMEOUT_MS = 90_000;
+/** After this long, tell the visitor the RAG service is probably waking up. */
+const SLOW_NOTICE_MS = 6_000;
+
+const createWelcomeMessage = (): ChatMessage => ({
+  id: 'msg-0',
+  sender: 'bot',
+  text: WELCOME_TEXT,
+  timestamp: 'NOW',
+});
+
+const nowTime = (): string =>
+  new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+let messageCounter = 0;
+const makeId = (prefix: string): string => `${prefix}-${Date.now()}-${++messageCounter}`;
+
+/** Only the delta-seconds form is used by our API; ignore anything else. */
+function parseRetryAfter(header: string | null): number | null {
+  if (!header) return null;
+  const n = Number(header);
+  return Number.isFinite(n) && n > 0 ? Math.ceil(n) : null;
+}
+
+async function readJsonBody(res: Response): Promise<ChatAskPayload | null> {
+  const type = (res.headers.get('content-type') ?? '').toLowerCase();
+  if (!type.includes('json')) {
+    // Typical cause in dev: the dev server has no proxy for /api and returns index.html or a 404 page.
+    console.error(
+      `[AIAssistantCompanion] Expected JSON from ${CHAT_ENDPOINT} but got "${type || 'unknown'}" (HTTP ${res.status}). ` +
+        'Check that the Express route is mounted and that your dev server proxies /api to it.'
+    );
+    return null;
+  }
+  try {
+    return (await res.json()) as ChatAskPayload;
+  } catch {
+    return null;
+  }
+}
+
+function buildErrorText(
+  status: number,
+  payload: ChatAskPayload | null,
+  retryAfter: number | null
+): string {
+  const apiError =
+    payload && payload.success === false && payload.error ? payload.error : undefined;
+
+  if (status === 422 || status === 400) {
+    const details =
+      payload && payload.success === false && Array.isArray(payload.details)
+        ? payload.details.map((d) => `${d.field}: ${d.message}`).join('; ')
+        : '';
+    const base = apiError || 'Your question could not be processed.';
+    return details ? `${base} (${details})` : base;
+  }
+  if (status === 429) {
+    return `Too many questions right now. Please wait ${retryAfter ? `${retryAfter}s` : 'a moment'} and try again.`;
+  }
+  if (status >= 500) {
+    return `The assistant is temporarily unavailable (the knowledge service may be waking up). Please try again ${
+      retryAfter ? `in about ${retryAfter}s` : 'shortly'
+    }.`;
+  }
+  return apiError || 'Unable to process your question right now.';
+}
+
 /**
  * Renders inline Markdown bold (`**text**`) and `[n]` source citations mapped to `sources[n - 1]`.
  */
@@ -73,6 +157,10 @@ function renderFormattedSegment(
   });
 }
 
+/* ------------------------------------------------------------------ */
+/* Component                                                           */
+/* ------------------------------------------------------------------ */
+
 export const AIAssistantCompanion: React.FC = () => {
   // Default to compact floating launcher on mobile/tablets (<1280px) so it never covers hero/console CTAs
   const [isOpen, setIsOpen] = useState<boolean>(() => {
@@ -84,26 +172,38 @@ export const AIAssistantCompanion: React.FC = () => {
   const [isMinimized, setIsMinimized] = useState(false);
   const [inputVal, setInputVal] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSlow, setIsSlow] = useState(false);
   const [blinkState, setBlinkState] = useState(false);
   const [mouthMood, setMouthMood] = useState<'happy' | 'talking' | 'idle'>('idle');
 
-  const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: 'msg-0',
-      sender: 'bot',
-      text: "Hi! I'm Suraj's AI assistant. Ask me about Jira Fixer, EVEE, VAssureAI, or his skills!",
-      timestamp: 'NOW',
-    },
-  ]);
+  const [messages, setMessages] = useState<ChatMessage[]>([createWelcomeMessage()]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const mountedRef = useRef(true);
+  const inFlightRef = useRef(false);
+  const abortRef = useRef<AbortController | null>(null);
+  const slowTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const moodTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  /** Ids of failed user turns and error replies: kept on screen but never sent back as history. */
+  const excludedIdsRef = useRef<Set<string>>(new Set());
+
+  // Track mount state; cancel any in-flight request and timers on unmount
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      abortRef.current?.abort('unmount');
+      if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+      if (moodTimerRef.current) clearTimeout(moodTimerRef.current);
+    };
+  }, []);
 
   // Auto-scroll chat to latest message
   useEffect(() => {
     if (isOpen && !isMinimized) {
       messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [messages, isOpen, isMinimized]);
+  }, [messages, isOpen, isMinimized, isLoading]);
 
   // Robot blinking & facial expression animation loop (respecting reduced motion)
   useEffect(() => {
@@ -112,41 +212,65 @@ export const AIAssistantCompanion: React.FC = () => {
       window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (prefersReducedMotion) return;
 
+    let blinkTimeout: ReturnType<typeof setTimeout> | undefined;
     const blinkInterval = setInterval(() => {
       setBlinkState(true);
-      setTimeout(() => setBlinkState(false), 220);
+      blinkTimeout = setTimeout(() => setBlinkState(false), 220);
     }, 3600);
-    return () => clearInterval(blinkInterval);
+    return () => {
+      clearInterval(blinkInterval);
+      if (blinkTimeout) clearTimeout(blinkTimeout);
+    };
   }, []);
 
   /**
-   * Builds the `history` array (oldest first, max 20 turns, each content 1-2000 chars,
+   * Builds the `history` array (oldest first, max 10 turns, each content 1-2000 chars,
    * roles strictly "user" or "assistant") for POST /api/v1/chat/ask.
+   * The welcome message and failed exchanges (error replies + the question that caused them)
+   * are excluded so the model never sees "service unavailable" text as its own answer.
    */
   const buildConversationHistory = (priorMessages: ChatMessage[]): ChatHistoryTurn[] => {
     return priorMessages
-      .filter((m) => m.id !== 'msg-0' && m.text.trim().length > 0)
+      .filter(
+        (m) =>
+          m.id !== 'msg-0' && !excludedIdsRef.current.has(m.id) && m.text.trim().length > 0
+      )
       .map((m): ChatHistoryTurn => ({
         role: m.sender === 'user' ? 'user' : 'assistant',
-        content: m.text.trim().slice(0, 2000),
+        content: m.text.trim().slice(0, MAX_HISTORY_CONTENT_CHARS),
       }))
-      .slice(-20);
+      .slice(-MAX_HISTORY_TURNS);
+  };
+
+  const handleReset = () => {
+    soundManager.playSelect();
+    abortRef.current?.abort('reset');
+    abortRef.current = null;
+    inFlightRef.current = false;
+    excludedIdsRef.current.clear();
+    if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+    setIsLoading(false);
+    setIsSlow(false);
+    setMouthMood('idle');
+    setMessages([createWelcomeMessage()]);
   };
 
   const handleSendMessage = async (textToSend?: string) => {
     const rawText = (textToSend || inputVal).trim();
-    if (!rawText || isLoading) return;
+    // Ref guard (not just state) so a double-click / double-Enter can't fire two requests
+    if (!rawText || inFlightRef.current) return;
+    inFlightRef.current = true;
 
     // Enforce /api/v1/chat/ask question limit of 1-1000 characters
-    const question = rawText.slice(0, 1000);
+    const question = rawText.slice(0, MAX_QUESTION_CHARS);
     const history = buildConversationHistory(messages);
 
     soundManager.playSelect();
     const userMsg: ChatMessage = {
-      id: `user-${Date.now()}`,
+      id: makeId('user'),
       sender: 'user',
       text: question,
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: nowTime(),
     };
 
     setMessages((prev) => [...prev, userMsg]);
@@ -154,12 +278,36 @@ export const AIAssistantCompanion: React.FC = () => {
       setInputVal('');
     }
     setIsLoading(true);
+    setIsSlow(false);
     setMouthMood('talking');
+    if (moodTimerRef.current) clearTimeout(moodTimerRef.current);
+
+    const controller = new AbortController();
+    abortRef.current = controller;
+    const timeoutId = setTimeout(() => controller.abort('timeout'), REQUEST_TIMEOUT_MS);
+    slowTimerRef.current = setTimeout(() => {
+      if (mountedRef.current) setIsSlow(true);
+    }, SLOW_NOTICE_MS);
+
+    // Aborted by Reset/unmount (not by our own timeout): drop the result silently
+    const wasCancelled = () => controller.signal.aborted && controller.signal.reason !== 'timeout';
+
+    const failWith = (text: string) => {
+      const errorBotMsg: ChatMessage = {
+        id: makeId('bot'),
+        sender: 'bot',
+        text,
+        timestamp: nowTime(),
+      };
+      excludedIdsRef.current.add(userMsg.id);
+      excludedIdsRef.current.add(errorBotMsg.id);
+      setMessages((prev) => [...prev, errorBotMsg]);
+    };
 
     try {
       // Always call our Express proxy route `/api/v1/chat/ask` which forwards server-to-server
       // to `https://rag-as-service.onrender.com/api/v1/chat/ask` without browser CORS restrictions
-      const res = await fetch('/api/v1/chat/ask', {
+      const res = await fetch(CHAT_ENDPOINT, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -169,58 +317,57 @@ export const AIAssistantCompanion: React.FC = () => {
           question,
           history,
         }),
+        signal: controller.signal,
       });
 
-      const retryAfter = res.headers.get('Retry-After');
-      const data = (await res.json()) as ChatAskSuccessPayload | ChatAskErrorPayload;
+      const retryAfter = parseRetryAfter(res.headers.get('Retry-After'));
+      const data = await readJsonBody(res);
+      if (wasCancelled()) return;
       soundManager.playNavigate();
 
-      if (!res.ok || !data.success) {
-        const errPayload = data as ChatAskErrorPayload;
-        let errorText = errPayload.error || 'Unable to process your question right now.';
-
-        if (res.status === 422 && Array.isArray(errPayload.details) && errPayload.details.length > 0) {
-          const detailSummary = errPayload.details
-            .map((d) => `${d.field}: ${d.message}`)
-            .join('; ');
-          errorText = `${errorText} (${detailSummary})`;
-        } else if ((res.status === 429 || res.status === 503) && retryAfter) {
-          errorText = `${errorText} (Retry after ${retryAfter}s)`;
-        }
-
-        const errorBotMsg: ChatMessage = {
-          id: `bot-${Date.now()}`,
+      if (res.ok && data && data.success === true) {
+        const botMsg: ChatMessage = {
+          id: makeId('bot'),
           sender: 'bot',
-          text: errorText,
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          text:
+            typeof data.answer === 'string' && data.answer.trim()
+              ? data.answer
+              : KB_UNAVAILABLE_TEXT,
+          // Keep the exact order/length: the answer's [n] markers map to sources[n - 1]
+          sources: Array.isArray(data.sources) ? data.sources : [],
+          timestamp: nowTime(),
         };
-        setMessages((prev) => [...prev, errorBotMsg]);
+        setMessages((prev) => [...prev, botMsg]);
         return;
       }
 
-      const successPayload = data as ChatAskSuccessPayload;
-      const botMsg: ChatMessage = {
-        id: `bot-${Date.now()}`,
-        sender: 'bot',
-        text:
-          successPayload.answer ||
-          'That information is not available in the portfolio knowledge base.',
-        sources: Array.isArray(successPayload.sources) ? successPayload.sources : [],
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      };
-      setMessages((prev) => [...prev, botMsg]);
-    } catch {
-      const fallbackMsg: ChatMessage = {
-        id: `bot-${Date.now()}`,
-        sender: 'bot',
-        text: 'A dependency is unavailable; please try again shortly.',
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      };
-      setMessages((prev) => [...prev, fallbackMsg]);
+      // A 2xx with an unusable body (e.g. HTML from a misconfigured proxy) counts as a bad gateway
+      failWith(buildErrorText(res.ok ? 502 : res.status, data, retryAfter));
+    } catch (err) {
+      if (wasCancelled()) return;
+      const timedOut = controller.signal.aborted;
+      console.error('[AIAssistantCompanion] Chat request failed:', err);
+      failWith(
+        timedOut
+          ? 'The assistant took too long to respond. Please try again in a moment.'
+          : 'A dependency is unavailable; please try again shortly.'
+      );
     } finally {
-      setIsLoading(false);
-      setMouthMood('happy');
-      setTimeout(() => setMouthMood('idle'), 2500);
+      clearTimeout(timeoutId);
+      if (slowTimerRef.current) clearTimeout(slowTimerRef.current);
+      // Only release the lock if Reset hasn't already replaced/cleared this request
+      if (abortRef.current === controller) {
+        abortRef.current = null;
+        inFlightRef.current = false;
+      }
+      if (mountedRef.current && !wasCancelled()) {
+        setIsLoading(false);
+        setIsSlow(false);
+        setMouthMood('happy');
+        moodTimerRef.current = setTimeout(() => {
+          if (mountedRef.current) setMouthMood('idle');
+        }, 2500);
+      }
     }
   };
 
@@ -363,17 +510,7 @@ export const AIAssistantCompanion: React.FC = () => {
               {messages.length > 1 && (
                 <button
                   type="button"
-                  onClick={() => {
-                    soundManager.playSelect();
-                    setMessages([
-                      {
-                        id: 'msg-0',
-                        sender: 'bot',
-                        text: "Hi! I'm Suraj's AI assistant. Ask me about Jira Fixer, EVEE, VAssureAI, or his skills!",
-                        timestamp: 'NOW',
-                      },
-                    ]);
-                  }}
+                  onClick={handleReset}
                   className="px-1.5 py-0.5 text-[9.5px] font-mono-tech text-[#6EB5F7] hover:text-[#F4E9D5] hover:bg-[#16385B]/60 rounded border border-[#16385B] transition-colors cursor-pointer"
                   title="Clear follow-up history turns"
                 >
@@ -421,7 +558,7 @@ export const AIAssistantCompanion: React.FC = () => {
                     type="button"
                     onClick={() => handleSendMessage(prompt)}
                     disabled={isLoading}
-                    className="shrink-0 px-2 py-1 rounded bg-[#0B253D] hover:bg-[#123F68] text-[#6EB5F7] border border-[#16385B] font-mono-tech text-[10px] transition-colors cursor-pointer"
+                    className="shrink-0 px-2 py-1 rounded bg-[#0B253D] hover:bg-[#123F68] text-[#6EB5F7] border border-[#16385B] font-mono-tech text-[10px] transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {prompt}
                   </button>
@@ -429,7 +566,12 @@ export const AIAssistantCompanion: React.FC = () => {
               </div>
 
               {/* Messages Area */}
-              <div className="flex-1 overflow-y-auto pr-1 space-y-2 text-xs font-mono-tech min-h-0">
+              <div
+                role="log"
+                aria-live="polite"
+                aria-relevant="additions"
+                className="flex-1 overflow-y-auto pr-1 space-y-2 text-xs font-mono-tech min-h-0"
+              >
                 {messages.map((m) => (
                   <div
                     key={m.id}
@@ -487,11 +629,15 @@ export const AIAssistantCompanion: React.FC = () => {
                 ))}
 
                 {isLoading && (
-                  <div className="flex items-center gap-1.5 text-[11px] font-mono-tech text-[#5FD182] bg-[#0B253D] p-1.5 rounded border border-[#16385B] w-fit">
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#5FD182] animate-bounce" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#5FD182] animate-bounce [animation-delay:0.2s]" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-[#5FD182] animate-bounce [animation-delay:0.4s]" />
-                    <span className="text-[10px] ml-1">Asking RAG service...</span>
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono-tech text-[#5FD182] bg-[#0B253D] p-1.5 rounded border border-[#16385B] w-fit max-w-full">
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#5FD182] animate-bounce shrink-0" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#5FD182] animate-bounce shrink-0 [animation-delay:0.2s]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#5FD182] animate-bounce shrink-0 [animation-delay:0.4s]" />
+                    <span className="text-[10px] ml-1 min-w-0">
+                      {isSlow
+                        ? 'Waking up the RAG service (first reply can take up to a minute)...'
+                        : 'Asking RAG service...'}
+                    </span>
                   </div>
                 )}
                 <div ref={messagesEndRef} />
@@ -511,7 +657,7 @@ export const AIAssistantCompanion: React.FC = () => {
                 <input
                   id="ai-chat-input"
                   type="text"
-                  maxLength={1000}
+                  maxLength={MAX_QUESTION_CHARS}
                   value={inputVal}
                   onChange={(e) => setInputVal(e.target.value)}
                   placeholder="Ask portfolio KB (1–1000 chars)..."
