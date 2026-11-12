@@ -1031,32 +1031,41 @@ export const DevOrbitPage: React.FC<DevOrbitPageProps> = ({ onNavigatePortfolio 
             Featured Projects (EVEE, VAssureAI, Travel Together) +
             Our Community Card + Closing Rocket Terminal Card
         ===================================================================== */}
-        <section id="devorbit-projects" className="py-10 lg:py-12 scroll-mt-24">
+        <section id="devorbit-projects" className="py-10 lg:py-14 scroll-mt-24">
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-6 items-stretch">
-            {/* LEFT 7 COLUMNS: Featured Projects Showcase Box (matching reference image) */}
+            {/* LEFT 8 COLUMNS: Featured Projects Showcase Box */}
             <div
-              className={`xl:col-span-7 rounded-2xl border p-6 flex flex-col justify-between ${
+              className={`xl:col-span-8 rounded-2xl border p-5 sm:p-6 lg:p-7 flex flex-col justify-between ${
                 isDark
                   ? 'bg-[#09142E]/85 border-[#3578FF]/30 shadow-[0_10px_35px_rgba(5,11,29,0.65)]'
                   : 'bg-white border-blue-200 shadow-sm'
               }`}
             >
               {/* Header Row */}
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
-                <div className="flex items-center gap-2.5">
-                  <span
-                    className="text-[#36C8FF] font-bold text-lg select-none"
-                    style={{ fontFamily: "'Press Start 2P', monospace" }}
-                    aria-hidden="true"
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+                <div>
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className="text-[#36C8FF] font-bold text-lg select-none"
+                      style={{ fontFamily: "'Press Start 2P', monospace" }}
+                      aria-hidden="true"
+                    >
+                      &gt;&gt;
+                    </span>
+                    <h2
+                      className="text-lg sm:text-xl font-bold tracking-wide"
+                      style={{ fontFamily: "'Press Start 2P', 'Space Grotesk', monospace" }}
+                    >
+                      Featured Projects
+                    </h2>
+                  </div>
+                  <p
+                    className={`text-xs sm:text-sm mt-1.5 ${
+                      isDark ? 'text-[#BAC8E8]' : 'text-slate-600'
+                    }`}
                   >
-                    &gt;&gt;
-                  </span>
-                  <h2
-                    className="text-lg sm:text-xl font-bold tracking-wide"
-                    style={{ fontFamily: "'Press Start 2P', 'Space Grotesk', monospace" }}
-                  >
-                    Featured Projects
-                  </h2>
+                    Highlighted open-source systems and AI developer tools from the portfolio.
+                  </p>
                 </div>
 
                 <a
@@ -1067,16 +1076,16 @@ export const DevOrbitPage: React.FC<DevOrbitPageProps> = ({ onNavigatePortfolio 
                       .getElementById('devorbit-project-directory')
                       ?.scrollIntoView({ behavior: 'smooth' });
                   }}
-                  className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#36C8FF] hover:text-[#6CE5FF] transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold text-[#36C8FF] bg-[#36C8FF]/10 hover:bg-[#36C8FF]/20 border border-[#36C8FF]/30 transition-colors"
                 >
-                  <span>View All Projects</span>
+                  <span>View All ({DEVORBIT_PROJECTS.length})</span>
                   <ArrowRight className="w-4 h-4" />
                 </a>
               </div>
 
-              {/* Three Primary Featured Cards: EVEE, VAssureAI, Travel Together */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {DEVORBIT_PROJECTS.map((project) => {
+              {/* Three Primary Featured Cards: Jira Fixer, EVEE, TalkingHead 3D */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-5 flex-1">
+                {DEVORBIT_PROJECTS.slice(0, 3).map((project) => {
                   const live = project.githubRepo ? repoMetrics[project.githubRepo] : undefined;
                   const relUpdated = formatRelativeTime(live?.updatedAt);
                   return (
@@ -1091,44 +1100,76 @@ export const DevOrbitPage: React.FC<DevOrbitPageProps> = ({ onNavigatePortfolio 
                           setSelectedProjectModal(project);
                         }
                       }}
-                      className={`group rounded-xl border p-4 flex flex-col justify-between transition-all duration-200 hover:-translate-y-1 cursor-pointer ${
+                      className={`group rounded-xl border p-4 sm:p-5 flex flex-col justify-between h-full transition-all duration-200 hover:-translate-y-1 cursor-pointer ${
                         isDark
-                          ? 'bg-[#0D1B38]/90 hover:bg-[#122449] border-[#3578FF]/30 hover:border-[#36C8FF]/70'
+                          ? 'bg-[#0D1B38]/90 hover:bg-[#122449] border-[#3578FF]/30 hover:border-[#36C8FF]/70 shadow-[0_4px_20px_rgba(5,11,29,0.4)]'
                           : 'bg-slate-50 hover:bg-blue-50/50 border-slate-200 hover:border-blue-400'
                       }`}
                     >
                       <div>
-                        <div className="flex items-start gap-3">
+                        <div className="flex items-center justify-between gap-2 mb-3">
                           <ProjectCardIcon type={project.iconType} />
-                          <div>
-                            <h3
-                              className={`text-base font-bold leading-snug ${
-                                isDark ? 'text-[#F5F7FF]' : 'text-[#0B1430]'
-                              }`}
-                            >
-                              {project.name}
-                            </h3>
-                            <p
-                              className={`mt-1 text-xs leading-relaxed ${
-                                isDark ? 'text-[#BAC8E8]' : 'text-slate-600'
-                              }`}
-                            >
-                              {project.shortDescription}
-                            </p>
-                          </div>
+                          <span
+                            className={`text-[10px] px-2 py-0.5 rounded-md font-semibold ${
+                              project.availability === 'Public Repository'
+                                ? 'bg-[#38E69B]/15 text-[#38E69B] border border-[#38E69B]/30'
+                                : 'bg-[#9657FF]/15 text-[#C084FC] border border-[#9657FF]/30'
+                            }`}
+                          >
+                            {project.availability === 'Public Repository'
+                              ? 'Open Source'
+                              : project.availability}
+                          </span>
                         </div>
+
+                        <h3
+                          className={`text-base font-bold leading-snug ${
+                            isDark ? 'text-[#F5F7FF]' : 'text-[#0B1430]'
+                          }`}
+                        >
+                          {project.name}
+                        </h3>
+
+                        <p
+                          className={`mt-2 text-xs leading-relaxed line-clamp-3 ${
+                            isDark ? 'text-[#BAC8E8]' : 'text-slate-600'
+                          }`}
+                        >
+                          {project.shortDescription}
+                        </p>
+
+                        {project.techStack.length > 0 && (
+                          <div className="mt-3.5 flex flex-wrap gap-1.5">
+                            {project.techStack.slice(0, 3).map((tech) => (
+                              <span
+                                key={tech}
+                                className={`text-[10.5px] px-2 py-0.5 rounded font-medium ${
+                                  isDark
+                                    ? 'bg-[#09142E] text-[#6CE5FF] border border-[#3578FF]/25'
+                                    : 'bg-white text-blue-700 border border-blue-200'
+                                }`}
+                              >
+                                {tech}
+                              </span>
+                            ))}
+                          </div>
+                        )}
                       </div>
 
                       {/* Card Footer: Honest live GitHub data or honest availability status */}
                       <div className="mt-5 pt-3 border-t border-[#3578FF]/20 flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2.5 text-[11px] font-medium">
+                        <div className="flex items-center gap-2 text-[11px] font-medium min-w-0">
                           {live ? (
                             <>
-                              <span className="inline-flex items-center gap-1 text-[#FFBF47] font-semibold">
+                              <span className="inline-flex items-center gap-1 text-[#FFBF47] font-semibold shrink-0">
                                 <Star className="w-3.5 h-3.5 fill-current" />
                                 {live.stars}
                               </span>
-                              <span className={isDark ? 'text-[#BAC8E8]' : 'text-slate-500'}>
+                              <span
+                                className={`truncate ${
+                                  isDark ? 'text-[#BAC8E8]' : 'text-slate-500'
+                                }`}
+                              >
                                 {relUpdated || 'Public Repo'}
                               </span>
                             </>
@@ -1151,7 +1192,7 @@ export const DevOrbitPage: React.FC<DevOrbitPageProps> = ({ onNavigatePortfolio 
                         </div>
 
                         <span
-                          className={`w-7 h-7 rounded-full border flex items-center justify-center transition-colors ${
+                          className={`w-7 h-7 rounded-full border flex items-center justify-center shrink-0 transition-colors ${
                             isDark
                               ? 'border-[#36C8FF]/40 text-[#36C8FF] group-hover:bg-[#36C8FF] group-hover:text-[#050B1D]'
                               : 'border-blue-300 text-blue-600 group-hover:bg-blue-600 group-hover:text-white'
@@ -1167,90 +1208,95 @@ export const DevOrbitPage: React.FC<DevOrbitPageProps> = ({ onNavigatePortfolio 
               </div>
             </div>
 
-            {/* MIDDLE 2.5 COLUMNS: Our Community Card (Uses Designed Illustration instead of fake avatars) */}
-            <div
-              id="devorbit-community"
-              className={`xl:col-span-2 rounded-2xl border p-6 flex flex-col justify-between scroll-mt-24 ${
-                isDark
-                  ? 'bg-[#09142E]/85 border-[#3578FF]/30 shadow-[0_10px_35px_rgba(5,11,29,0.65)]'
-                  : 'bg-white border-blue-200 shadow-sm'
-              }`}
-            >
-              <div>
-                <div className="flex items-center gap-2">
-                  <Users className="w-5 h-5 text-[#36C8FF]" />
-                  <h2
-                    className={`text-base sm:text-lg font-bold ${
-                      isDark ? 'text-[#F5F7FF]' : 'text-[#0B1430]'
-                    }`}
-                  >
-                    Our Community
-                  </h2>
+            {/* RIGHT 4 COLUMNS: Responsive Stack of Our Community + Terminal Rocket CTA */}
+            <div className="xl:col-span-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-6">
+              {/* Our Community Card */}
+              <div
+                id="devorbit-community"
+                className={`rounded-2xl border p-5 sm:p-6 flex flex-col justify-between scroll-mt-24 ${
+                  isDark
+                    ? 'bg-[#09142E]/85 border-[#3578FF]/30 shadow-[0_10px_35px_rgba(5,11,29,0.65)]'
+                    : 'bg-white border-blue-200 shadow-sm'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="space-y-2 flex-1">
+                    <div className="flex items-center gap-2">
+                      <Users className="w-5 h-5 text-[#36C8FF]" />
+                      <h2
+                        className={`text-base sm:text-lg font-bold ${
+                          isDark ? 'text-[#F5F7FF]' : 'text-[#0B1430]'
+                        }`}
+                      >
+                        Our Community
+                      </h2>
+                    </div>
+
+                    <p
+                      className={`text-xs sm:text-sm leading-relaxed ${
+                        isDark ? 'text-[#BAC8E8]' : 'text-slate-600'
+                      }`}
+                    >
+                      Join a growing community of developers, contributors, and builders collaborating on open source!
+                    </p>
+                  </div>
+
+                  {/* Designed Orbital Illustration */}
+                  <div className="w-24 sm:w-28 shrink-0">
+                    <CommunityOrbitIllustration className="w-full h-16 sm:h-20" />
+                  </div>
                 </div>
 
-                {/* Designed Orbital Illustration (Zero fabricated avatars) */}
-                <div className="my-3">
-                  <CommunityOrbitIllustration className="w-full h-20" />
-                </div>
-
-                <p
-                  className={`text-xs sm:text-sm leading-relaxed ${
-                    isDark ? 'text-[#BAC8E8]' : 'text-slate-600'
-                  }`}
-                >
-                  Join a growing community of developers, contributors, and builders!
-                </p>
-              </div>
-
-              <div className="mt-5">
-                <button
-                  type="button"
-                  onClick={handleDiscordClick}
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#5B21B6] via-[#7C3AED] to-[#9657FF] hover:brightness-110 transition-all shadow-[0_0_20px_rgba(150,87,255,0.4)] cursor-pointer"
-                >
-                  <span>Join DevOrbit Community</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* RIGHT 3 COLUMNS: Terminal Rocket Call-to-Action Card */}
-            <div
-              className={`xl:col-span-3 rounded-2xl border p-6 relative overflow-hidden flex flex-col justify-between ${
-                isDark
-                  ? 'bg-gradient-to-br from-[#07142B] via-[#0B1B3D] to-[#1A103C] border-[#38E69B]/55 shadow-[0_0_30px_rgba(56,230,155,0.18)]'
-                  : 'bg-gradient-to-br from-slate-900 to-indigo-950 text-white border-emerald-400/60 shadow-md'
-              }`}
-            >
-              <div className="relative z-10 space-y-3 max-w-[230px]">
-                <div
-                  className="text-[#FFBF47] font-bold text-base sm:text-lg"
-                  style={{ fontFamily: "'Press Start 2P', monospace" }}
-                >
-                  &gt;_
-                </div>
-                <h3
-                  className="text-sm sm:text-base font-bold leading-relaxed text-[#38E69B]"
-                  style={{ fontFamily: "'Press Start 2P', 'Space Grotesk', monospace" }}
-                >
-                  Let&apos;s build something amazing together!
-                </h3>
-                <div className="pt-1 flex items-center gap-3">
-                  <PixelHeartIcon className="w-7 h-7" />
+                <div className="mt-4 pt-3 border-t border-[#3578FF]/20">
                   <button
                     type="button"
-                    onClick={() => scrollToSection('how-to-contribute')}
-                    className="text-xs font-semibold text-[#6CE5FF] hover:underline inline-flex items-center gap-1 cursor-pointer"
+                    onClick={handleDiscordClick}
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-[#5B21B6] via-[#7C3AED] to-[#9657FF] hover:brightness-110 transition-all shadow-[0_0_20px_rgba(150,87,255,0.35)] cursor-pointer"
                   >
-                    <span>Start Building</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
+                    <span>Join DevOrbit Community</span>
+                    <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>
 
-              {/* Rocket Launching Illustration in bottom-right corner */}
-              <div className="absolute -right-3 -bottom-3 pointer-events-none opacity-95">
-                <RocketLaunchIllustration className="w-36 h-36 sm:w-40 sm:h-40" />
+              {/* Terminal Rocket Call-to-Action Card */}
+              <div
+                className={`rounded-2xl border p-5 sm:p-6 relative overflow-hidden flex flex-col justify-between min-h-[170px] ${
+                  isDark
+                    ? 'bg-gradient-to-br from-[#07142B] via-[#0B1B3D] to-[#1A103C] border-[#38E69B]/55 shadow-[0_0_30px_rgba(56,230,155,0.18)]'
+                    : 'bg-gradient-to-br from-slate-900 to-indigo-950 text-white border-emerald-400/60 shadow-md'
+                }`}
+              >
+                <div className="relative z-10 space-y-2.5 max-w-[68%]">
+                  <div
+                    className="text-[#FFBF47] font-bold text-sm sm:text-base"
+                    style={{ fontFamily: "'Press Start 2P', monospace" }}
+                  >
+                    &gt;_
+                  </div>
+                  <h3
+                    className="text-xs sm:text-sm font-bold leading-relaxed text-[#38E69B]"
+                    style={{ fontFamily: "'Press Start 2P', 'Space Grotesk', monospace" }}
+                  >
+                    Let&apos;s build something amazing together!
+                  </h3>
+                  <div className="pt-1 flex items-center gap-2.5">
+                    <PixelHeartIcon className="w-6 h-6 shrink-0" />
+                    <button
+                      type="button"
+                      onClick={() => scrollToSection('how-to-contribute')}
+                      className="text-xs font-semibold text-[#6CE5FF] hover:underline inline-flex items-center gap-1 cursor-pointer"
+                    >
+                      <span>Start Building</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Rocket Launching Illustration in bottom-right corner */}
+                <div className="absolute -right-2 -bottom-2 pointer-events-none opacity-95">
+                  <RocketLaunchIllustration className="w-28 h-28 sm:w-32 sm:h-32" />
+                </div>
               </div>
             </div>
           </div>
@@ -1258,31 +1304,49 @@ export const DevOrbitPage: React.FC<DevOrbitPageProps> = ({ onNavigatePortfolio 
           {/* =====================================================================
               EXPANDED INTERACTIVE PROJECT DIRECTORY (Search + Category Filters)
           ===================================================================== */}
-          <div id="devorbit-project-directory" className="mt-10 pt-8 border-t border-[#3578FF]/20 scroll-mt-24">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div
+            id="devorbit-project-directory"
+            className="mt-10 pt-8 border-t border-[#3578FF]/20 scroll-mt-24"
+          >
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-5">
               <div>
-                <h3
-                  className={`text-lg sm:text-xl font-bold ${
-                    isDark ? 'text-[#F5F7FF]' : 'text-[#0B1430]'
+                <div className="flex items-center gap-2.5">
+                  <h3
+                    className={`text-lg sm:text-xl font-bold ${
+                      isDark ? 'text-[#F5F7FF]' : 'text-[#0B1430]'
+                    }`}
+                  >
+                    Project Directory
+                  </h3>
+                  <span
+                    className={`text-xs px-2.5 py-0.5 rounded-full font-semibold ${
+                      isDark
+                        ? 'bg-[#36C8FF]/15 text-[#36C8FF] border border-[#36C8FF]/30'
+                        : 'bg-blue-50 text-blue-700 border border-blue-200'
+                    }`}
+                  >
+                    {filteredProjects.length} {filteredProjects.length === 1 ? 'Project' : 'Projects'}
+                  </span>
+                </div>
+                <p
+                  className={`text-xs sm:text-sm mt-1 ${
+                    isDark ? 'text-[#BAC8E8]' : 'text-slate-600'
                   }`}
                 >
-                  Project Directory
-                </h3>
-                <p className={`text-xs sm:text-sm mt-1 ${isDark ? 'text-[#BAC8E8]' : 'text-slate-600'}`}>
-                  Filter initial projects by category or search by name and technology.
+                  Filter portfolio projects by category or search by name and technology stack.
                 </p>
               </div>
 
               {/* Search Input */}
-              <div className="relative w-full md:w-72">
+              <div className="relative w-full sm:w-80">
                 <Search className="w-4 h-4 text-[#36C8FF] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                   type="text"
                   value={projectSearch}
                   onChange={(e) => setProjectSearch(e.target.value)}
-                  placeholder="Search projects..."
+                  placeholder="Search projects or tech stack..."
                   aria-label="Search projects"
-                  className={`w-full pl-10 pr-4 py-2 rounded-xl text-sm border focus:outline-none transition-colors ${
+                  className={`w-full pl-10 pr-4 py-2.5 rounded-xl text-sm border focus:outline-none transition-colors ${
                     isDark
                       ? 'bg-[#09142E] border-[#3578FF]/35 text-[#F5F7FF] placeholder-[#BAC8E8]/50 focus:border-[#36C8FF]'
                       : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400 focus:border-blue-500'
@@ -1314,7 +1378,7 @@ export const DevOrbitPage: React.FC<DevOrbitPageProps> = ({ onNavigatePortfolio 
               })}
             </div>
 
-            {/* Filtered Project Cards Grid */}
+            {/* Filtered Project Cards Grid — Responsive 1 -> 2 -> 3 -> 4 columns on full-screen viewports */}
             {filteredProjects.length === 0 ? (
               <div
                 className={`mt-4 rounded-2xl border p-8 text-center ${
@@ -1328,14 +1392,26 @@ export const DevOrbitPage: React.FC<DevOrbitPageProps> = ({ onNavigatePortfolio 
                 </p>
               </div>
             ) : (
-              <div className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-5 items-stretch">
                 {filteredProjects.map((project) => {
                   const live = project.githubRepo ? repoMetrics[project.githubRepo] : undefined;
                   const relUpdated = formatRelativeTime(live?.updatedAt);
+                  const visibleTech = project.techStack.slice(0, 4);
+                  const extraTechCount = Math.max(0, project.techStack.length - visibleTech.length);
+
                   return (
                     <div
                       key={project.id}
-                      className={`rounded-2xl border p-5 flex flex-col justify-between transition-all duration-200 hover:-translate-y-1 ${
+                      onClick={() => setSelectedProjectModal(project)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setSelectedProjectModal(project);
+                        }
+                      }}
+                      className={`group rounded-2xl border p-5 flex flex-col justify-between h-full transition-all duration-200 hover:-translate-y-1 cursor-pointer ${
                         isDark
                           ? 'bg-[#09142E]/90 border-[#3578FF]/30 hover:border-[#36C8FF]/60 shadow-[0_6px_25px_rgba(5,11,29,0.5)]'
                           : 'bg-white border-slate-200 hover:border-blue-400 shadow-sm'
@@ -1343,11 +1419,11 @@ export const DevOrbitPage: React.FC<DevOrbitPageProps> = ({ onNavigatePortfolio 
                     >
                       <div>
                         <div className="flex items-start justify-between gap-3">
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-3 min-w-0">
                             <ProjectCardIcon type={project.iconType} />
-                            <div>
+                            <div className="min-w-0">
                               <h4
-                                className={`text-base font-bold ${
+                                className={`text-base font-bold truncate ${
                                   isDark ? 'text-[#F5F7FF]' : 'text-[#0B1430]'
                                 }`}
                               >
@@ -1367,25 +1443,46 @@ export const DevOrbitPage: React.FC<DevOrbitPageProps> = ({ onNavigatePortfolio 
                             </div>
                           </div>
 
-                          {project.githubUrl && (
-                            <a
-                              href={project.githubUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              aria-label={`Open ${project.name} on GitHub`}
-                              className={`p-2 rounded-lg border transition-colors ${
-                                isDark
-                                  ? 'border-[#3578FF]/30 text-[#BAC8E8] hover:text-white hover:bg-white/5'
-                                  : 'border-slate-200 text-slate-600 hover:text-slate-900'
-                              }`}
-                            >
-                              <ExternalLink className="w-4 h-4" />
-                            </a>
-                          )}
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            {project.demoUrl && project.demoUrl !== project.githubUrl && (
+                              <a
+                                href={project.demoUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                title={`Live Demo: ${project.name}`}
+                                aria-label={`Open ${project.name} Live Demo`}
+                                className={`p-2 rounded-lg border transition-colors ${
+                                  isDark
+                                    ? 'border-[#36C8FF]/35 text-[#36C8FF] hover:bg-[#36C8FF]/15'
+                                    : 'border-blue-200 text-blue-600 hover:bg-blue-50'
+                                }`}
+                              >
+                                <Globe className="w-4 h-4" />
+                              </a>
+                            )}
+                            {project.githubUrl && (
+                              <a
+                                href={project.githubUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                title={`Open ${project.name} Repository`}
+                                aria-label={`Open ${project.name} on GitHub`}
+                                className={`p-2 rounded-lg border transition-colors ${
+                                  isDark
+                                    ? 'border-[#3578FF]/30 text-[#BAC8E8] hover:text-white hover:bg-white/5'
+                                    : 'border-slate-200 text-slate-600 hover:text-slate-900'
+                                }`}
+                              >
+                                <ExternalLink className="w-4 h-4" />
+                              </a>
+                            )}
+                          </div>
                         </div>
 
                         <p
-                          className={`mt-3 text-xs sm:text-sm leading-relaxed ${
+                          className={`mt-3 text-xs sm:text-sm leading-relaxed line-clamp-3 ${
                             isDark ? 'text-[#BAC8E8]' : 'text-slate-600'
                           }`}
                         >
@@ -1394,17 +1491,17 @@ export const DevOrbitPage: React.FC<DevOrbitPageProps> = ({ onNavigatePortfolio 
 
                         {/* Ownership clarity */}
                         <p
-                          className={`mt-2 text-[11px] font-medium ${
+                          className={`mt-2.5 text-[11px] font-medium truncate ${
                             isDark ? 'text-[#6CE5FF]/80' : 'text-blue-700'
                           }`}
                         >
                           {project.ownershipNote}
                         </p>
 
-                        {/* Tech Stack Tags (only rendered when verified) */}
-                        {project.techStack.length > 0 && (
-                          <div className="mt-4 flex flex-wrap gap-1.5">
-                            {project.techStack.map((tech) => (
+                        {/* Tech Stack Tags */}
+                        {visibleTech.length > 0 && (
+                          <div className="mt-3.5 flex flex-wrap gap-1.5">
+                            {visibleTech.map((tech) => (
                               <span
                                 key={tech}
                                 className={`text-[11px] px-2.5 py-0.5 rounded-md font-medium ${
@@ -1416,24 +1513,39 @@ export const DevOrbitPage: React.FC<DevOrbitPageProps> = ({ onNavigatePortfolio 
                                 {tech}
                               </span>
                             ))}
+                            {extraTechCount > 0 && (
+                              <span
+                                className={`text-[11px] px-2 py-0.5 rounded-md font-semibold ${
+                                  isDark
+                                    ? 'bg-[#0D1B38]/60 text-[#BAC8E8] border border-[#3578FF]/20'
+                                    : 'bg-slate-100 text-slate-600 border border-slate-200'
+                                }`}
+                              >
+                                +{extraTechCount}
+                              </span>
+                            )}
                           </div>
                         )}
                       </div>
 
                       <div className="mt-5 pt-3 border-t border-[#3578FF]/20 flex items-center justify-between text-xs">
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
                           {live ? (
                             <>
-                              <span className="inline-flex items-center gap-1 text-[#FFBF47] font-semibold">
+                              <span className="inline-flex items-center gap-1 text-[#FFBF47] font-semibold shrink-0">
                                 <Star className="w-3.5 h-3.5 fill-current" />
                                 {live.stars}
                               </span>
-                              <span className="inline-flex items-center gap-1 text-[#BAC8E8]">
+                              <span className="inline-flex items-center gap-1 text-[#BAC8E8] shrink-0">
                                 <GitFork className="w-3.5 h-3.5" />
                                 {live.forks}
                               </span>
                               {relUpdated && (
-                                <span className={isDark ? 'text-[#BAC8E8]/80' : 'text-slate-500'}>
+                                <span
+                                  className={`truncate ${
+                                    isDark ? 'text-[#BAC8E8]/80' : 'text-slate-500'
+                                  }`}
+                                >
                                   {relUpdated}
                                 </span>
                               )}
@@ -1445,14 +1557,10 @@ export const DevOrbitPage: React.FC<DevOrbitPageProps> = ({ onNavigatePortfolio 
                           )}
                         </div>
 
-                        <button
-                          type="button"
-                          onClick={() => setSelectedProjectModal(project)}
-                          className="font-semibold text-[#36C8FF] hover:text-[#6CE5FF] inline-flex items-center gap-1 cursor-pointer"
-                        >
+                        <span className="font-semibold text-[#36C8FF] group-hover:text-[#6CE5FF] inline-flex items-center gap-1 shrink-0">
                           <span>Details</span>
-                          <ArrowRight className="w-3.5 h-3.5" />
-                        </button>
+                          <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+                        </span>
                       </div>
                     </div>
                   );
