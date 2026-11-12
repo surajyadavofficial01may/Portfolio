@@ -2374,6 +2374,20 @@ export const DevOrbitPage: React.FC<DevOrbitPageProps> = ({ onNavigatePortfolio 
             )}
 
             <div className="mt-6 pt-4 border-t border-[#3578FF]/25 flex flex-wrap items-center justify-end gap-3">
+              {selectedProjectModal.demoUrl &&
+                selectedProjectModal.demoUrl !== selectedProjectModal.githubUrl && (
+                  <a
+                    href={selectedProjectModal.demoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-[#F5F7FF] bg-[#3578FF]/25 border border-[#36C8FF]/50 hover:bg-[#3578FF]/40 transition-all"
+                  >
+                    <Globe className="w-4 h-4 text-[#36C8FF]" />
+                    <span>Live Demo</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                )}
+
               {selectedProjectModal.githubUrl ? (
                 <a
                   href={selectedProjectModal.githubUrl}
@@ -2382,7 +2396,11 @@ export const DevOrbitPage: React.FC<DevOrbitPageProps> = ({ onNavigatePortfolio 
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-[#050B1D] bg-gradient-to-r from-[#36C8FF] to-[#38E69B] hover:brightness-110 transition-all"
                 >
                   <GitHubOctocatIcon className="w-4 h-4" />
-                  <span>View Repository on GitHub</span>
+                  <span>
+                    {selectedProjectModal.githubUrl.includes('pypi.org')
+                      ? 'View on PyPI'
+                      : 'View Repository on GitHub'}
+                  </span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               ) : (

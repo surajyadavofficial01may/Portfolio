@@ -26,7 +26,6 @@ import {
   PORTFOLIO_SHEETS_SCHEMA,
   PortfolioKnowledgeBaseData,
   SheetTabName,
-  retrieveKnowledgeForQuery,
 } from '../data/knowledgeBaseSchema';
 import {
   SupabaseSyncMeta,
@@ -61,7 +60,7 @@ export const KnowledgeBaseStudioModal: React.FC<KnowledgeBaseStudioModalProps> =
 
   // Supabase KB Studio State (7 Official Chatbot RAG Categories)
   const [activeTab, setActiveTab] = useState<SheetTabName>('Projects');
-  const [viewMode, setViewMode] = useState<'records' | 'schema' | 'rag_tester' | 'supabase_service'>(
+  const [viewMode, setViewMode] = useState<'records' | 'schema' | 'supabase_service'>(
     'records'
   );
   const [searchFilter, setSearchFilter] = useState('');
@@ -77,11 +76,6 @@ export const KnowledgeBaseStudioModal: React.FC<KnowledgeBaseStudioModalProps> =
   const [isSyncingSupabase, setIsSyncingSupabase] = useState(false);
   const [syncStatusMsg, setSyncStatusMsg] = useState<string | null>(null);
   const [syncErrorMsg, setSyncErrorMsg] = useState<string | null>(null);
-
-  // RAG Sandbox state
-  const [ragTestQuery, setRagTestQuery] = useState(
-    'What is Jira Fixer and how does EVEE work?'
-  );
 
   useEffect(() => {
     const unsubKB = subscribeKnowledgeBase(() => {
@@ -169,11 +163,6 @@ export const KnowledgeBaseStudioModal: React.FC<KnowledgeBaseStudioModalProps> =
       Object.values(row).some((val) => String(val).toLowerCase().includes(q))
     );
   }, [kbState.data, activeTab, searchFilter]);
-
-  const ragPreviewOutput = useMemo(
-    () => retrieveKnowledgeForQuery(ragTestQuery, kbState.data, 5),
-    [ragTestQuery, kbState.data]
-  );
 
   const totalRowsCount = useMemo(
     () =>
@@ -598,18 +587,6 @@ export async function querySupabaseCategory(category = "${activeTab}") {
               </button>
               <button
                 type="button"
-                onClick={() => setViewMode('rag_tester')}
-                className={`px-3 py-1.5 rounded-lg text-xs font-mono-tech font-semibold inline-flex items-center gap-1.5 cursor-pointer ${
-                  viewMode === 'rag_tester'
-                    ? 'bg-[#092A4A] dark:bg-[#3578FF] text-white'
-                    : 'text-[#4B6173] dark:text-[#AAB7D2]'
-                }`}
-              >
-                <Sparkles size={13} />
-                <span>RAG Tester</span>
-              </button>
-              <button
-                type="button"
                 onClick={() => setViewMode('supabase_service')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-mono-tech font-semibold inline-flex items-center gap-1.5 cursor-pointer ${
                   viewMode === 'supabase_service'
@@ -792,53 +769,6 @@ export async function querySupabaseCategory(category = "${activeTab}") {
                 <div className="mt-5 pt-4 border-t border-[#C8B79D] dark:border-[#4191FF]/20 text-xs font-mono-tech">
                   Supabase Bucket: <strong className="text-[#257336] dark:text-[#38E69B]">{bucketName}</strong>
                 </div>
-              </div>
-            </div>
-          )}
-
-          {/* VIEW 3: INTERACTIVE RAG RETRIEVAL TESTER */}
-          {viewMode === 'rag_tester' && (
-            <div className="rounded-2xl border border-[#C8B79D] dark:border-[#4191FF]/30 bg-white dark:bg-[#0D1B38] p-5 space-y-4">
-              <div>
-                <h3 className="font-display font-bold text-base mb-1">
-                  Live RAG Knowledge Retrieval Preview (Verbatim `content` + Citations)
-                </h3>
-                <p className="text-xs opacity-80">
-                  Type any visitor question below to inspect the exact active rows (`active = TRUE`)
-                  retrieved from your 7 Supabase categories (`Personal_Details`, `Work_Experience`,
-                  `Technical_Skills`, `Projects`, `Articles`, `Social_Links`, `FAQs`).
-                </p>
-              </div>
-
-              <div className="flex flex-col sm:flex-row gap-2">
-                <input
-                  type="text"
-                  value={ragTestQuery}
-                  onChange={(e) => setRagTestQuery(e.target.value)}
-                  placeholder="Ask e.g. What is Jira Fixer? or What is EVEE?"
-                  className="flex-1 min-h-[42px] px-3.5 py-2 rounded-xl border border-[#C8B79D] dark:border-[#4191FF]/35 bg-[#F4E9D5]/40 dark:bg-[#050B1D] text-xs sm:text-sm font-mono-tech"
-                />
-                <div className="flex flex-wrap gap-1.5">
-                  {[
-                    'What is Jira Fixer?',
-                    'What is EVEE?',
-                    'What was your contribution to VAssureAI?',
-                    'Which AI models have you integrated?',
-                  ].map((sample) => (
-                    <button
-                      key={sample}
-                      type="button"
-                      onClick={() => setRagTestQuery(sample)}
-                      className="px-2.5 py-1.5 rounded-lg border border-[#C8B79D] dark:border-[#4191FF]/30 text-[11px] font-mono-tech hover:border-[#36C8FF] cursor-pointer"
-                    >
-                      {sample}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="rounded-xl bg-[#071829] text-[#E2E8F0] p-4 font-mono-tech text-xs whitespace-pre-wrap leading-relaxed border border-[#16385B]">
-                {ragPreviewOutput}
               </div>
             </div>
           )}

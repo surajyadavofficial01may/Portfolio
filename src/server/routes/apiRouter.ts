@@ -7,7 +7,6 @@ import {
   MASTER_SPREADSHEET_TITLE,
   PORTFOLIO_SHEETS_SCHEMA,
   type SheetTabName,
-  retrieveKnowledgeForQuery,
 } from '../../data/knowledgeBaseSchema.ts';
 import { syncKnowledgeBaseToSupabase } from '../../../scripts/sync-knowledge-base-to-supabase.ts';
 import { getServerConfig } from '../../config/env.ts';
@@ -15,10 +14,10 @@ import {
   authenticateAdminPassword,
   verifyAdminSessionToken,
 } from '../services/adminAuthService.ts';
-import { generateAssistantChatReply } from '../services/chatService.ts';
+import { askPortfolioKnowledgeBase } from '../services/chatService.ts';
 import {
   createRateLimiter,
-  validateChatInput,
+  validateChatAskInput,
   validateContactInput,
 } from '../middleware/security.ts';
 import {
@@ -186,30 +185,7 @@ export function createApiRouter(): Router {
     }
   });
 
-  // 5. RAG Retrieval API for external codebases/services (`GET /api/knowledge-base/rag`)
-  router.get('/knowledge-base/rag', (req, res) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    const query = typeof req.query.q === 'string' ? req.query.q.slice(0, 500) : '';
-    const requestedTopK = Number(req.query.topK);
-    const topK =
-      Number.isFinite(requestedTopK) && requestedTopK >= 1 && requestedTopK <= 25
-        ? Math.floor(requestedTopK)
-        : 6;
-
-    const context = retrieveKnowledgeForQuery(
-      query,
-      DEFAULT_PORTFOLIO_KNOWLEDGE_BASE,
-      topK
-    );
-    res.json({
-      query,
-      topK,
-      supabase: supabaseSyncStatus,
-      context,
-    });
-  });
-
-  // 6. Complete 7-Category Knowledge Base JSON API (`GET /api/knowledge-base`)
+  // 5. Complete 7-Category Knowledge Base JSON API (`GET /api/knowledge-base`)
   router.get('/knowledge-base', (_req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Cache-Control', 'public, max-age=60');
@@ -236,7 +212,7 @@ export function createApiRouter(): Router {
     });
   });
 
-  // 7. Live CSV Export for any of the 7 categories (`GET /api/knowledge-base/:tab/csv`)
+  // 6. Live CSV Export for any of the 7 categories (`GET /api/knowledge-base/:tab/csv`)
   router.get('/knowledge-base/:tab/csv', (req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     const requested = req.params.tab.toLowerCase();
@@ -265,7 +241,7 @@ export function createApiRouter(): Router {
     res.send(csvLines.join('\n'));
   });
 
-  // 8. Single Category JSON Endpoint (`GET /api/knowledge-base/:tab`)
+  // 7. Single Category JSON Endpoint (`GET /api/knowledge-base/:tab`)
   router.get('/knowledge-base/:tab', (req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     const requested = req.params.tab.toLowerCase();
@@ -291,12 +267,22 @@ export function createApiRouter(): Router {
     });
   });
 
-  // 9. AI Assistant Chat Endpoint (`POST /api/chat`)
-  router.post('/chat', chatLimiter, async (req, res, next) => {
+  // 8. Portfolio Knowledge Base RAG Question-Answering Service (`POST /api/v1/chat/ask`)
+  router.post('/v1/chat/ask', chatLimiter, async (req, res, next) => {
     try {
-      const { message, ragContext } = validateChatInput(req.body);
-      const reply = await generateAssistantChatReply({ message, ragContext });
-      return res.json({ reply });
+      const { question, history } = validateChatAskInput(req.body);
+      const clientIp =
+        (req.headers['x-forwarded-for'] as string | undefined)?.split(',')[0]?.trim() ||
+        req.socket.remoteAddress ||
+        'local';
+
+      const result = await askPortfolioKnowledgeBase({
+        question,
+        history,
+        clientIp,
+      });
+
+      return res.status(200).json(result);
     } catch (err: unknown) {
       next(err);
     }

@@ -44,11 +44,23 @@ export interface JourneyMetric {
   iconName: string;
 }
 
+export interface ChatSourceCitation {
+  category: string;
+  title: string;
+  url: string;
+}
+
+export interface ChatHistoryTurn {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
 export interface ChatMessage {
   id: string;
   sender: 'user' | 'bot';
   text: string;
   timestamp: string;
+  sources?: ChatSourceCitation[];
 }
 
 export interface GameEntity {

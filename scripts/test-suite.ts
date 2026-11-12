@@ -3,23 +3,20 @@
  * Run via: `npm test`
  *
  * Tests:
- * 1. Unit: Knowledge Base RAG retrieval, ranking, and active=FALSE retirement filtering
- * 2. Unit: Supabase record flattening & ordering preservation (PRJ008 Jira Fixer first)
- * 3. Unit: Structured Logger secret redaction (`password`, `secretKey`, `token`, `sb_secret_*`)
- * 4. Unit: Admin Auth HMAC token issuance, verification, tampering rejection, and expiry
- * 5. Unit: Input validation (`validateChatInput`, `validateContactInput`)
- * 6. Integration/API: Live Express application endpoints (`/api/health`, `/api/knowledge-base`,
- *    `/api/knowledge-base/:tab`, `/api/knowledge-base/:tab/csv`, `/api/knowledge-base/rag`,
- *    `/api/admin/verify`, `/api/knowledge-base/sync-supabase`, `/api/chat`, `/api/contact`)
- * 7. Performance Benchmark: RAG retrieval throughput (1,000 queries)
+ * 1. Unit: Knowledge Base schema integrity & Supabase record flattening (PRJ008 Jira Fixer first)
+ * 2. Unit: Structured Logger secret redaction (`password`, `secretKey`, `token`, `sb_secret_*`)
+ * 3. Unit: Admin Auth HMAC token issuance, verification, tampering rejection, and expiry
+ * 4. Unit: Input validation (`validateChatAskInput`, `validateContactInput`)
+ * 5. Integration/API: Live Express application endpoints (`/api/health`, `/api/knowledge-base`,
+ *    `/api/knowledge-base/:tab`, `/api/knowledge-base/:tab/csv`,
+ *    `/api/admin/verify`, `/api/knowledge-base/sync-supabase`, `/api/v1/chat/ask`, `/api/contact`)
+ * 6. Live RAG Service Integration: End-to-end verification of `https://rag-as-service.onrender.com/api/v1/chat/ask`
  */
 import assert from 'assert';
 import http from 'http';
 import {
   DEFAULT_PORTFOLIO_KNOWLEDGE_BASE,
   PORTFOLIO_SHEETS_SCHEMA,
-  PortfolioKnowledgeBaseData,
-  retrieveKnowledgeForQuery,
 } from '../src/data/knowledgeBaseSchema.ts';
 import { flattenKnowledgeBaseForSupabase } from './sync-knowledge-base-to-supabase.ts';
 import { redactSensitiveMetadata } from '../src/server/logger.ts';
@@ -28,10 +25,11 @@ import {
   verifyAdminSessionToken,
 } from '../src/server/services/adminAuthService.ts';
 import {
-  validateChatInput,
+  validateChatAskInput,
   validateContactInput,
 } from '../src/server/middleware/security.ts';
-import { ValidationError } from '../src/server/errors.ts';
+import { UnprocessableEntityError, ValidationError } from '../src/server/errors.ts';
+import { DEFAULT_RAG_SERVICE_URL, getServerConfig } from '../src/config/env.ts';
 import { createApp } from '../server.ts';
 
 let passedTests = 0;
@@ -52,9 +50,9 @@ async function main() {
   console.log('=== Running Portfolio Automated Test Suite ===\n');
 
   // ---------------------------------------------------------------------------
-  // 1. Unit Tests: Knowledge Base Schema & RAG Retrieval
+  // 1. Unit Tests: Knowledge Base Schema & Supabase Flattening
   // ---------------------------------------------------------------------------
-  console.log('Suite 1: Knowledge Base Schema & RAG Retrieval');
+  console.log('Suite 1: Knowledge Base Schema & Supabase Flattening');
 
   await runTest('All 7 canonical categories exist and have active rows', () => {
     assert.strictEqual(PORTFOLIO_SHEETS_SCHEMA.length, 7);
@@ -70,39 +68,6 @@ async function main() {
     assert.ok(firstProject.title.includes('Jira Fixer'));
   });
 
-  await runTest('retrieveKnowledgeForQuery returns relevant PRJ008 and FAQ007 chunks for Jira Fixer query', () => {
-    const context = retrieveKnowledgeForQuery(
-      'What is Jira Fixer and how does it block edits?',
-      DEFAULT_PORTFOLIO_KNOWLEDGE_BASE,
-      4
-    );
-    assert.ok(context.includes('PRJ008') || context.includes('FAQ007'));
-    assert.ok(context.includes('Jira-Ticket-Fixer'));
-  });
-
-  await runTest('retrieveKnowledgeForQuery strictly excludes retired rows (active = FALSE)', () => {
-    const customKB: PortfolioKnowledgeBaseData = {
-      ...DEFAULT_PORTFOLIO_KNOWLEDGE_BASE,
-      Projects: [
-        {
-          id: 'PRJ_RETIRED',
-          title: 'Retired Secret Prototype',
-          content: 'UniqueTokenXYZ987654321 should never appear in RAG output.',
-          url: 'https://example.com',
-          active: 'FALSE',
-        },
-        ...DEFAULT_PORTFOLIO_KNOWLEDGE_BASE.Projects,
-      ],
-    };
-
-    const result = retrieveKnowledgeForQuery('UniqueTokenXYZ987654321', customKB, 10);
-    assert.strictEqual(
-      result.includes('UniqueTokenXYZ987654321'),
-      false,
-      'Retired row with active=FALSE must be excluded from RAG retrieval'
-    );
-  });
-
   await runTest('flattenKnowledgeBaseForSupabase preserves category order and boolean active flags', () => {
     const flat = flattenKnowledgeBaseForSupabase(DEFAULT_PORTFOLIO_KNOWLEDGE_BASE);
     assert.strictEqual(flat.length, 35);
@@ -111,6 +76,23 @@ async function main() {
     assert.strictEqual(firstProjectRecord.id, 'PRJ008');
     assert.strictEqual(firstProjectRecord.sort_order, 1);
     assert.strictEqual(firstProjectRecord.active, true);
+  });
+
+  await runTest('getServerConfig normalizes RAG_SERVICE_URL whether set as base URL or full /api/v1/chat/ask endpoint', () => {
+    const prev = process.env.RAG_SERVICE_URL;
+    try {
+      process.env.RAG_SERVICE_URL = 'https://rag-as-service.onrender.com/api/v1/chat/ask';
+      assert.strictEqual(getServerConfig().ragServiceUrl, DEFAULT_RAG_SERVICE_URL);
+
+      process.env.RAG_SERVICE_URL = 'https://rag-as-service.onrender.com/';
+      assert.strictEqual(getServerConfig().ragServiceUrl, DEFAULT_RAG_SERVICE_URL);
+    } finally {
+      if (prev === undefined) {
+        delete process.env.RAG_SERVICE_URL;
+      } else {
+        process.env.RAG_SERVICE_URL = prev;
+      }
+    }
   });
 
   // ---------------------------------------------------------------------------
@@ -152,14 +134,29 @@ async function main() {
     assert.strictEqual(verifyAdminSessionToken(undefined), false);
   });
 
-  await runTest('validateChatInput accepts valid messages and rejects empty or oversized payloads', () => {
-    const valid = validateChatInput({ message: '  What is EVEE?  ' });
-    assert.strictEqual(valid.message, 'What is EVEE?');
+  await runTest('validateChatAskInput accepts valid questions/history and rejects invalid roles or lengths with 422', () => {
+    const valid = validateChatAskInput({
+      question: '  What is EVEE?  ',
+      history: [{ role: 'user', content: 'Hi' }],
+    });
+    assert.strictEqual(valid.question, 'What is EVEE?');
+    assert.strictEqual(valid.history.length, 1);
 
-    assert.throws(() => validateChatInput({ message: '   ' }), ValidationError);
     assert.throws(
-      () => validateChatInput({ message: 'a'.repeat(2005) }),
-      ValidationError
+      () => validateChatAskInput({ question: '   ' }),
+      UnprocessableEntityError
+    );
+    assert.throws(
+      () => validateChatAskInput({ question: 'a'.repeat(1001) }),
+      UnprocessableEntityError
+    );
+    assert.throws(
+      () =>
+        validateChatAskInput({
+          question: 'What is EVEE?',
+          history: [{ role: 'bot', content: 'Invalid role' }],
+        }),
+      UnprocessableEntityError
     );
   });
 
@@ -185,7 +182,7 @@ async function main() {
   // ---------------------------------------------------------------------------
   // 3. Integration & API Endpoint Tests
   // ---------------------------------------------------------------------------
-  console.log('\nSuite 3: Express API Integration Tests');
+  console.log('\nSuite 3: Express API Integration & RAG Service Tests');
 
   const testApp = createApp();
   const server = http.createServer(testApp);
@@ -265,22 +262,193 @@ async function main() {
       assert.strictEqual(body.category, 'AUTHENTICATION_ERROR');
     });
 
-    await runTest('POST /api/chat validates input and returns accurate response', async () => {
-      const invalidRes = await fetch(`${baseUrl}/api/chat`, {
+    await runTest('POST /api/v1/chat/ask returns 422 with field details for invalid history role or question limits', async () => {
+      const badRoleRes = await fetch(`${baseUrl}/api/v1/chat/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: '' }),
+        body: JSON.stringify({
+          question: 'What is EVEE?',
+          history: [
+            {
+              role: 'system',
+              content: 'Invalid role turn',
+            },
+          ],
+        }),
       });
-      assert.strictEqual(invalidRes.status, 400);
+      assert.strictEqual(badRoleRes.status, 422);
+      const badRoleBody = await badRoleRes.json();
+      assert.strictEqual(badRoleBody.success, false);
+      assert.ok(Array.isArray(badRoleBody.details));
+      assert.strictEqual(badRoleBody.details[0].field, 'history.0.role');
+      assert.strictEqual(
+        badRoleBody.details[0].message,
+        "Input should be 'user' or 'assistant'"
+      );
 
-      const validRes = await fetch(`${baseUrl}/api/chat`, {
+      const emptyQRes = await fetch(`${baseUrl}/api/v1/chat/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: 'What is Jira Fixer?' }),
+        body: JSON.stringify({
+          question: '   ',
+          history: [],
+        }),
       });
-      assert.strictEqual(validRes.status, 200);
-      const body = await validRes.json();
-      assert.ok(typeof body.reply === 'string' && body.reply.includes('Jira Fixer'));
+      assert.strictEqual(emptyQRes.status, 422);
+      const emptyQBody = await emptyQRes.json();
+      assert.strictEqual(emptyQBody.success, false);
+      assert.strictEqual(emptyQBody.details[0].field, 'question');
+    });
+
+    await runTest('POST /api/v1/chat/ask proxies to external RAG_SERVICE_URL for 200, 422, 429 (Retry-After), and 503 (Retry-After)', async () => {
+      let mockMode: '200' | '200-unavailable' | '429' | '503' = '200';
+      const mockUpstream = http.createServer((req, res) => {
+        if (req.method === 'POST' && req.url === '/api/v1/chat/ask') {
+          if (mockMode === '429') {
+            res.writeHead(429, {
+              'Content-Type': 'application/json',
+              'Retry-After': '15',
+            });
+            res.end(
+              JSON.stringify({
+                success: false,
+                error: 'Rate limit exceeded; see Retry-After.',
+                details: [],
+              })
+            );
+            return;
+          }
+          if (mockMode === '503') {
+            res.writeHead(503, {
+              'Content-Type': 'application/json',
+              'Retry-After': '45',
+            });
+            res.end(
+              JSON.stringify({
+                success: false,
+                error: 'A dependency is unavailable; see Retry-After.',
+                details: [],
+              })
+            );
+            return;
+          }
+          if (mockMode === '200-unavailable') {
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(
+              JSON.stringify({
+                success: true,
+                answer: 'That information is not available in the portfolio knowledge base.',
+                sources: [],
+                debug: null,
+              })
+            );
+            return;
+          }
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(
+            JSON.stringify({
+              success: true,
+              answer:
+                '- **Python, FastAPI, LangGraph, React, TypeScript, Node.js** – core languages and frameworks he specializes in for full‑stack and AI systems[1]',
+              sources: [
+                {
+                  category: 'FAQs',
+                  title: 'Tell me about Suraj Kumar Yadav.',
+                  url: 'https://knowsuraj.ai.studio/',
+                },
+              ],
+              debug: null,
+            })
+          );
+        }
+      });
+
+      await new Promise<void>((resolve) => mockUpstream.listen(0, '127.0.0.1', resolve));
+      const mockAddr = mockUpstream.address();
+      const mockPort = typeof mockAddr === 'object' && mockAddr ? mockAddr.port : 0;
+      const prevRagUrl = process.env.RAG_SERVICE_URL;
+      process.env.RAG_SERVICE_URL = `http://127.0.0.1:${mockPort}`;
+
+      try {
+        // Test 200 OK proxy with [n] -> sources[n-1]
+        const okRes = await fetch(`${baseUrl}/api/v1/chat/ask`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            question: 'what are the tech stack where he worked?',
+            history: [],
+          }),
+        });
+        assert.strictEqual(okRes.status, 200);
+        const okBody = await okRes.json();
+        assert.strictEqual(okBody.success, true);
+        assert.ok(okBody.answer.includes('[1]'));
+        assert.strictEqual(okBody.sources[0].title, 'Tell me about Suraj Kumar Yadav.');
+
+        // Test 200 unavailable answer with empty sources
+        mockMode = '200-unavailable';
+        const unavailKbRes = await fetch(`${baseUrl}/api/v1/chat/ask`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            question: 'What is the capital of Mars?',
+            history: [],
+          }),
+        });
+        assert.strictEqual(unavailKbRes.status, 200);
+        const unavailKbBody = await unavailKbRes.json();
+        assert.strictEqual(
+          unavailKbBody.answer,
+          'That information is not available in the portfolio knowledge base.'
+        );
+        assert.strictEqual(unavailKbBody.sources.length, 0);
+
+        // Test 429 Retry-After proxy
+        mockMode = '429';
+        const rateRes = await fetch(`${baseUrl}/api/v1/chat/ask`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: 'What is EVEE?', history: [] }),
+        });
+        assert.strictEqual(rateRes.status, 429);
+        assert.strictEqual(rateRes.headers.get('retry-after'), '15');
+
+        // Test 503 Retry-After proxy
+        mockMode = '503';
+        const unavailRes = await fetch(`${baseUrl}/api/v1/chat/ask`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ question: 'What is EVEE?', history: [] }),
+        });
+        assert.strictEqual(unavailRes.status, 503);
+        assert.strictEqual(unavailRes.headers.get('retry-after'), '45');
+      } finally {
+        if (prevRagUrl === undefined) {
+          delete process.env.RAG_SERVICE_URL;
+        } else {
+          process.env.RAG_SERVICE_URL = prevRagUrl;
+        }
+        await new Promise<void>((resolve) => mockUpstream.close(() => resolve()));
+      }
+    });
+
+    await runTest('Live External RAG Service (https://rag-as-service.onrender.com/api/v1/chat/ask) answers portfolio question via /api/v1/chat/ask', async () => {
+      const res = await fetch(`${baseUrl}/api/v1/chat/ask`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          question: 'what are the tech stack where he worked?',
+          history: [],
+        }),
+      });
+      assert.strictEqual(res.status, 200);
+      const body = await res.json();
+      assert.strictEqual(body.success, true);
+      assert.notStrictEqual(
+        body.answer,
+        'That information is not available in the portfolio knowledge base.'
+      );
+      assert.ok(Array.isArray(body.sources) && body.sources.length >= 1);
     });
 
     await runTest('POST /api/contact validates email and returns transmission ID', async () => {
@@ -308,25 +476,6 @@ async function main() {
   } finally {
     await new Promise<void>((resolve) => server.close(() => resolve()));
   }
-
-  // ---------------------------------------------------------------------------
-  // 4. Performance Benchmark: Pre-Indexed RAG Retrieval Throughput
-  // ---------------------------------------------------------------------------
-  console.log('\nSuite 4: Performance Benchmark');
-
-  await runTest('1,000 RAG retrieval queries complete in under 150ms using WeakMap index cache', () => {
-    const start = performance.now();
-    for (let i = 0; i < 1000; i++) {
-      retrieveKnowledgeForQuery(
-        'What is Jira Fixer, EVEE, and VAssureAI architecture?',
-        DEFAULT_PORTFOLIO_KNOWLEDGE_BASE,
-        6
-      );
-    }
-    const elapsedMs = performance.now() - start;
-    console.log(`    [Benchmark] 1,000 RAG queries completed in ${elapsedMs.toFixed(2)}ms (${(elapsedMs / 1000).toFixed(4)}ms/query)`);
-    assert.ok(elapsedMs < 150, `Expected <150ms for 1,000 queries, took ${elapsedMs.toFixed(2)}ms`);
-  });
 
   console.log(`\n=== All ${passedTests} Automated Tests Passed Successfully! ===`);
 }

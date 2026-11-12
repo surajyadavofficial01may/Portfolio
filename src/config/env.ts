@@ -23,6 +23,7 @@ export interface ServerConfig {
   port: number;
   appUrl?: string;
   geminiApiKey?: string;
+  ragServiceUrl: string;
   supabase: {
     url: string;
     publishableKey: string;
@@ -40,6 +41,27 @@ function cleanEnvValue(value: string | undefined): string {
   return typeof value === 'string' ? value.trim() : '';
 }
 
+export const DEFAULT_RAG_SERVICE_URL = 'https://rag-as-service.onrender.com';
+
+/**
+ * Normalizes `RAG_SERVICE_URL` whether configured as:
+ * - `https://rag-as-service.onrender.com`
+ * - `https://rag-as-service.onrender.com/api/v1/chat/ask`
+ * - `https://rag-as-service.onrender.com/api/v1`
+ * Always returns the clean base URL without trailing slash or duplicate path suffix.
+ */
+export function normalizeRagServiceBaseUrl(rawUrl: string | undefined): string {
+  const cleaned = cleanEnvValue(rawUrl).replace(/\/+$/, '');
+  if (!cleaned) {
+    return DEFAULT_RAG_SERVICE_URL;
+  }
+  return cleaned
+    .replace(/\/api\/v1\/chat\/ask$/i, '')
+    .replace(/\/api\/v1\/chat$/i, '')
+    .replace(/\/api\/v1$/i, '')
+    .replace(/\/+$/, '');
+}
+
 export function getServerConfig(): ServerConfig {
   const rawNodeEnv = cleanEnvValue(process.env.NODE_ENV) || 'development';
   const nodeEnv =
@@ -54,12 +76,14 @@ export function getServerConfig(): ServerConfig {
   const supabaseJwksUrl =
     cleanEnvValue(process.env.SUPABASE_JWKS_URL) ||
     (supabaseUrl ? `${supabaseUrl}/auth/v1/.well-known/jwks.json` : '');
+  const ragServiceUrl = normalizeRagServiceBaseUrl(process.env.RAG_SERVICE_URL);
 
   return {
     nodeEnv,
     port,
     appUrl: cleanEnvValue(process.env.APP_URL) || undefined,
     geminiApiKey: cleanEnvValue(process.env.GEMINI_API_KEY) || undefined,
+    ragServiceUrl,
     supabase: {
       url: supabaseUrl,
       publishableKey: supabasePublishableKey,

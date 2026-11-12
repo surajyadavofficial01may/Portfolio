@@ -3,7 +3,12 @@
  */
 import crypto from 'crypto';
 import type { Request, Response, NextFunction, RequestHandler } from 'express';
-import { RateLimitError, ValidationError } from '../errors.ts';
+import {
+  RateLimitError,
+  ValidationError,
+  UnprocessableEntityError,
+  type FieldValidationDetail,
+} from '../errors.ts';
 import { createLogger } from '../logger.ts';
 
 const httpLogger = createLogger('HTTP');
@@ -77,7 +82,7 @@ export function createRateLimiter(options: {
       const retryAfterSeconds = Math.max(1, Math.ceil((entry.resetAt - now) / 1000));
       next(
         new RateLimitError(
-          options.message || 'Rate limit exceeded. Please wait before retrying.',
+          options.message || 'Rate limit exceeded; see Retry-After.',
           retryAfterSeconds
         )
       );
@@ -91,30 +96,122 @@ export function createRateLimiter(options: {
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export function validateChatInput(body: unknown): {
-  message: string;
-  ragContext?: string;
-} {
-  if (!body || typeof body !== 'object') {
-    throw new ValidationError('Request body must be a JSON object.');
+export interface ValidatedHistoryTurn {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export interface ValidatedChatAskInput {
+  question: string;
+  history: ValidatedHistoryTurn[];
+}
+
+/**
+ * Validates POST /api/v1/chat/ask request payloads according to the RAG Service OpenAPI schema:
+ * - question: 1–1000 characters
+ * - history: optional array of up to 20 turns (oldest first)
+ *   - history[i].role: strictly "user" or "assistant" (any other role rejected with 422)
+ *   - history[i].content: 1–2000 characters
+ */
+export function validateChatAskInput(body: unknown): ValidatedChatAskInput {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) {
+    throw new UnprocessableEntityError('Invalid request body', [
+      {
+        field: 'body',
+        message: 'Input should be a valid JSON object',
+      },
+    ]);
   }
 
-  const { message, ragContext } = body as Record<string, unknown>;
-  if (typeof message !== 'string' || !message.trim()) {
-    throw new ValidationError('Message is required and must be a non-empty string.');
+  const record = body as Record<string, unknown>;
+  const details: FieldValidationDetail[] = [];
+
+  const rawQuestion = record.question;
+  let cleanQuestion = '';
+
+  if (typeof rawQuestion !== 'string') {
+    details.push({
+      field: 'question',
+      message: 'Input should be a valid string',
+    });
+  } else {
+    cleanQuestion = rawQuestion.trim();
+    if (cleanQuestion.length < 1 || cleanQuestion.length > 1000) {
+      details.push({
+        field: 'question',
+        message: 'String should have at least 1 character and at most 1000 characters',
+      });
+    }
   }
 
-  const trimmedMessage = message.trim();
-  if (trimmedMessage.length > 2000) {
-    throw new ValidationError('Message must not exceed 2000 characters.');
+  const rawHistory = record.history;
+  const cleanHistory: ValidatedHistoryTurn[] = [];
+
+  if (rawHistory !== undefined) {
+    if (!Array.isArray(rawHistory)) {
+      details.push({
+        field: 'history',
+        message: 'Input should be a valid list',
+      });
+    } else {
+      if (rawHistory.length > 20) {
+        details.push({
+          field: 'history',
+          message: 'List should have at most 20 items after validation',
+        });
+      }
+
+      rawHistory.forEach((turn, idx) => {
+        if (!turn || typeof turn !== 'object' || Array.isArray(turn)) {
+          details.push({
+            field: `history.${idx}`,
+            message: 'Input should be a valid object',
+          });
+          return;
+        }
+
+        const turnObj = turn as Record<string, unknown>;
+        const role = turnObj.role;
+        const content = turnObj.content;
+
+        if (role !== 'user' && role !== 'assistant') {
+          details.push({
+            field: `history.${idx}.role`,
+            message: "Input should be 'user' or 'assistant'",
+          });
+        }
+
+        if (typeof content !== 'string') {
+          details.push({
+            field: `history.${idx}.content`,
+            message: 'Input should be a valid string',
+          });
+        } else {
+          const trimmedContent = content.trim();
+          if (trimmedContent.length < 1 || trimmedContent.length > 2000) {
+            details.push({
+              field: `history.${idx}.content`,
+              message:
+                'String should have at least 1 character and at most 2000 characters',
+            });
+          } else if (role === 'user' || role === 'assistant') {
+            cleanHistory.push({
+              role,
+              content: trimmedContent,
+            });
+          }
+        }
+      });
+    }
   }
 
-  const sanitizedRagContext =
-    typeof ragContext === 'string' ? ragContext.slice(0, 16000) : undefined;
+  if (details.length > 0) {
+    throw new UnprocessableEntityError('Invalid request body', details);
+  }
 
   return {
-    message: trimmedMessage,
-    ragContext: sanitizedRagContext,
+    question: cleanQuestion,
+    history: cleanHistory,
   };
 }
 

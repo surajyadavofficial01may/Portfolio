@@ -1,164 +1,166 @@
 /**
- * Portfolio AI Assistant Chat & RAG Service
+ * Portfolio External RAG Service Client (`/api/v1/chat/ask`)
+ *
+ * Exclusively connects the portfolio chatbot to the external RAG service
+ * (`https://rag-as-service.onrender.com/api/v1/chat/ask` or `RAG_SERVICE_URL`).
+ * All in-house RAG engine logic has been removed per architectural specification.
+ *
+ * Contract:
+ * - POST `${ragServiceUrl}/api/v1/chat/ask`
+ * - Request body: `{ question: string (1-1000 chars), history: Array<{ role: "user" | "assistant", content: string (1-2000 chars) }> }`
+ * - 200 OK: `{ success: true, answer: string, sources: [{ category, title, url }], debug: Record<string, unknown> | null }`
+ * - 422 Unprocessable Entity: `{ success: false, error: string, details: [{ field, message }] }`
+ * - 429 Too Many Requests: `{ success: false, error: string, details: [] }` + `Retry-After` header
+ * - 503 Service Unavailable: `{ success: false, error: string, details: [] }` + `Retry-After` header
  */
-import { GoogleGenAI } from '@google/genai';
 import { getServerConfig } from '../../config/env.ts';
+import {
+  RateLimitError,
+  ServiceUnavailableError,
+  UnprocessableEntityError,
+  type FieldValidationDetail,
+} from '../errors.ts';
+import type { ValidatedHistoryTurn } from '../middleware/security.ts';
 import { createLogger } from '../logger.ts';
 
 const logger = createLogger('ChatService');
 
-let aiClient: GoogleGenAI | null = null;
+export const UNAVAILABLE_KB_ANSWER =
+  'That information is not available in the portfolio knowledge base.';
 
-function getGeminiClient(): GoogleGenAI | null {
+export interface RagSourceCitation {
+  category: string;
+  title: string;
+  url: string;
+}
+
+export interface ChatAskResponse {
+  success: true;
+  answer: string;
+  sources: RagSourceCitation[];
+  debug?: Record<string, unknown> | null;
+}
+
+export function resolveRagAskEndpoint(ragServiceUrl: string): string {
+  const trimmed = ragServiceUrl.trim().replace(/\/+$/, '');
+  if (/\/api\/v1\/chat\/ask$/i.test(trimmed)) {
+    return trimmed;
+  }
+  const base = trimmed
+    .replace(/\/api\/v1\/chat$/i, '')
+    .replace(/\/api\/v1$/i, '')
+    .replace(/\/+$/, '');
+  return `${base}/api/v1/chat/ask`;
+}
+
+/**
+ * Main handler for `POST /api/v1/chat/ask`
+ * Forwards validated `{ question, history }` to `${config.ragServiceUrl}/api/v1/chat/ask`.
+ */
+export async function askPortfolioKnowledgeBase(params: {
+  question: string;
+  history: ValidatedHistoryTurn[];
+  clientIp?: string;
+}): Promise<ChatAskResponse> {
+  const { question, history, clientIp } = params;
   const config = getServerConfig();
-  if (!aiClient && config.geminiApiKey) {
-    aiClient = new GoogleGenAI({
-      apiKey: config.geminiApiKey,
-      httpOptions: {
-        headers: {
-          'User-Agent': 'aistudio-build',
-        },
-      },
+  const targetUrl = resolveRagAskEndpoint(config.ragServiceUrl);
+
+  let upstreamRes: Response;
+  try {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    };
+    if (clientIp && clientIp !== 'local' && clientIp !== '::1' && clientIp !== '127.0.0.1') {
+      headers['X-Forwarded-For'] = clientIp;
+    }
+
+    upstreamRes = await fetch(targetUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ question, history }),
+      signal: AbortSignal.timeout(30_000),
     });
-  }
-  return aiClient;
-}
-
-export const SURAJ_SYSTEM_CONTEXT = `
-You are the AI Assistant companion for Suraj Kumar Yadav's interactive retro developer portfolio.
-About Suraj Kumar Yadav:
-- Full Name: Suraj Kumar Yadav
-- Contact: thesuraj396@gmail.com | +91 9508998437
-- LinkedIn: https://linkedin.com/in/surajyadav01
-- GitHub: https://github.com/Thesuraj01
-- Education: KIIT Deemed University — B.Tech in CSE (CGPA: 8.35/10.0)
-- Title: Software Engineer
-- Location: Bhubaneswar, Odisha, India
-- Availability: Seeking opportunities at Google Payments
-- Tagline: "Building scalable full-stack systems and AI-powered applications."
-- Bio: Results-driven Software Engineer with 1+ year of hands-on industry experience designing, developing, and deploying scalable full-stack systems and AI-powered applications in production environments.
-- Technical Skills:
-  - Languages: Python, JavaScript (ES6+), TypeScript, Java, C, C++, SQL
-  - Frontend: React.js, Vue.js 3, Next.js, Vite, TailwindCSS, HTML5, CSS3, Three.js, Zustand
-  - Backend: Node.js, Express.js, FastAPI, RESTful APIs, WebSockets, Server-Sent Events (SSE)
-  - AI / ML: LangGraph, LiteLLM, RAG (BM25/TF-IDF/Vector), TensorFlow, PyTorch, Scikit-Learn, FAISS, Pydantic
-  - Databases: Supabase (PostgreSQL), MongoDB, Redis, MongoDB Atlas (Vector Search), Pinecone, TimescaleDB
-  - Cloud & DevOps: Docker, Docker Compose, GKE, AWS (Bedrock, EKS), CI/CD, Kafka, Celery
-  - Security: OAuth 2.0, JWT, RBAC, Token Encryption, SSO
-- Experience & Internships:
-  1. Spotline, Inc. (May 2025 – Present): Software Engineer — Architected V-Assure ScriptGen Extension, engineered DB-Compare, led a production-grade Agentic-RAG system, and contributed to a MS Teams AI Knowledge Bot.
-  2. SmartInternz (May 2024 – Jun 2024): Salesforce Development Intern — Developed Apex triggers and automated workflows reducing manual intervention by 30%.
-- Key Projects:
-  1. Jira Fixer (Jira-Ticket-Fixer): Open-source plugin for Claude Code and GitHub Copilot in VS Code (Node.js 18+, zero dependencies, MIT license). Investigates Jira tickets via Atlassian MCP, proposes a minimal "At a glance" plan, and uses a deterministic hook to physically block file edits until human approval.
-  2. EVEE: Open-source, offline-first Voice PC Agent for Windows 11 using local faster-whisper speech-to-text, 55+ built-in voice commands with 1.6ms latency, a local policy engine, and optional Groq/Qwen fallback.
-  3. TalkingHead 3D: Open-source real-time 3D Avatar-as-a-Service for chatbots with realistic lip-sync, moods, gestures, free Microsoft Edge Neural TTS, and Groq Qwen 3 / OpenAI-compatible APIs.
-  4. Aiden (2025): Emotionally Intelligent AI Companion featuring tree-leaf persistent memory, 11-dimension emotion detection, and FAISS-based semantic memory retrieval.
-  5. AI Quantitative Stock Intelligence System (2025): Institutional-grade predictive analytics platform aggregating 100+ technical indicators with an ML ensemble forecasting engine.
-  6. ZipIgnore: Python-based CLI utility published on PyPI to simplify project packaging by automatically excluding non-essential files.
-  7. MeDict AI (04/2024): Designed deep learning lung cancer detection system achieving 81% accuracy using VGG16 and Streamlit UI.
-- Certifications:
-  - AWS Academy Graduate — Introduction to Cloud Foundations
-  - Cognite Game v4.5 — Certified
-- Extracurricular:
-  - Led 3 end-to-end production systems at Spotline Inc.
-  - National Service Scheme (NSS) | General Volunteer (2022 – Present)
-- Personality: Friendly, technical, concise, and enthusiastic about software craftsmanship. Keep responses crisp and informative.
-`;
-
-export function generateDeterministicFallbackReply(
-  message: string,
-  ragContext?: string
-): string {
-  const lower = message.toLowerCase();
-
-  if (
-    lower.includes('jira') ||
-    lower.includes('fixer') ||
-    lower.includes('claude code') ||
-    lower.includes('copilot')
-  ) {
-    return "**Jira Fixer (PRJ008)** (`github.com/TheSuraj01/Jira-Ticket-Fixer`) is an open-source plugin for **Claude Code** and **GitHub Copilot in VS Code** built by Suraj. It investigates Jira tickets, proposes a minimal **'At a glance'** plan, and uses a zero-dependency Node.js 18+ hook to **physically block file edits** until you click Approve—limiting edits strictly to approved files and writing a failing regression test first.";
-  }
-  if (lower.includes('evee')) {
-    return '**EVEE (PRJ001)** is an open-source, offline-first voice-controlled PC agent for Windows 11 built by Suraj. It uses int8-quantized **faster-whisper** on CPU for 100% local speech recognition, matches 55+ commands with **1.6ms (p95) latency** (including negation checks), and enforces a local policy engine (allow/confirm/deny) with optional **Groq/Qwen** fallback.';
-  }
-  if (lower.includes('vassure') || lower.includes('scriptgen') || lower.includes('veeva')) {
-    return '**VAssureAI (PRJ003)**: At **Spotline, Inc.**, Suraj architected the V-Assure ScriptGen Chrome Extension (MV3) and its asynchronous **FastAPI + Groq LLM** backend to automatically extract requirement context and generate compliant validation test scripts for Veeva Vault.';
-  }
-  if (lower.includes('travel together')) {
-    return '**Travel Together (PRJ002)** is a collaborative community trip planning platform built with **React, TypeScript, Node.js, and WebSockets**, enabling developer communities and friends to coordinate shared itineraries, voting, and expenses in real time.';
-  }
-  if (
-    lower.includes('model') ||
-    lower.includes('ai') ||
-    lower.includes('rag') ||
-    lower.includes('llm')
-  ) {
-    return 'Suraj has integrated **Groq LLMs (Llama 8B/70B, Qwen 3)**, **LangGraph** multi-agent workflows, **faster-whisper** (local int8 CPU speech-to-text), **FAISS & MongoDB Atlas Vector Search** (achieving sub-45ms cache-hit latency), **Microsoft Edge Neural TTS**, and deep learning ensembles (**VGG16, ResNet50, InceptionV3, EfficientNet**).';
-  }
-  if (lower.includes('auth') || lower.includes('security') || lower.includes('oauth')) {
-    return 'For authentication and security, Suraj implements **OAuth 2.0, JWT bearer tokens, Role-Based Access Control (RBAC), token encryption, and SSO**, alongside deterministic local policy engines and physical edit-blocking hooks in autonomous agents (**EVEE**, **Jira Fixer**).';
-  }
-  if (lower.includes('skill') || lower.includes('tech') || lower.includes('stack')) {
-    return "Suraj's technical skills (from **Technical_Skills**) include **Python, TypeScript, React.js, FastAPI, Node.js**, databases (**Supabase/PostgreSQL, MongoDB Atlas, Redis, FAISS**), and AI orchestration with **LangGraph, LiteLLM, Groq, TensorFlow, and PyTorch**.";
-  }
-  if (lower.includes('project') || lower.includes('work') || lower.includes('portfolio')) {
-    return "Suraj's projects (newest first) include:\n• **Jira Fixer (PRJ008)**: Deterministic approval gate plugin for Claude Code & GitHub Copilot.\n• **EVEE (PRJ001)**: Offline-first Voice PC Agent (1.6ms latency, faster-whisper).\n• **TalkingHead 3D (PRJ005)**: Real-time 3D Avatar-as-a-Service.\n• **VAssureAI (PRJ003)**: AI test script generator at Spotline, Inc.\n• **Aiden (PRJ004)**: Emotionally Intelligent AI Companion with tree-leaf FAISS memory.\n• **Travel Together (PRJ002)**: Collaborative community trip planner.\n• **ZipIgnore (PRJ006)**: Python CLI packaging tool on PyPI.\n• **MeDict AI (PRJ007)**: VGG16 lung cancer detection (81% accuracy).";
-  }
-  if (
-    lower.includes('experience') ||
-    lower.includes('internship') ||
-    lower.includes('spotline')
-  ) {
-    return 'Suraj is a **Software Engineer at Spotline, Inc.** (May 2025 – Present), where he led 3 end-to-end production systems (VAssureAI, DB-Compare, and an Agentic-RAG system). Previously, he was a **Salesforce Development Intern at SmartInternz**, reducing manual workflows by 30%.';
-  }
-  if (
-    lower.includes('hire') ||
-    lower.includes('available') ||
-    lower.includes('contact') ||
-    lower.includes('email')
-  ) {
-    return 'Suraj is open to Software Engineer opportunities (including **Google Payments**)! Reach him at **thesuraj396@gmail.com** or **linkedin.com/in/surajyadav01**.';
-  }
-  if (typeof ragContext === 'string' && ragContext.trim()) {
-    const firstChunk = ragContext.split('\n\n')[0] || '';
-    if (firstChunk) {
-      return `From **Portfolio_Knowledge_Base**:\n${firstChunk}`;
-    }
+  } catch (err: unknown) {
+    logger.warn('External RAG service unreachable; throwing 503 ServiceUnavailableError', {
+      targetUrl,
+      error: err instanceof Error ? err.message : String(err),
+    });
+    throw new ServiceUnavailableError(
+      'A dependency is unavailable; see Retry-After.',
+      30
+    );
   }
 
-  return 'Hello! Suraj Kumar Yadav is a Software Engineer specializing in scalable full-stack systems and Agentic AI (FastAPI, React, LangGraph). Ask me about **Jira Fixer**, **EVEE**, **VAssureAI**, or **AI models integrated**!';
-}
+  const retryAfterHeader = upstreamRes.headers.get('retry-after');
+  const retryAfterSeconds = retryAfterHeader
+    ? Math.max(1, Number.parseInt(retryAfterHeader, 10) || 30)
+    : 30;
 
-export async function generateAssistantChatReply(params: {
-  message: string;
-  ragContext?: string;
-}): Promise<string> {
-  const { message, ragContext } = params;
-  const ai = getGeminiClient();
-
-  const knowledgeSection =
-    typeof ragContext === 'string' && ragContext.trim()
-      ? `\n\nRetrieved Records from Portfolio_Knowledge_Base (Supabase Master Source):\n${ragContext}`
-      : '';
-
-  if (ai) {
-    try {
-      const prompt = `System Context:\n${SURAJ_SYSTEM_CONTEXT}${knowledgeSection}\n\nInstruction: Answer the visitor's question naturally, accurately, and concisely using the retrieved Portfolio_Knowledge_Base records and system context.\n\nUser Question: ${message}`;
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.8-flash',
-        contents: prompt,
-      });
-
-      if (response.text) {
-        return response.text;
-      }
-    } catch {
-      logger.warn('Gemini API call failed; using deterministic RAG fallback responder.', {
-        errorCategory: 'EXTERNAL_SERVICE_ERROR',
-      });
-    }
+  let payload: Record<string, unknown> = {};
+  try {
+    payload = (await upstreamRes.json()) as Record<string, unknown>;
+  } catch {
+    payload = {};
   }
 
-  return generateDeterministicFallbackReply(message, ragContext);
+  if (upstreamRes.status === 422) {
+    const details = Array.isArray(payload.details)
+      ? (payload.details as FieldValidationDetail[])
+      : [];
+    throw new UnprocessableEntityError(
+      typeof payload.error === 'string' ? payload.error : 'Invalid request body',
+      details
+    );
+  }
+
+  if (upstreamRes.status === 429) {
+    const details = Array.isArray(payload.details)
+      ? (payload.details as FieldValidationDetail[])
+      : [];
+    throw new RateLimitError(
+      typeof payload.error === 'string'
+        ? payload.error
+        : 'Rate limit exceeded; see Retry-After.',
+      retryAfterSeconds,
+      details
+    );
+  }
+
+  if (upstreamRes.status === 503 || upstreamRes.status >= 500 || !upstreamRes.ok) {
+    const details = Array.isArray(payload.details)
+      ? (payload.details as FieldValidationDetail[])
+      : [];
+    throw new ServiceUnavailableError(
+      typeof payload.error === 'string'
+        ? payload.error
+        : 'A dependency is unavailable; see Retry-After.',
+      retryAfterSeconds,
+      details
+    );
+  }
+
+  const rawSources = Array.isArray(payload.sources) ? payload.sources : [];
+  const sources: RagSourceCitation[] = rawSources.map((s: unknown) => {
+    const item = (s && typeof s === 'object' ? s : {}) as Record<string, unknown>;
+    return {
+      category: typeof item.category === 'string' ? item.category : '',
+      title: typeof item.title === 'string' ? item.title : '',
+      url: typeof item.url === 'string' ? item.url : '',
+    };
+  });
+
+  return {
+    success: true,
+    answer:
+      typeof payload.answer === 'string' && payload.answer.trim()
+        ? payload.answer
+        : UNAVAILABLE_KB_ANSWER,
+    sources,
+    debug:
+      payload.debug && typeof payload.debug === 'object'
+        ? (payload.debug as Record<string, unknown>)
+        : null,
+  };
 }

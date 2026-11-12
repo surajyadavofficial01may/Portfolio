@@ -1,9 +1,77 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, X, Minimize2, Maximize2, MessageSquare } from 'lucide-react';
-import { ChatMessage } from '../types';
+import { Send, X, Minimize2, Maximize2, MessageSquare, ExternalLink } from 'lucide-react';
+import { ChatMessage, ChatHistoryTurn, ChatSourceCitation } from '../types';
 import { soundManager } from '../utils/soundEffects';
-import { retrieveKnowledgeForQuery } from '../data/knowledgeBaseSchema';
-import { getActiveKnowledgeBase } from '../services/supabaseKnowledgeBaseService';
+
+interface ChatAskSuccessPayload {
+  success: true;
+  answer: string;
+  sources?: ChatSourceCitation[];
+  debug?: Record<string, unknown> | null;
+}
+
+interface ChatAskErrorDetail {
+  field: string;
+  message: string;
+}
+
+interface ChatAskErrorPayload {
+  success: false;
+  error: string;
+  details?: ChatAskErrorDetail[];
+}
+
+/**
+ * Renders inline Markdown bold (`**text**`) and `[n]` source citations mapped to `sources[n - 1]`.
+ */
+function renderFormattedSegment(
+  text: string,
+  sources: ChatSourceCitation[] | undefined,
+  keyPrefix: string
+): React.ReactNode[] {
+  // Split by [n] citations and **bold** markers
+  const tokens = text.split(/(\[\d+\]|\*\*[^*]+\*\*)/g);
+  return tokens.map((token, idx) => {
+    const citeMatch = /^\[(\d+)\]$/.exec(token);
+    if (citeMatch && sources) {
+      const sourceIdx = Number(citeMatch[1]) - 1;
+      const citedSource = sources[sourceIdx];
+      if (citedSource) {
+        return citedSource.url ? (
+          <a
+            key={`${keyPrefix}-cite-${idx}`}
+            href={citedSource.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            title={`${citedSource.category}: ${citedSource.title}`}
+            className="inline-flex items-center px-1 mx-0.5 rounded bg-[#123F68] text-[#5FD182] hover:underline font-bold text-[10px]"
+          >
+            {token}
+          </a>
+        ) : (
+          <span
+            key={`${keyPrefix}-cite-${idx}`}
+            title={`${citedSource.category}: ${citedSource.title}`}
+            className="inline-flex items-center px-1 mx-0.5 rounded bg-[#123F68] text-[#5FD182] font-bold text-[10px]"
+          >
+            {token}
+          </span>
+        );
+      }
+    }
+
+    const boldMatch = /^\*\*([^*]+)\*\*$/.exec(token);
+    if (boldMatch) {
+      return (
+        <strong key={`${keyPrefix}-bold-${idx}`} className="text-[#F4E9D5] font-bold">
+          {boldMatch[1]}
+        </strong>
+      );
+    }
+
+    return <React.Fragment key={`${keyPrefix}-txt-${idx}`}>{token}</React.Fragment>;
+  });
+}
 
 export const AIAssistantCompanion: React.FC = () => {
   // Default to compact floating launcher on mobile/tablets (<1280px) so it never covers hero/console CTAs
@@ -51,15 +119,33 @@ export const AIAssistantCompanion: React.FC = () => {
     return () => clearInterval(blinkInterval);
   }, []);
 
+  /**
+   * Builds the `history` array (oldest first, max 20 turns, each content 1-2000 chars,
+   * roles strictly "user" or "assistant") for POST /api/v1/chat/ask.
+   */
+  const buildConversationHistory = (priorMessages: ChatMessage[]): ChatHistoryTurn[] => {
+    return priorMessages
+      .filter((m) => m.id !== 'msg-0' && m.text.trim().length > 0)
+      .map((m): ChatHistoryTurn => ({
+        role: m.sender === 'user' ? 'user' : 'assistant',
+        content: m.text.trim().slice(0, 2000),
+      }))
+      .slice(-20);
+  };
+
   const handleSendMessage = async (textToSend?: string) => {
-    const text = (textToSend || inputVal).trim();
-    if (!text || isLoading) return;
+    const rawText = (textToSend || inputVal).trim();
+    if (!rawText || isLoading) return;
+
+    // Enforce /api/v1/chat/ask question limit of 1-1000 characters
+    const question = rawText.slice(0, 1000);
+    const history = buildConversationHistory(messages);
 
     soundManager.playSelect();
     const userMsg: ChatMessage = {
       id: `user-${Date.now()}`,
       sender: 'user',
-      text,
+      text: question,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
     };
 
@@ -71,21 +157,55 @@ export const AIAssistantCompanion: React.FC = () => {
     setMouthMood('talking');
 
     try {
-      const { data: activeKB } = getActiveKnowledgeBase();
-      const ragContext = retrieveKnowledgeForQuery(text, activeKB, 6);
-
-      const res = await fetch('/api/chat', {
+      // Always call our Express proxy route `/api/v1/chat/ask` which forwards server-to-server
+      // to `https://rag-as-service.onrender.com/api/v1/chat/ask` without browser CORS restrictions
+      const res = await fetch('/api/v1/chat/ask', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text, ragContext }),
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify({
+          question,
+          history,
+        }),
       });
-      const data = await res.json();
+
+      const retryAfter = res.headers.get('Retry-After');
+      const data = (await res.json()) as ChatAskSuccessPayload | ChatAskErrorPayload;
       soundManager.playNavigate();
 
+      if (!res.ok || !data.success) {
+        const errPayload = data as ChatAskErrorPayload;
+        let errorText = errPayload.error || 'Unable to process your question right now.';
+
+        if (res.status === 422 && Array.isArray(errPayload.details) && errPayload.details.length > 0) {
+          const detailSummary = errPayload.details
+            .map((d) => `${d.field}: ${d.message}`)
+            .join('; ');
+          errorText = `${errorText} (${detailSummary})`;
+        } else if ((res.status === 429 || res.status === 503) && retryAfter) {
+          errorText = `${errorText} (Retry after ${retryAfter}s)`;
+        }
+
+        const errorBotMsg: ChatMessage = {
+          id: `bot-${Date.now()}`,
+          sender: 'bot',
+          text: errorText,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        };
+        setMessages((prev) => [...prev, errorBotMsg]);
+        return;
+      }
+
+      const successPayload = data as ChatAskSuccessPayload;
       const botMsg: ChatMessage = {
         id: `bot-${Date.now()}`,
         sender: 'bot',
-        text: data.reply || "I'm ready to answer any questions about Suraj's engineering projects!",
+        text:
+          successPayload.answer ||
+          'That information is not available in the portfolio knowledge base.',
+        sources: Array.isArray(successPayload.sources) ? successPayload.sources : [],
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, botMsg]);
@@ -93,7 +213,7 @@ export const AIAssistantCompanion: React.FC = () => {
       const fallbackMsg: ChatMessage = {
         id: `bot-${Date.now()}`,
         sender: 'bot',
-        text: 'Suraj is a software engineer specializing in scalable full-stack applications with React, Node.js, and Python. Feel free to explore the console or ask about his skills!',
+        text: 'A dependency is unavailable; please try again shortly.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, fallbackMsg]);
@@ -105,10 +225,10 @@ export const AIAssistantCompanion: React.FC = () => {
   };
 
   const samplePrompts = [
+    'What projects are in the portfolio?',
+    'What are the tech stack where he worked?',
     'What is Jira Fixer?',
     'What is EVEE?',
-    'VAssureAI role?',
-    'AI models used?',
     'Open for hire?',
   ];
 
@@ -223,29 +343,43 @@ export const AIAssistantCompanion: React.FC = () => {
 
       {/* Main Terminal Chat Window (Responsive width & height on mobile and desktop) */}
       <div
-        className={`w-full sm:w-[355px] bg-[#D6C2A5] rounded-2xl border-3 border-[#C8B69A] flex flex-col overflow-hidden transition-all duration-200 p-2 sm:p-2.5 ${
-          isMinimized ? 'h-16' : 'h-[min(65dvh,340px)] sm:h-[310px]'
+        className={`w-full sm:w-[355px] bg-[#D6C2A5] rounded-2xl border-3 border-[#C8B69A] flex flex-col overflow-hidden transition-all duration-200 p-2 sm:p-2.5 shadow-[0_16px_32px_rgba(20,25,35,0.32),0_3px_8px_rgba(20,25,35,0.16),inset_0_2px_4px_#F5E8D4,inset_0_-3px_5px_#A68F71] ${
+          isMinimized ? 'h-16' : 'h-[min(65dvh,350px)] sm:h-[325px]'
         }`}
-        style={{
-          boxShadow: `
-            0 16px 32px rgba(20, 25, 35, 0.32),
-            0 3px 8px rgba(20, 25, 35, 0.16),
-            inset 0 2px 4px #F5E8D4,
-            inset 0 -3px 5px #A68F71
-          `,
-        }}
       >
         {/* Dark CRT Screen Container (Always dark CRT background, so text inside is always light!) */}
         <div className="w-full h-full bg-[#071829] rounded-xl border border-[#16385B] flex flex-col overflow-hidden p-2.5 relative shadow-inner">
-          {/* Top Bar: AI ASSISTANT • ONLINE */}
+          {/* Top Bar: RAG SERVICE • /api/v1/chat/ask */}
           <div className="flex items-center justify-between pb-1.5 border-b border-[#16385B]/60 mb-1.5 shrink-0">
-            <div className="flex items-center gap-1.5 font-mono-tech text-[11px] font-bold min-w-0">
-              <span className="text-[#F4E9D5] tracking-wider truncate">AI ASSISTANT</span>
+            <div className="flex items-center gap-1.5 font-mono-tech text-[10.5px] font-bold min-w-0">
+              <span className="text-[#F4E9D5] tracking-wider truncate">RAG CHATBOT</span>
               <span className="text-[#6EB5F7]" aria-hidden="true">•</span>
-              <span className="text-[#5FD182] tracking-wide text-[10px] shrink-0">ONLINE</span>
+              <span className="text-[#5FD182] tracking-wide text-[9.5px] shrink-0">
+                /api/v1/chat/ask
+              </span>
             </div>
 
             <div className="flex items-center gap-1 text-[#94A3B8] shrink-0">
+              {messages.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    soundManager.playSelect();
+                    setMessages([
+                      {
+                        id: 'msg-0',
+                        sender: 'bot',
+                        text: "Hi! I'm Suraj's AI assistant. Ask me about Jira Fixer, EVEE, VAssureAI, or his skills!",
+                        timestamp: 'NOW',
+                      },
+                    ]);
+                  }}
+                  className="px-1.5 py-0.5 text-[9.5px] font-mono-tech text-[#6EB5F7] hover:text-[#F4E9D5] hover:bg-[#16385B]/60 rounded border border-[#16385B] transition-colors cursor-pointer"
+                  title="Clear follow-up history turns"
+                >
+                  Reset
+                </button>
+              )}
               <button
                 type="button"
                 aria-label={isMinimized ? 'Expand AI Assistant' : 'Minimize AI Assistant'}
@@ -308,7 +442,46 @@ export const AIAssistantCompanion: React.FC = () => {
                           : 'bg-[#0B253D] text-[#EADBC3] rounded-bl-none border border-[#16385B]'
                       }`}
                     >
-                      <p className="whitespace-pre-line">{m.text}</p>
+                      <p className="whitespace-pre-line">
+                        {renderFormattedSegment(m.text, m.sources, m.id)}
+                      </p>
+
+                      {/* Cited Knowledge Base Sources ([n] -> sources[n-1]) */}
+                      {m.sender === 'bot' && m.sources && m.sources.length > 0 && (
+                        <div className="mt-2 pt-1.5 border-t border-[#16385B] space-y-1">
+                          <div className="text-[9.5px] text-[#6EB5F7] font-bold uppercase tracking-wider">
+                            Cited Sources ({m.sources.length})
+                          </div>
+                          {m.sources.map((src, idx) => (
+                            <div
+                              key={`${src.category}-${src.title}-${idx}`}
+                              className="text-[10px] text-[#94A3B8] flex items-start gap-1 leading-snug"
+                            >
+                              <span className="text-[#5FD182] font-bold shrink-0">
+                                [{idx + 1}]
+                              </span>
+                              <div className="min-w-0 flex-1">
+                                <span className="text-[#CBD5E1] font-semibold">
+                                  {src.category}:
+                                </span>{' '}
+                                {src.url ? (
+                                  <a
+                                    href={src.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-[#6EB5F7] hover:underline inline-flex items-center gap-0.5 break-all"
+                                  >
+                                    <span>{src.title || src.url}</span>
+                                    <ExternalLink size={9} className="shrink-0" />
+                                  </a>
+                                ) : (
+                                  <span>{src.title}</span>
+                                )}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -318,7 +491,7 @@ export const AIAssistantCompanion: React.FC = () => {
                     <span className="w-1.5 h-1.5 rounded-full bg-[#5FD182] animate-bounce" />
                     <span className="w-1.5 h-1.5 rounded-full bg-[#5FD182] animate-bounce [animation-delay:0.2s]" />
                     <span className="w-1.5 h-1.5 rounded-full bg-[#5FD182] animate-bounce [animation-delay:0.4s]" />
-                    <span className="text-[10px] ml-1">Thinking...</span>
+                    <span className="text-[10px] ml-1">Asking RAG service...</span>
                   </div>
                 )}
                 <div ref={messagesEndRef} />
@@ -338,9 +511,10 @@ export const AIAssistantCompanion: React.FC = () => {
                 <input
                   id="ai-chat-input"
                   type="text"
+                  maxLength={1000}
                   value={inputVal}
                   onChange={(e) => setInputVal(e.target.value)}
-                  placeholder="Ask about Suraj..."
+                  placeholder="Ask portfolio KB (1–1000 chars)..."
                   className="flex-1 min-w-0 min-h-[40px] bg-[#051321] text-[#F4E9D5] font-mono-tech text-base sm:text-xs px-2.5 py-1.5 rounded-lg border border-[#16385B] placeholder-[#64748B] focus:outline-none focus:border-[#5FD182]"
                 />
                 <button

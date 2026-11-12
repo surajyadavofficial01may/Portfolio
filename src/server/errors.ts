@@ -17,13 +17,20 @@ const logger = createLogger('ErrorHandler');
 
 export type ErrorCategory =
   | 'VALIDATION_ERROR'
+  | 'UNPROCESSABLE_ENTITY_ERROR'
   | 'AUTHENTICATION_ERROR'
   | 'AUTHORIZATION_ERROR'
   | 'NOT_FOUND_ERROR'
   | 'RATE_LIMIT_ERROR'
+  | 'SERVICE_UNAVAILABLE_ERROR'
   | 'EXTERNAL_SERVICE_ERROR'
   | 'CONFIGURATION_ERROR'
   | 'INTERNAL_SERVER_ERROR';
+
+export interface FieldValidationDetail {
+  field: string;
+  message: string;
+}
 
 export class AppError extends Error {
   statusCode: number;
@@ -50,6 +57,18 @@ export class ValidationError extends AppError {
   }
 }
 
+export class UnprocessableEntityError extends AppError {
+  validationDetails: FieldValidationDetail[];
+
+  constructor(
+    message = 'Invalid request body',
+    validationDetails: FieldValidationDetail[] = []
+  ) {
+    super(message, 422, 'UNPROCESSABLE_ENTITY_ERROR', validationDetails);
+    this.validationDetails = validationDetails;
+  }
+}
+
 export class AuthenticationError extends AppError {
   constructor(message = 'Authentication required or invalid credentials.') {
     super(message, 401, 'AUTHENTICATION_ERROR');
@@ -72,10 +91,24 @@ export class RateLimitError extends AppError {
   retryAfterSeconds: number;
 
   constructor(
-    message = 'Too many requests. Please try again shortly.',
-    retryAfterSeconds = 60
+    message = 'Rate limit exceeded; see Retry-After.',
+    retryAfterSeconds = 60,
+    details: FieldValidationDetail[] = []
   ) {
-    super(message, 429, 'RATE_LIMIT_ERROR', { retryAfterSeconds });
+    super(message, 429, 'RATE_LIMIT_ERROR', details);
+    this.retryAfterSeconds = retryAfterSeconds;
+  }
+}
+
+export class ServiceUnavailableError extends AppError {
+  retryAfterSeconds: number;
+
+  constructor(
+    message = 'A dependency is unavailable; see Retry-After.',
+    retryAfterSeconds = 30,
+    details: FieldValidationDetail[] = []
+  ) {
+    super(message, 503, 'SERVICE_UNAVAILABLE_ERROR', details);
     this.retryAfterSeconds = retryAfterSeconds;
   }
 }
@@ -99,7 +132,7 @@ export function errorHandlerMiddleware(
   const requestId = (req.headers['x-request-id'] as string | undefined) || 'unknown';
 
   if (err instanceof AppError) {
-    if (err instanceof RateLimitError) {
+    if (err instanceof RateLimitError || err instanceof ServiceUnavailableError) {
       res.setHeader('Retry-After', String(err.retryAfterSeconds));
     }
 
@@ -113,6 +146,7 @@ export function errorHandlerMiddleware(
     res.status(err.statusCode).json({
       success: false,
       error: err.message,
+      details: Array.isArray(err.details) ? err.details : [],
       category: err.category,
       requestId,
     });
@@ -132,6 +166,7 @@ export function errorHandlerMiddleware(
   res.status(500).json({
     success: false,
     error: 'Internal server error.',
+    details: [],
     category: 'INTERNAL_SERVER_ERROR',
     requestId,
   });

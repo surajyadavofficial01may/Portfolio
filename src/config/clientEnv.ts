@@ -14,6 +14,7 @@ export interface ClientPublicConfig {
   supabaseJwksUrl: string;
   supabaseKbBucket: string;
   supabaseKbTable: string;
+  ragServiceUrl: string;
 }
 
 function getViteEnv(key: string): string {
@@ -40,5 +41,6 @@ export function getClientConfig(): ClientPublicConfig {
       getViteEnv('VITE_SUPABASE_KB_BUCKET') || 'portfolio-knowledge-base',
     supabaseKbTable:
       getViteEnv('VITE_SUPABASE_KB_TABLE') || 'portfolio_knowledge_base',
+    ragServiceUrl: getViteEnv('VITE_RAG_SERVICE_URL').replace(/\/+$/, ''),
   };
 }

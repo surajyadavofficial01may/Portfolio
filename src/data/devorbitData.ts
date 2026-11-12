@@ -37,16 +37,15 @@ export interface DevOrbitProject {
 }
 
 /**
- * Only the exact 3 initial projects requested in the specification,
- * with zero fabricated stars, dates, tech stacks, or fake URLs.
+ * Complete list of portfolio projects for DevOrbit, synchronized with src/data/portfolioData.ts.
  */
 export const DEVORBIT_PROJECTS: DevOrbitProject[] = [
   {
     id: 'jira-fixer',
     name: 'Jira Fixer',
     shortDescription:
-      'Open-source plugin for Claude Code & GitHub Copilot that investigates Jira tickets, proposes a minimal plan, and physically blocks file edits until approved.',
-    techStack: ['Node.js 18+', 'Claude Code', 'GitHub Copilot', 'Atlassian MCP'],
+      'An open-source plugin for Claude Code and GitHub Copilot in VS Code that investigates Jira tickets, proposes a minimal plan with an "At a glance" summary, and uses a deterministic hook to physically block file edits until human approval.',
+    techStack: ['Node.js 18+', 'Claude Code', 'GitHub Copilot', 'Atlassian MCP', 'Zero Dependencies'],
     categories: ['AI & ML', 'Developer Tools', 'Automation', 'Open Source'],
     availability: 'Public Repository',
     ownershipNote: 'Open Source Project · Suraj Kumar Yadav (MIT License)',
@@ -57,30 +56,85 @@ export const DEVORBIT_PROJECTS: DevOrbitProject[] = [
   {
     id: 'evee',
     name: 'EVEE',
-    shortDescription: 'My personal development workspace and productivity hub.',
-    techStack: ['Python'],
+    shortDescription:
+      'An open-source, privacy-first voice control agent for Windows 11 where wake-word detection, faster-whisper CPU speech recognition, and 55+ command matching run 100% locally with a strict policy engine and optional Groq/Qwen fallback.',
+    techStack: ['Python', 'faster-whisper', 'Groq (Qwen)', 'Local AI', 'Windows'],
     categories: ['AI & ML', 'Developer Tools', 'Automation', 'Open Source'],
     availability: 'Public Repository',
-    ownershipNote: 'Personal Portfolio Project · Suraj Kumar Yadav',
+    ownershipNote: 'Open Source Project · Suraj Kumar Yadav',
     githubRepo: 'TheSuraj01/EVEE',
     githubUrl: 'https://github.com/TheSuraj01/EVEE',
     iconType: 'evee',
   },
   {
-    id: 'vassureai',
-    name: 'VAssureAI',
-    shortDescription: 'AI-powered script generation and automation tools.',
-    techStack: [],
-    categories: ['AI & ML', 'Automation', 'Developer Tools'],
-    availability: 'Private Project',
-    ownershipNote: 'Personal Engineering Work · Suraj Kumar Yadav',
+    id: 'talkinghead-3d',
+    name: 'TalkingHead 3D',
+    shortDescription:
+      'An open-source 3D talking avatar service that gives any AI assistant or chatbot a lifelike face with real-time lip-sync, 8 facial moods, hand gestures, free Microsoft Edge Neural TTS, and built-in Groq Qwen 3 LLM & OpenAI-compatible APIs.',
+    techStack: ['Three.js', 'Node.js', 'Edge Neural TTS', 'Groq (Qwen 3)', 'REST / SSE'],
+    categories: ['AI & ML', 'Web Development', 'Backend', 'Open Source'],
+    availability: 'Public Repository',
+    ownershipNote: 'Open Source Project · Suraj Kumar Yadav',
+    githubRepo: 'TheSuraj01/TalkingHead-3D',
+    githubUrl: 'https://github.com/TheSuraj01/TalkingHead-3D',
+    demoUrl: 'https://talking-head-3-d.vercel.app',
+    iconType: 'evee',
+  },
+  {
+    id: 'aiden',
+    name: 'Aiden',
+    shortDescription:
+      'Self-enhancing emotionally intelligent AI companion featuring a tree-leaf persistent memory architecture, 11-dimension emotion detection with intensity scoring, and FAISS-based semantic memory retrieval.',
+    techStack: ['Python', 'FastAPI', 'React', 'FAISS', 'Groq (8B/70B)'],
+    categories: ['AI & ML', 'Web Development', 'Backend'],
+    availability: 'Public Repository',
+    ownershipNote: 'Personal Portfolio Project · Suraj Kumar Yadav',
+    githubUrl: 'https://github.com/Thesuraj01',
     iconType: 'vassure',
+  },
+  {
+    id: 'ai-quant-stock-system',
+    name: 'AI Quantitative Stock System',
+    shortDescription:
+      'Institutional-grade predictive analytics platform aggregating 100+ technical indicators (RSI, MACD, VWAP) with an ML ensemble forecasting engine (LSTM, Transformer, XGBoost, Reinforcement Learning) and Kafka + Redis Streams.',
+    techStack: ['Python', 'FastAPI', 'PyTorch', 'Kafka', 'Redis'],
+    categories: ['AI & ML', 'Backend', 'Automation'],
+    availability: 'Public Repository',
+    ownershipNote: 'Personal Portfolio Project · Suraj Kumar Yadav',
+    githubUrl: 'https://github.com/Thesuraj01',
+    iconType: 'vassure',
+  },
+  {
+    id: 'zipignore',
+    name: 'ZipIgnore',
+    shortDescription:
+      'A Python-based CLI utility published on PyPI that simplifies project packaging by creating ZIP archives while automatically excluding cache files, virtual environments, and build artifacts.',
+    techStack: ['Python', 'CLI', 'PyPI', 'Automation'],
+    categories: ['Developer Tools', 'Automation', 'Open Source'],
+    availability: 'Public Repository',
+    ownershipNote: 'Published Open Source Tool on PyPI · Suraj Kumar Yadav',
+    githubUrl: 'https://pypi.org/project/ZipIgnore/',
+    demoUrl: 'https://pypi.org/project/ZipIgnore/',
+    iconType: 'vassure',
+  },
+  {
+    id: 'medict-ai',
+    name: 'MeDict AI',
+    shortDescription:
+      'Deep learning lung cancer diagnostic system achieving 81% detection accuracy using fine-tuned VGG16, with cross-verification via ResNet50, InceptionV3, and EfficientNet ensemble models and a Streamlit UI.',
+    techStack: ['Python', 'TensorFlow', 'Streamlit', 'VGG16'],
+    categories: ['AI & ML', 'Web Development', 'Open Source'],
+    availability: 'Public Repository',
+    ownershipNote: 'Open Source Project · Suraj Kumar Yadav',
+    githubRepo: 'TheSuraj01/MeDict',
+    githubUrl: 'https://github.com/TheSuraj01/MeDict',
+    iconType: 'evee',
   },
   {
     id: 'travel-together',
     name: 'Travel Together',
     shortDescription: 'Plan and travel together with your community.',
-    techStack: [],
+    techStack: ['React', 'Node.js', 'WebSockets'],
     categories: ['Web Development'],
     availability: 'Coming Soon',
     ownershipNote: 'Personal Portfolio Project · Suraj Kumar Yadav',
