@@ -62,18 +62,18 @@ async function main() {
     }
   });
 
-  await runTest('Projects category places latest project PRJ008 (Jira Fixer) at index 0', () => {
+  await runTest('Projects category places latest project PRJ009 (Msg Optimizer) at index 0', () => {
     const firstProject = DEFAULT_PORTFOLIO_KNOWLEDGE_BASE.Projects[0];
-    assert.strictEqual(firstProject.id, 'PRJ008');
-    assert.ok(firstProject.title.includes('Jira Fixer'));
+    assert.strictEqual(firstProject.id, 'PRJ009');
+    assert.ok(firstProject.title.includes('Msg Optimizer'));
   });
 
   await runTest('flattenKnowledgeBaseForSupabase preserves category order and boolean active flags', () => {
     const flat = flattenKnowledgeBaseForSupabase(DEFAULT_PORTFOLIO_KNOWLEDGE_BASE);
-    assert.strictEqual(flat.length, 35);
+    assert.strictEqual(flat.length, 38);
     const firstProjectRecord = flat.find((r) => r.category === 'Projects');
     assert.ok(firstProjectRecord);
-    assert.strictEqual(firstProjectRecord.id, 'PRJ008');
+    assert.strictEqual(firstProjectRecord.id, 'PRJ009');
     assert.strictEqual(firstProjectRecord.sort_order, 1);
     assert.strictEqual(firstProjectRecord.active, true);
   });
@@ -202,12 +202,12 @@ async function main() {
       assert.strictEqual('secretKey' in body, false);
     });
 
-    await runTest('GET /api/knowledge-base returns all 7 categories and 35 records', async () => {
+    await runTest('GET /api/knowledge-base returns all 7 categories and 38 records', async () => {
       const res = await fetch(`${baseUrl}/api/knowledge-base`);
       assert.strictEqual(res.status, 200);
       const body = await res.json();
       assert.strictEqual(body.tabs.length, 7);
-      assert.strictEqual(body.data.Projects[0].id, 'PRJ008');
+      assert.strictEqual(body.data.Projects[0].id, 'PRJ009');
     });
 
     await runTest('GET /api/knowledge-base/Projects/csv exports RFC-4180 CSV with headers', async () => {
@@ -216,7 +216,7 @@ async function main() {
       const csv = await res.text();
       const lines = csv.trim().split('\n');
       assert.strictEqual(lines[0], '"id","title","content","url","active"');
-      assert.ok(lines[1].startsWith('"PRJ008"'));
+      assert.ok(lines[1].startsWith('"PRJ009"'));
     });
 
     await runTest('GET /api/knowledge-base/NonExistentTab returns standardized 404 NotFoundError', async () => {

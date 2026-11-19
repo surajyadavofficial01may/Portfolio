@@ -215,10 +215,18 @@ export const DEFAULT_PORTFOLIO_KNOWLEDGE_BASE: PortfolioKnowledgeBaseData = {
 
   Projects: [
     {
+      id: 'PRJ009',
+      title: 'Msg Optimizer — Native Windows Right-Click AI Text Optimizer (C#/.NET)',
+      content:
+        'Msg Optimizer (github.com/TheSuraj01/Msg-Optimizer) is Suraj Kumar Yadav’s latest open-source, MIT-licensed Windows productivity tool (~90 KB single .exe, ~1,900 lines of C#, zero dependencies) that turns the 7-step copy-paste chatbot loop into a single right-click. Using Windows UI Automation and low-level hooks, it docks a native, theme-matched (dark mode included) "Optimize Text" menu flush against right-click context menus in Microsoft Teams, Outlook, Word, Edge, Notepad, and WhatsApp Desktop. Built-in actions include Enhance for Mail, Enhance for Teams, Correct English, Humanize, and custom JSON prompt actions. It supports Gemini, Groq, OpenRouter, or local Ollama for fully offline use, encrypts API keys with Windows DPAPI with zero telemetry or text logging, preserves the clipboard, supports Ctrl+Z undo, and never overwrites text if a paste cannot be confirmed.',
+      url: 'https://github.com/TheSuraj01/Msg-Optimizer',
+      active: 'TRUE',
+    },
+    {
       id: 'PRJ008',
       title: 'Jira Fixer (Jira-Ticket-Fixer) — Claude Code & GitHub Copilot Safety Gate Plugin',
       content:
-        'Jira Fixer (github.com/TheSuraj01/Jira-Ticket-Fixer) is Suraj Kumar Yadav’s latest open-source, MIT-licensed plugin for Claude Code and GitHub Copilot in VS Code, built with Node.js 18+ and zero dependencies. It solves the problem of AI coding agents confidently editing 14 unrelated files when pointed at a Jira ticket: Jira Fixer investigates the ticket via Atlassian MCP, proposes a minimal "At a glance" plan (problem, cause, fix, files, risk), and uses a deterministic Node.js hook to physically block file edits until the developer clicks Approve. Once approved, edits are locked strictly to the approved file list, a failing regression test is written first, every acceptance criterion is verified, and Jira comments, commit messages, and PR descriptions are drafted automatically.',
+        'Jira Fixer (github.com/TheSuraj01/Jira-Ticket-Fixer) is Suraj Kumar Yadav’s open-source, MIT-licensed plugin for Claude Code and GitHub Copilot in VS Code, built with Node.js 18+ and zero dependencies. It solves the problem of AI coding agents confidently editing 14 unrelated files when pointed at a Jira ticket: Jira Fixer investigates the ticket via Atlassian MCP, proposes a minimal "At a glance" plan (problem, cause, fix, files, risk), and uses a deterministic Node.js hook to physically block file edits until the developer clicks Approve. Once approved, edits are locked strictly to the approved file list, a failing regression test is written first, every acceptance criterion is verified, and Jira comments, commit messages, and PR descriptions are drafted automatically.',
       url: 'https://github.com/TheSuraj01/Jira-Ticket-Fixer',
       active: 'TRUE',
     },
@@ -282,6 +290,14 @@ export const DEFAULT_PORTFOLIO_KNOWLEDGE_BASE: PortfolioKnowledgeBaseData = {
 
   Articles: [
     {
+      id: 'ART005',
+      title: 'Introducing Msg Optimizer: One-Click Native Windows Context-Menu AI Text Optimizer',
+      content:
+        'In his November 2026 LinkedIn post (https://lnkd.in/p/dEzdPnET), Suraj Kumar Yadav introduced Msg Optimizer, an open-source MIT-licensed Windows utility (https://github.com/TheSuraj01/Msg-Optimizer). Built in ~1,900 lines of zero-dependency C# (~90 KB .exe), it uses Windows UI Automation and low-level hooks to dock a theme-matched "Optimize Text" menu onto right-click context menus in Teams, Outlook, Word, Edge, Notepad, and WhatsApp Desktop with Enhance for Mail, Enhance for Teams, Correct English, Humanize, and custom JSON prompt actions backed by Gemini, Groq, OpenRouter, or offline Ollama and Windows DPAPI key encryption.',
+      url: 'https://lnkd.in/p/dEzdPnET',
+      active: 'TRUE',
+    },
+    {
       id: 'ART004',
       title: 'Introducing Jira Fixer: Deterministic Approval Gate for Claude Code & GitHub Copilot',
       content:
@@ -320,7 +336,7 @@ export const DEFAULT_PORTFOLIO_KNOWLEDGE_BASE: PortfolioKnowledgeBaseData = {
       id: 'SOC001',
       title: 'GitHub — @Thesuraj01',
       content:
-        'Suraj Kumar Yadav’s official GitHub profile is https://github.com/Thesuraj01, where he maintains open-source repositories including Jira Fixer (Jira-Ticket-Fixer), EVEE, TalkingHead 3D, ZipIgnore, and MeDict AI.',
+        'Suraj Kumar Yadav’s official GitHub profile is https://github.com/Thesuraj01, where he maintains open-source repositories including Msg Optimizer (Msg-Optimizer), Jira Fixer (Jira-Ticket-Fixer), EVEE, TalkingHead 3D, ZipIgnore, and MeDict AI.',
       url: 'https://github.com/Thesuraj01',
       active: 'TRUE',
     },
@@ -328,7 +344,7 @@ export const DEFAULT_PORTFOLIO_KNOWLEDGE_BASE: PortfolioKnowledgeBaseData = {
       id: 'SOC002',
       title: 'LinkedIn — Suraj Kumar Yadav (@surajyadav01)',
       content:
-        'Suraj Kumar Yadav’s official LinkedIn profile is https://linkedin.com/in/surajyadav01, where he shares software engineering updates, open-source launches like Jira Fixer, and published LinkedIn Pulse articles.',
+        'Suraj Kumar Yadav’s official LinkedIn profile is https://linkedin.com/in/surajyadav01, where he shares software engineering updates, open-source launches like Msg Optimizer and Jira Fixer, and published LinkedIn Pulse articles.',
       url: 'https://linkedin.com/in/surajyadav01',
       active: 'TRUE',
     },
@@ -368,10 +384,18 @@ export const DEFAULT_PORTFOLIO_KNOWLEDGE_BASE: PortfolioKnowledgeBaseData = {
       active: 'TRUE',
     },
     {
+      id: 'FAQ008',
+      title: 'What is Msg Optimizer and how does it work?',
+      content:
+        'Msg Optimizer (https://github.com/TheSuraj01/Msg-Optimizer) is Suraj Kumar Yadav’s open-source, MIT-licensed Windows utility (~90 KB .exe, ~1,900 lines of zero-dependency C#). It uses Windows UI Automation and low-level hooks to dock a native, theme-matched "Optimize Text" menu onto right-click context menus in Teams, Outlook, Word, Edge, Notepad, and WhatsApp Desktop. Users can Enhance for Mail, Enhance for Teams, Correct English, Humanize text, or define custom JSON prompts using Gemini, Groq, OpenRouter, or local Ollama offline, with DPAPI-encrypted API keys, zero telemetry, clipboard restoration, and Ctrl+Z undo safety.',
+      url: 'https://github.com/TheSuraj01/Msg-Optimizer',
+      active: 'TRUE',
+    },
+    {
       id: 'FAQ007',
       title: 'What is Jira Fixer and how does it work?',
       content:
-        'Jira Fixer (https://github.com/TheSuraj01/Jira-Ticket-Fixer) is Suraj Kumar Yadav’s latest open-source plugin for Claude Code and GitHub Copilot in VS Code (Node.js 18+, zero dependencies, MIT license). It investigates a Jira ticket via Atlassian MCP, presents a minimal "At a glance" plan (problem, cause, fix, files, risk), and uses a deterministic hook to physically block file edits until the developer clicks Approve. It then restricts edits to the approved file list, writes a failing regression test first, and drafts the Jira comment, commit message, and PR description.',
+        'Jira Fixer (https://github.com/TheSuraj01/Jira-Ticket-Fixer) is Suraj Kumar Yadav’s open-source plugin for Claude Code and GitHub Copilot in VS Code (Node.js 18+, zero dependencies, MIT license). It investigates a Jira ticket via Atlassian MCP, presents a minimal "At a glance" plan (problem, cause, fix, files, risk), and uses a deterministic hook to physically block file edits until the developer clicks Approve. It then restricts edits to the approved file list, writes a failing regression test first, and drafts the Jira comment, commit message, and PR description.',
       url: 'https://github.com/TheSuraj01/Jira-Ticket-Fixer',
       active: 'TRUE',
     },

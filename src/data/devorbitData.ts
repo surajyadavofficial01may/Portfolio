@@ -41,6 +41,19 @@ export interface DevOrbitProject {
  */
 export const DEVORBIT_PROJECTS: DevOrbitProject[] = [
   {
+    id: 'msg-optimizer',
+    name: 'Msg Optimizer',
+    shortDescription:
+      'Open-source ~90 KB zero-dependency C#/.NET Windows utility that docks a native, theme-matched "Optimize Text" menu onto right-click menus in Teams, Outlook, Word, Edge, Notepad, and WhatsApp Desktop with Gemini, Groq, OpenRouter, or local Ollama.',
+    techStack: ['C#', '.NET', 'Windows UI Automation', 'Gemini / Groq / Ollama', 'Windows DPAPI'],
+    categories: ['AI & ML', 'Developer Tools', 'Automation', 'Open Source'],
+    availability: 'Public Repository',
+    ownershipNote: 'Open Source Project · Suraj Kumar Yadav (MIT License)',
+    githubRepo: 'TheSuraj01/Msg-Optimizer',
+    githubUrl: 'https://github.com/TheSuraj01/Msg-Optimizer',
+    iconType: 'vassure',
+  },
+  {
     id: 'jira-fixer',
     name: 'Jira Fixer',
     shortDescription:
